@@ -1,0 +1,151 @@
+Link of dbdiagram.io tool :
+https://dbdiagram.io/
+
+Saved version:
+https://dbdiagram.io/d/630b6cc9f1a9b01b0ff8cc09
+
+
+Notes:
+This new version consider anything hardware a "device", devices can contains devices recursively.
+(Opendrop device containing adaptor device containing cartridge device for example).
+Each electrode, linked to a device, has feedback and feature capabilities. 
+These feedback and features can require a certain device.
+(magnet feature requiring a device id corresponding to magnet adaptor for example)
+
+
+Current data structure (WIP) :
+
+Table hardware.device_type {
+   id int [pk]
+   name varchar
+ }
+
+Table hardware.device {
+  id int [pk]
+  name varchar
+  svg varchar
+  version varchar
+  device_type_id int [ ref: > hardware.device_type.id ]
+}
+
+Table hardware.device_requirement {
+  id int [pk]
+  parent_device_id int [ ref: > hardware.device.id ]
+  child_device_id int [ ref: > hardware.device.id ]
+}
+
+
+Table hardware.electrode {
+  id int [pk]
+  cartridge_id int [ ref: > hardware.device.id ]
+  svg_denomination varchar
+ }
+ 
+Table hardware.feedback_type {
+   id int [pk]
+   name varchar
+   data_type varchar
+ }
+ 
+Table hardware.feature_type {
+   id int [pk]
+   name varchar
+   data_type varchar
+ }
+ 
+Table hardware.electrode_feedback {
+   id int [pk]
+   feedback_type_id int [ ref: > hardware.feedback_type.id ]
+   electrode_cartridge_id int [ ref: > hardware.electrode.id ]
+   require_device_id int [ ref: > hardware.device.id ]
+  
+}
+ 
+Table hardware.electrode_feature {
+   id int [pk]
+   feature_type_id int [ ref: > hardware.feature_type.id ]
+   electrode_cartridge_id int [ ref: > hardware.electrode.id ]
+   require_device_id int [ ref: > hardware.device.id ] 
+  
+}
+ 
+Table protocols.protocol {
+  id int [pk]
+  name varchar
+  frame_count int
+  total_duration int
+  mask_frame_id int [ ref: > protocols.frame.id ]
+  date_created date
+  version varchar
+  fork_of int [ ref: > protocols.protocol.id ]
+}
+
+Table protocols.frame {
+  id int [pk]
+  protocol_id int [ ref: > protocols.protocol.id]
+  duration int
+  rank int
+}
+
+Table protocols.nested_protocols {
+  id int [pk]
+  parent_protocol_id int [ ref: > protocols.protocol.id]
+  child_protocol_id int [ ref: > protocols.protocol.id]
+}
+
+Table protocols.frame_electrode {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id ]
+  value int
+  electrode_id int [ ref: > hardware.electrode.id]
+}
+
+Table protocols.frame_feature {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id]
+  electrode_id int [ ref: > hardware.electrode.id]
+  hardware_feature_id int [ ref: > hardware.electrode_feature.id]
+  value int
+}
+
+Table protocols.frame_log {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id]
+  electrode_id int [ ref: > hardware.electrode.id]
+  hardware_feeback_id int [ ref: > hardware.electrode_feedback.id  ]
+  value int
+}
+
+Table users.user {
+  id int [pk]
+  login varchar
+  password varchar
+}
+
+Table users.device {
+  id int [pk]
+  hardware_uid varchar
+  name varchar
+  user_id int [ ref: > users.user.id]
+  device_id int [ ref: > hardware.device.id]
+}
+
+Table protocols.authors {
+  id int [pk]
+  protocol_id int [ ref: > protocols.protocol.id]
+  user_id varchar [ ref: > users.user.id]
+  rank int
+}
+
+Table protocols.point_of_interest {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id]
+  electrode_id int [ ref: > hardware.electrode.id]
+  type_id varchar [ ref: > protocols.poi_types.id]
+}
+
+Table protocols.poi_types {
+  id int [pk]
+  name varchar
+}
+
