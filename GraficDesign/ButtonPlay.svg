@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg9347"
+   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   sodipodi:docname="ButtonPlay.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview9349"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.80087682"
+     inkscape:cx="396.44049"
+     inkscape:cy="561.25984"
+     inkscape:window-width="1974"
+     inkscape:window-height="1088"
+     inkscape:window-x="74"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs9344" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;-inkscape-stroke:none"
+       d="M 3.5,0 C 1.56908,0 -9.9999522e-6,1.56909 0,3.5 0,5.43091 1.56909,7 3.5,7 5.4309,7 6.99999,5.43091 7,3.5 7,1.56909 5.43091,0 3.5,0 Z m 0,0.35351 C 5.24058,0.35351 6.64648,1.75942 6.64648,3.5 6.64648,5.24058 5.24057,6.64844 3.5,6.64844 1.75942,6.64844 0.35156,5.24058 0.35156,3.5 0.35155,1.75942 1.75941,0.35351 3.5,0.35351 Z"
+       id="path9628-3" />
+    <path
+       id="path2675-1"
+       style="fill:#000000;stroke-width:0.0291124"
+       d="M 3.83462,4.16086 C 4.71555,3.58413 4.78063,3.52767 4.69008,3.41856 4.65248,3.37316 3.22513,2.42157 3.00305,2.29376 2.91145,2.24106 2.88766,2.23746 2.84807,2.27026 c -0.0416,0.0345 -0.0468,0.171 -0.0468,1.22305 0,1.23551 0.004,1.27503 0.12278,1.24397 C 2.95155,4.73028 3.3613,4.4707 3.83459,4.16084 Z M 2.57541,5.1186 c -0.0337,-0.036 -0.0753,-0.10238 -0.0924,-0.14745 -0.0204,-0.0539 -0.031,-0.5591 -0.031,-1.47556 0,-0.91646 0.0106,-1.42166 0.031,-1.47556 C 2.56121,1.81359 2.74858,1.74825 2.9556,1.85521 3.09483,1.92711 4.90124,3.11478 4.98023,3.1863 5.18442,3.37122 5.17854,3.6238 4.96553,3.81864 4.87793,3.89874 3.11403,5.0552 2.95562,5.13636 2.81891,5.20646 2.65032,5.19856 2.57545,5.11856 Z" />
+  </g>
+</svg>

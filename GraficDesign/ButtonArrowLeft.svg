@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg9347"
+   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   sodipodi:docname="ButtonArrowLeft.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview9349"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.80087682"
+     inkscape:cx="396.44049"
+     inkscape:cy="561.25984"
+     inkscape:window-width="1974"
+     inkscape:window-height="1088"
+     inkscape:window-x="74"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs9344" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="color:#000000;fill:#000000;stroke-linecap:round;stroke-linejoin:round;-inkscape-stroke:none"
+       d="M 3.5,0 C 1.569088,0 -3.9999924e-6,1.56909 0,3.5 2.0000076e-6,5.43091 1.569092,7 3.5,7 5.430908,7 6.999998,5.43091 7,3.5 7.000004,1.56909 5.430912,0 3.5,0 Z m 0,0.35351 C 5.240583,0.35351 6.646488,1.75942 6.646484,3.5 6.646483,5.24058 5.240579,6.64844 3.5,6.64844 1.759421,6.64844 0.351564,5.24058 0.351562,3.5 0.351559,1.75942 1.759417,0.35351 3.5,0.35351 Z"
+       id="path9628" />
+    <path
+       id="path1540-7-3"
+       style="fill:#000000;stroke:none;stroke-width:0.0219313"
+       d="m 1.762229,3.43114 c 0.02468,-0.0529 1.277247,-1.29483 1.371703,-1.36012 0.0533,-0.0368 0.07101,-0.0389 0.124263,-0.0144 0.03416,0.0157 0.06673,0.0506 0.07239,0.0776 0.0057,0.027 0.01258,0.19986 0.01533,0.38414 l 0.005,0.33506 0.922754,0.0115 c 0.882971,0.0111 0.92403,0.0135 0.952283,0.0564 0.04319,0.0656 0.04319,1.09251 0,1.15811 -0.02825,0.0429 -0.06932,0.0454 -0.952283,0.0564 l -0.922754,0.0115 -0.005,0.33507 c -0.0027,0.18428 -0.0097,0.35713 -0.01533,0.38412 -0.0056,0.027 -0.03824,0.0619 -0.07239,0.0776 -0.05325,0.0245 -0.07096,0.0224 -0.124263,-0.0144 C 3.028764,4.85702 1.78544,3.6192 1.760901,3.56275 c -0.02716,-0.0625 -0.02707,-0.071 0.0012,-0.13178 z m 0.881047,0.6016 0.4163,0.40964 0.0059,-0.26206 c 0.0046,-0.20237 0.01361,-0.27148 0.03965,-0.30343 0.03144,-0.0386 0.09578,-0.0414 0.946361,-0.0414 H 4.964119 V 3.50043 3.16537 H 4.05152 c -0.850583,0 -0.914929,-0.003 -0.946361,-0.0413 -0.02604,-0.032 -0.03508,-0.10102 -0.03965,-0.30296 l -0.0059,-0.26159 -0.474921,0.46851 -0.474925,0.46852 0.05862,0.0633 c 0.03224,0.0348 0.245958,0.24764 0.47492,0.47295 z" />
+  </g>
+</svg>
