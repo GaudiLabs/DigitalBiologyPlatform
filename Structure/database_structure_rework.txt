@@ -1,0 +1,152 @@
+//// -- LEVEL 1
+//// -- Schemas, Tables and References
+
+// Creating tables
+// You can define the tables with full schema names
+
+
+
+Table hardware.device {
+  id int [pk]
+  name varchar
+  svg varchar
+  version varchar
+  device_type_id varchar
+  adapter_id int [ ref: > hardware.adapter.id ]
+}
+
+
+Table hardware.adapter {
+  id int [pk]
+  name varchar
+  svg varchar
+  version varchar
+  has_magnets varchar
+  has_sesnors varchar
+  has_heatcontroler varchar
+}
+
+Table hardware.cartridge {
+  id int [pk]
+  name varchar
+  svg varchar
+  version varchar
+  usage_hours usage_hours
+  device int [ ref: > hardware.adapter.id ]
+}
+
+Table hardware.device_requirement {
+  id int [pk]
+  parent_device_id int [ ref: > hardware.device.id ]
+  child_device_id int [ ref: > hardware.device.id ]
+}
+
+
+Table hardware.electrode {
+  id int [pk]
+  cartridge_id int [ ref: > hardware.cartridge.id ]
+  svg_denomination varchar
+  electrode_parameters int  [ ref: > hardware.electrode_parameters.id ]
+ }
+ 
+
+
+
+ 
+Table hardware.electrode_parameters {
+   id int [pk]
+set_voltage varchar
+set_temperature varchar
+set_magnetstate varchar
+feedback_temerature varchar
+feedback_magnetstate varchar
+feedback_dropplet varchar
+feedback_voltage varchar
+feedback_optical varchar
+
+  
+}
+ 
+Table protocols.protocol {
+  id int [pk]
+  name varchar
+  frame_count int
+  total_duration int
+  mask_frame_id int [ ref: > protocols.frame.id ]
+  date_created date
+  version varchar
+  fork_of int [ ref: > protocols.protocol.id ]
+  cartridge int [ ref: > hardware.cartridge.id ]
+}
+
+Table protocols.frame {
+  id int [pk]
+  protocol_id int [ ref: > protocols.protocol.id]
+  duration int
+  rank int
+  pattern_electrodes varchar
+  pattern_magnets varchar
+  pattern_temeratrues varchar
+
+}
+
+Table protocols.nested_protocols {
+  id int [pk]
+  parent_protocol_id int [ ref: > protocols.protocol.id]
+  child_protocol_id int [ ref: > protocols.protocol.id]
+}
+
+
+
+Table protocols.frame_log {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id]
+  electrode_id int [ ref: > hardware.electrode.id]
+  value int
+}
+
+Table protocols.authors {
+  id int [pk]
+  protocol_id int [ ref: > protocols.protocol.id]
+  user_id varchar [ ref: > users.user.id]
+  rank int
+}
+
+Table protocols.point_of_interest {
+  id int [pk]
+  frame_id int [ ref: > protocols.frame.id]
+  electrode_id int [ ref: > hardware.electrode.id]
+  type_id varchar [ ref: > protocols.poi_types.id]
+}
+
+Table protocols.poi_types {
+  id int [pk]
+  name varchar
+}
+
+
+
+Table users.user {
+  id int [pk]
+  login varchar
+  password varchar
+}
+
+Table users.device {
+  id int [pk]
+  hardware_uid varchar
+  name varchar
+  user_id int [ ref: > users.user.id]
+  device_id int [ ref: > hardware.device.id]
+}
+
+Table users.cartridge {
+  id int [pk]
+  cartridge_uid varchar
+  name varchar
+  user_id int [ ref: > users.user.id]
+  device_id int [ ref: > hardware.cartridge.id]
+}
+
+
+
