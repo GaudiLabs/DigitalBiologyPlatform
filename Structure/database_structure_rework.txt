@@ -3,7 +3,8 @@
 
 // Creating tables
 // You can define the tables with full schema names
-
+// Hosted link:
+// https://dbdiagram.io/d/631a06310911f91ba566675c
 
 
 Table hardware.device {
@@ -12,7 +13,6 @@ Table hardware.device {
   svg varchar
   version varchar
   device_type_id varchar
-  adapter_id int [ ref: > hardware.adapter.id ]
 }
 
 
@@ -31,16 +31,20 @@ Table hardware.cartridge {
   name varchar
   svg varchar
   version varchar
-  usage_hours usage_hours
-  device int [ ref: > hardware.adapter.id ]
+  usage_hours int
 }
 
-Table hardware.device_requirement {
+Table hardware.adapter_device_compatibility {
   id int [pk]
-  parent_device_id int [ ref: > hardware.device.id ]
-  child_device_id int [ ref: > hardware.device.id ]
+  adapter_id int [ ref: > hardware.adapter.id ]
+  device_id int [ ref: > hardware.device.id ]
 }
 
+Table hardware.cartridge_adapter_compatibility {
+  id int [pk]
+  adapter_id int [ ref: > hardware.adapter.id ]
+  cartridge_id int [ ref: > hardware.cartridge.id ]
+}
 
 Table hardware.electrode {
   id int [pk]
@@ -76,7 +80,12 @@ Table protocols.protocol {
   date_created date
   version varchar
   fork_of int [ ref: > protocols.protocol.id ]
-  cartridge int [ ref: > hardware.cartridge.id ]
+}
+
+Table protocol.cartridge_comptibility {
+  id int [pk]
+  protocol_id int [ ref: > protocols.protocol.id ]
+  cartridge_id int [ ref: > hardware.cartridge.id ]
 }
 
 Table protocols.frame {
@@ -134,10 +143,11 @@ Table users.user {
 
 Table users.device {
   id int [pk]
-  hardware_uid varchar
+  device_uid varchar
   name varchar
   user_id int [ ref: > users.user.id]
-  device_id int [ ref: > hardware.device.id]
+  type_device_id int [ ref: > hardware.device.id]
+  adapter_id int [ ref: > users.adapter.id]
 }
 
 Table users.cartridge {
@@ -145,8 +155,13 @@ Table users.cartridge {
   cartridge_uid varchar
   name varchar
   user_id int [ ref: > users.user.id]
-  device_id int [ ref: > hardware.cartridge.id]
+  type_cartridge_id int [ ref: > hardware.cartridge.id]
 }
 
-
-
+Table users.adapter {
+  id int [pk]
+  cartridge_uid varchar
+  name varchar
+  user_id int [ ref: > users.user.id]
+  type_adapter_id int [ ref: > hardware.adapter.id]
+}
