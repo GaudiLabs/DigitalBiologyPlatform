@@ -7,6 +7,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import './index.css';
 import './bootstrap.scss';
+import CartridgeComponent from './cartridge_DIMM';
 
 
 function OpenDropLogo() {
@@ -299,12 +300,10 @@ class Adaptor extends React.Component {
   //width="378.516"
   //height="282.607"
 
-  renderAdaptor(x, y) {
+  renderAdaptor() {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width={{ x }}
-        height={{ y }}
         version="1.1"
         viewBox="0 0 100.149 74.773"
       >
@@ -892,12 +891,13 @@ class Adaptor extends React.Component {
             d="M106.493 155.091h.03"
           ></path>
         </g>
+        
       </svg>
     )
   }
   render() {
     return (
-      this.renderAdaptor(30, 40)
+      this.renderAdaptor()
     );
   }
 }
@@ -936,14 +936,14 @@ class Body extends React.Component {
     return (
       <React.Fragment>
         <HeaderTop />
-        <ResizableBox width={300} lockAspectRatio={false}
+          <div class ="mn" >
+          <ResizableBox width={'400'} lockAspectRatio={false}
           axis="x"
           handleSize={[20, 20]}
           minConstraints={[100, 100]} maxConstraints={[800, 800]}>
-          <span>
-            <Adaptor />
-          </span>
-        </ResizableBox>
+            <CartridgeComponent />
+            </ResizableBox>
+          </div>
       </React.Fragment>
     )
   }
