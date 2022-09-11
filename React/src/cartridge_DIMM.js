@@ -2,13 +2,56 @@ import * as React from "react"
 
 class CartridgeComponent extends React.Component {
 
+    renderElectrode() {
+        return (
+            <path
+          strokeWidth="0.578"
+          d="M86.691 106.5H89.241V109.05H86.691z"
+          display="inline"
+          stopColor="#000"
+          fill="#0F0"
+        ></path>
+        )
+    }
+
     constructor(props) {
       super(props);
       this.state = {
-        electrodes: Array(16).fill(Array(8).fill(null)),
+        squares: Array(16).fill(Array(8).fill(null)),
         serialPort: null
       };
     }
+
+    handleHover(i, j, e) {
+        console.log("MOUSE ENTER")
+        console.log(e)
+        if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
+          var newArray = this.state.squares.map(function (arr) {
+            return arr.slice();
+          });
+    
+          if (newArray[i][j] != null) {
+            newArray[i][j] = null;
+          } else {
+            newArray[i][j] = '🟦';
+          }
+          console.log(i, j)
+    
+          this.setState({
+            squares: newArray,
+          });
+        }
+        console.log(this.state.squares)
+      }
+
+    renderElectrodeFill(i, j){
+        if (this.state.squares[i][j] == null ) {
+            return ("#c4a31c")
+        } else {
+            return ("#00F")
+        }
+    }
+
     render() { 
         return(
     <svg
@@ -737,12 +780,14 @@ class CartridgeComponent extends React.Component {
           d="M83.941 106.5H86.491V109.05H83.941z"
           display="inline"
           stopColor="#000"
+          fill="#0F0"
         ></path>
         <path
           strokeWidth="0.578"
           d="M89.441 106.5H91.991V109.05H89.441z"
           display="inline"
           stopColor="#000"
+          fill="#0F0"
         ></path>
         <path
           strokeWidth="0.578"
@@ -767,7 +812,12 @@ class CartridgeComponent extends React.Component {
           d="M100.441 106.5H102.991V109.05H100.441z"
           display="inline"
           stopColor="#000"
-        ></path>
+          //fill="#F00"
+          onMouseEnter={(e) => this.handleHover(3, 3, e)}
+          onClick={(e) => this.handleHover(3, 3, e)}
+          fill={this.renderElectrodeFill(3, 3)}
+          //onClick={() => {console.log(this.electrode_id)}}
+        ></path> 
         <path
           strokeWidth="0.578"
           d="M103.191 106.5H105.741V109.05H103.191z"

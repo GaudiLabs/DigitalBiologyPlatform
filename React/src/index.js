@@ -174,7 +174,7 @@ class Board extends React.Component {
       });
     }
   }
-
+  
   async SelectSerialClick() {
     console.log("CONNECT CLICKED")
     //if ("serial" in navigator) {
@@ -937,7 +937,7 @@ class Body extends React.Component {
       <React.Fragment>
         <HeaderTop />
           <div class ="mn" >
-          <ResizableBox width={'400'} lockAspectRatio={false}
+          <ResizableBox width={'400'} height={'100%'} lockAspectRatio={false}
           axis="x"
           handleSize={[20, 20]}
           minConstraints={[100, 100]} maxConstraints={[800, 800]}>
