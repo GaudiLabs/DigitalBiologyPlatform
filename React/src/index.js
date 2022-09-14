@@ -8,6 +8,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import './index.css';
 import './bootstrap.scss';
 import CartridgeComponent from './cartridge_DIMM';
+import AdaptorComponent from './adaptor';
 
 
 function OpenDropLogo() {
@@ -941,7 +942,7 @@ class Body extends React.Component {
           axis="x"
           handleSize={[20, 20]}
           minConstraints={[100, 100]} maxConstraints={[800, 800]}>
-            <CartridgeComponent />
+            <AdaptorComponent />
             </ResizableBox>
           </div>
       </React.Fragment>
