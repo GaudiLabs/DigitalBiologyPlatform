@@ -4,16 +4,27 @@ class CartridgeComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            squares: Array(16).fill(Array(8).fill(null)),
-            electrodes: Array(128).fill(null),
-            instanciatedHooks: false,
-            serialPort: null
-        };
+        let new_frames = new Array();
+        var times = 10;
+
+        for(var i = 0; i < times; i++){
+            new_frames.push(Array(16).fill(Array(8).fill(null)))
+        }
+        console.log(new_frames)
+
+            this.state = {
+                frames: new_frames,
+                //squares: Array(16).fill(Array(8).fill("o")),
+                //electrodes: Array(128).fill(null),
+                instanciatedHooks: false,
+                serialPort: null
+            };
+
+        console.log(this.state.frames)
     }
 
     componentDidMount() {
-        console.log("HERE");
+        console.log("HERE - LINKING EVNET LISTENERS");
         console.log(this.state.instanciatedHooks);
 
         var electrodes = document.getElementsByClassName("electrode");
@@ -34,8 +45,9 @@ class CartridgeComponent extends React.Component {
             
         }
     }
-    componentWillUnmount() {
 
+    componentWillUnmount() {
+        //TO-DO
     }
 
     renderCartridge() {
@@ -309,157 +321,234 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="25"
+                    fill={this.renderElectrodeFill(25)}
                     strokeWidth="0.578"
                     d="M89.441 106.5H91.991V109.05H89.441z"
                     display="inline"
                     stopColor="#000"
-                    fill="#0F0"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="33"
+                    fill={this.renderElectrodeFill(33)}
                     strokeWidth="0.578"
                     d="M92.191 106.5H94.741V109.05H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="41"
+                    fill={this.renderElectrodeFill(41)}
                     strokeWidth="0.578"
                     d="M94.941 106.5H97.491V109.05H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="49"
+                    fill={this.renderElectrodeFill(49)}
                     strokeWidth="0.578"
                     d="M97.691 106.5H100.241V109.05H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="57"
+                    fill={this.renderElectrodeFill(57)}
                     strokeWidth="0.578"
                     d="M100.441 106.5H102.991V109.05H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="65"
+                    fill={this.renderElectrodeFill(65)}
                     strokeWidth="0.578"
                     d="M103.191 106.5H105.741V109.05H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="73"
+                    fill={this.renderElectrodeFill(73)}
                     strokeWidth="0.578"
                     d="M105.941 106.5H108.491V109.05H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="81"
+                    fill={this.renderElectrodeFill(81)}
                     strokeWidth="0.578"
                     d="M108.691 106.5H111.241V109.05H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="89"
+                    fill={this.renderElectrodeFill(89)}
                     strokeWidth="0.578"
                     d="M111.441 106.5H113.991V109.05H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="97"
+                    fill={this.renderElectrodeFill(97)}
                     strokeWidth="0.578"
                     d="M114.191 106.5H116.741V109.05H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="105"
+                    fill={this.renderElectrodeFill(105)}
                     strokeWidth="0.578"
                     d="M116.941 106.5H119.491V109.05H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="113"
+                    fill={this.renderElectrodeFill(113)}
                     strokeWidth="0.578"
                     d="M119.691 106.5H122.241V109.05H119.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="16"
+                    fill={this.renderElectrodeFill(16)}
                     strokeWidth="0.578"
                     d="M86.691 103.75H89.241V106.3H86.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="8"
+                    fill={this.renderElectrodeFill(8)}
                     strokeWidth="0.578"
                     d="M83.941 103.75H86.491V106.3H83.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="24"
+                    fill={this.renderElectrodeFill(24)}
                     strokeWidth="0.578"
                     d="M89.441 103.75H91.991V106.3H89.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="32"
+                    fill={this.renderElectrodeFill(32)}
                     strokeWidth="0.578"
                     d="M92.191 103.75H94.741V106.3H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="40"
+                    fill={this.renderElectrodeFill(40)}
                     strokeWidth="0.578"
                     d="M94.941 103.75H97.491V106.3H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="48"
+                    fill={this.renderElectrodeFill(48)}
                     strokeWidth="0.578"
                     d="M97.691 103.75H100.241V106.3H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="56"
+                    fill={this.renderElectrodeFill(56)}
                     strokeWidth="0.578"
                     d="M100.441 103.75H102.991V106.3H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="64"
+                    fill={this.renderElectrodeFill(64)}
                     strokeWidth="0.578"
                     d="M103.191 103.75H105.741V106.3H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="72"
+                    fill={this.renderElectrodeFill(72)}
                     strokeWidth="0.578"
                     d="M105.941 103.75H108.491V106.3H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="80"
+                    fill={this.renderElectrodeFill(80)}
                     strokeWidth="0.578"
                     d="M108.691 103.75H111.241V106.3H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="88"
+                    fill={this.renderElectrodeFill(88)}
                     strokeWidth="0.578"
                     d="M111.441 103.75H113.991V106.3H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="96"
+                    fill={this.renderElectrodeFill(96)}
                     strokeWidth="0.578"
                     d="M114.191 103.75H116.741V106.3H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="104"
+                    fill={this.renderElectrodeFill(104)}
                     strokeWidth="0.578"
                     d="M116.941 103.75H119.491V106.3H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="112"
+                    fill={this.renderElectrodeFill(112)}
                     strokeWidth="0.578"
                     d="M119.691 103.75H122.241V106.3H119.691z"
                     display="inline"
@@ -665,8 +754,8 @@ class CartridgeComponent extends React.Component {
                 ></path>
                 <path
                     className="electrode"
-                    electrode_id="83"
-                    fill={this.renderElectrodeFill(83)}
+                    electrode_id="75"
+                    fill={this.renderElectrodeFill(75)}
                     strokeWidth="0.578"
                     d="M105.941 112H108.491V114.55H105.941z"
                     display="inline"
@@ -727,174 +816,261 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="12"
+                    fill={this.renderElectrodeFill(12)}
                     strokeWidth="0.578"
                     d="M83.941 114.75H86.491V117.3H83.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="28"
+                    fill={this.renderElectrodeFill(28)}
                     strokeWidth="0.578"
                     d="M89.441 114.75H91.991V117.3H89.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="36"
+                    fill={this.renderElectrodeFill(36)}
                     strokeWidth="0.578"
                     d="M92.191 114.75H94.741V117.3H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="44"
+                    fill={this.renderElectrodeFill(44)}
                     strokeWidth="0.578"
                     d="M94.941 114.75H97.491V117.3H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="52"
+                    fill={this.renderElectrodeFill(52)}
                     strokeWidth="0.578"
                     d="M97.691 114.75H100.241V117.3H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="60"
+                    fill={this.renderElectrodeFill(60)}
                     strokeWidth="0.578"
                     d="M100.441 114.75H102.991V117.3H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="68"
+                    fill={this.renderElectrodeFill(68)}
                     strokeWidth="0.578"
                     d="M103.191 114.75H105.741V117.3H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="76"
+                    fill={this.renderElectrodeFill(76)}
                     strokeWidth="0.578"
                     d="M105.941 114.75H108.491V117.3H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="84"
+                    fill={this.renderElectrodeFill(84)}
                     strokeWidth="0.578"
                     d="M108.691 114.75H111.241V117.3H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="92"
+                    fill={this.renderElectrodeFill(92)}
                     strokeWidth="0.578"
                     d="M111.441 114.75H113.991V117.3H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="100"
+                    fill={this.renderElectrodeFill(100)}
                     strokeWidth="0.578"
                     d="M114.191 114.75H116.741V117.3H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="108"
+                    fill={this.renderElectrodeFill(108)}
                     strokeWidth="0.578"
                     d="M116.941 114.75H119.491V117.3H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="116"
+                    fill={this.renderElectrodeFill(116)}
                     strokeWidth="0.578"
                     d="M119.691 114.75H122.241V117.3H119.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="21"
+                    fill={this.renderElectrodeFill(21)}
                     strokeWidth="0.578"
                     d="M86.691 117.5H89.241V120.05H86.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="13"
+                    fill={this.renderElectrodeFill(13)}
                     strokeWidth="0.578"
                     d="M83.941 117.5H86.491V120.05H83.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="29"
+                    fill={this.renderElectrodeFill(29)}
                     strokeWidth="0.578"
                     d="M89.441 117.5H91.991V120.05H89.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="37"
+                    fill={this.renderElectrodeFill(37)}
                     strokeWidth="0.578"
                     d="M92.191 117.5H94.741V120.05H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="45"
+                    fill={this.renderElectrodeFill(45)}
                     strokeWidth="0.578"
                     d="M94.941 117.5H97.491V120.05H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="53"
+                    fill={this.renderElectrodeFill(53)}
                     strokeWidth="0.578"
                     d="M97.691 117.5H100.241V120.05H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="61"
+                    fill={this.renderElectrodeFill(61)}
                     strokeWidth="0.578"
                     d="M100.441 117.5H102.991V120.05H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="69"
+                    fill={this.renderElectrodeFill(69)}
                     strokeWidth="0.578"
                     d="M103.191 117.5H105.741V120.05H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="77"
+                    fill={this.renderElectrodeFill(77)}
                     strokeWidth="0.578"
                     d="M105.941 117.5H108.491V120.05H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="85"
+                    fill={this.renderElectrodeFill(85)}
                     strokeWidth="0.578"
                     d="M108.691 117.5H111.241V120.05H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="93"
+                    fill={this.renderElectrodeFill(93)}
                     strokeWidth="0.578"
                     d="M111.441 117.5H113.991V120.05H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="101"
+                    fill={this.renderElectrodeFill(101)}
                     strokeWidth="0.578"
                     d="M114.191 117.5H116.741V120.05H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="109"
+                    fill={this.renderElectrodeFill(109)}
                     strokeWidth="0.578"
                     d="M116.941 117.5H119.491V120.05H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="117"
+                    fill={this.renderElectrodeFill(117)}
                     strokeWidth="0.578"
                     d="M119.691 117.5H122.241V120.05H119.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="22"
+                    fill={this.renderElectrodeFill(22)}
                     strokeWidth="0.578"
                     d="M86.691 120.25H89.241V122.8H86.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="14"
+                    fill={this.renderElectrodeFill(14)}
                     strokeWidth="0.578"
                     d="M83.941 120.25H86.491V122.8H83.941z"
                     display="inline"
@@ -929,90 +1105,135 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="30"
+                    fill={this.renderElectrodeFill(30)}
                     strokeWidth="0.578"
                     d="M89.441 120.25H91.991V122.8H89.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="38"
+                    fill={this.renderElectrodeFill(38)}
                     strokeWidth="0.578"
                     d="M92.191 120.25H94.741V122.8H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="46"
+                    fill={this.renderElectrodeFill(46)}
                     strokeWidth="0.578"
                     d="M94.941 120.25H97.491V122.8H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="54"
+                    fill={this.renderElectrodeFill(54)}
                     strokeWidth="0.578"
                     d="M97.691 120.25H100.241V122.8H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="62"
+                    fill={this.renderElectrodeFill(62)}
                     strokeWidth="0.578"
                     d="M100.441 120.25H102.991V122.8H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="70"
+                    fill={this.renderElectrodeFill(70)}
                     strokeWidth="0.578"
                     d="M103.191 120.25H105.741V122.8H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="78"
+                    fill={this.renderElectrodeFill(78)}
                     strokeWidth="0.578"
                     d="M105.941 120.25H108.491V122.8H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="86"
+                    fill={this.renderElectrodeFill(86)}
                     strokeWidth="0.578"
                     d="M108.691 120.25H111.241V122.8H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="94"
+                    fill={this.renderElectrodeFill(94)}
                     strokeWidth="0.578"
                     d="M111.441 120.25H113.991V122.8H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="102"
+                    fill={this.renderElectrodeFill(102)}
                     strokeWidth="0.578"
                     d="M114.191 120.25H116.741V122.8H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="110"
+                    fill={this.renderElectrodeFill(110)}
                     strokeWidth="0.578"
                     d="M116.941 120.25H119.491V122.8H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="118"
+                    fill={this.renderElectrodeFill(118)}
                     strokeWidth="0.578"
                     d="M119.691 120.25H122.241V122.8H119.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="120"
+                    fill={this.renderElectrodeFill(120)}
                     strokeWidth="0.578"
                     d="M122.441 106.5H124.991V109.05H122.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="127"
+                    fill={this.renderElectrodeFill(127)}
                     strokeWidth="0.578"
                     d="M122.441 120.25H124.991V122.8H122.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="122"
+                    fill={this.renderElectrodeFill(122)}
                     strokeWidth="2.185"
                     d="M473.162 402.52v9.636H487.998v-9.636h-9.639z"
                     display="inline"
@@ -1020,6 +1241,9 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="125"
+                    fill={this.renderElectrodeFill(125)}
                     strokeWidth="2.185"
                     d="M473.162 454.486v9.639H487.998v-9.639h-9.639z"
                     display="inline"
@@ -1027,12 +1251,18 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="23"
+                    fill={this.renderElectrodeFill(23)}
                     strokeWidth="0.578"
                     d="M86.691 123H89.241V125.55H86.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="15"
+                    fill={this.renderElectrodeFill(15)}
                     strokeWidth="0.578"
                     d="M83.941 123H86.491V125.55H83.941z"
                     display="inline"
@@ -1084,109 +1314,163 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="123"
+                    fill={this.renderElectrodeFill(123)}
                     strokeWidth="0.671"
                     d="M135.634 103.749v8.05h-9.069v-2.55h2.75v-2.95h-2.75v-2.55H130z"
-                    fill="#0F0"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="124"
+                    fill={this.renderElectrodeFill(124)}
                     strokeWidth="0.671"
                     d="M135.634 117.5v8.05h-9.069V123h2.75v-2.95h-2.75v-2.55H130z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+
+                    className="electrode"
+                    electrode_id="31"
+                    fill={this.renderElectrodeFill(31)}
                     strokeWidth="0.578"
                     d="M89.441 123H91.991V125.55H89.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="39"
+                    fill={this.renderElectrodeFill(39)}
                     strokeWidth="0.578"
                     d="M92.191 123H94.741V125.55H92.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="47"
+                    fill={this.renderElectrodeFill(47)}
                     strokeWidth="0.578"
                     d="M94.941 123H97.491V125.55H94.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="55"
+                    fill={this.renderElectrodeFill(55)}
                     strokeWidth="0.578"
                     d="M97.691 123H100.241V125.55H97.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="63"
+                    fill={this.renderElectrodeFill(63)}
                     strokeWidth="0.578"
                     d="M100.441 123H102.991V125.55H100.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="71"
+                    fill={this.renderElectrodeFill(71)}
                     strokeWidth="0.578"
                     d="M103.191 123H105.741V125.55H103.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="79"
+                    fill={this.renderElectrodeFill(79)}
                     strokeWidth="0.578"
                     d="M105.941 123H108.491V125.55H105.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="87"
+                    fill={this.renderElectrodeFill(87)}
                     strokeWidth="0.578"
                     d="M108.691 123H111.241V125.55H108.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="95"
+                    fill={this.renderElectrodeFill(95)}
                     strokeWidth="0.578"
                     d="M111.441 123H113.991V125.55H111.441z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="103"
+                    fill={this.renderElectrodeFill(103)}
                     strokeWidth="0.578"
                     d="M114.191 123H116.741V125.55H114.191z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="111"
+                    fill={this.renderElectrodeFill(111)}
                     strokeWidth="0.578"
                     d="M116.941 123H119.491V125.55H116.941z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="119"
+                    fill={this.renderElectrodeFill(119)}
                     strokeWidth="0.578"
                     d="M119.691 123H122.241V125.55H119.691z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="121"
+                    fill={this.renderElectrodeFill(121)}
                     strokeWidth="0.578"
                     d="M123.816 103.75H126.366V106.3H123.816z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="121"
+                    fill={this.renderElectrodeFill(121)}
                     strokeWidth="0.578"
                     d="M123.816 109.25H126.366V111.8H123.816z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="126"
+                    fill={this.renderElectrodeFill(126)}
                     strokeWidth="0.578"
                     d="M123.816 117.5H126.366V120.05H123.816z"
                     display="inline"
                     stopColor="#000"
                 ></path>
                 <path
+                    className="electrode"
+                    electrode_id="126"
+                    fill={this.renderElectrodeFill(126)}
                     strokeWidth="0.578"
                     d="M123.816 123H126.366V125.55H123.816z"
                     display="inline"
@@ -1200,7 +1484,7 @@ class CartridgeComponent extends React.Component {
         //console.log("MOUSE ENTER")
         //console.log(e)
         if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
-            var newArray = this.state.squares.map(function (arr) {
+            var newArray = this.state.frames[this.props.state.currently_edited_frame[0]].map(function (arr) {
                 return arr.slice();
             });
 
@@ -1215,8 +1499,13 @@ class CartridgeComponent extends React.Component {
             }
             //console.log(i, j)
 
+            var newFrames = this.state.frames.map(function (arr) {
+                return arr.slice();
+            });
+            newFrames[this.props.state.currently_edited_frame[0]] = newArray
+
             this.setState({
-                squares: newArray,
+                frames: newFrames,
             });
         }
         console.log(this.state.squares)
@@ -1227,7 +1516,11 @@ class CartridgeComponent extends React.Component {
         var i = Math.floor(electrode_id / 8);
         var j = electrode_id % 8;
 
-        if (this.state.squares[i][j] == null) {
+        console.log("MODIFYING FRAME:")
+        console.log(this.props.state.currently_edited_frame[0])
+        console.log(this.state.frames)
+        console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+        if (this.state.frames[this.props.state.currently_edited_frame[0]][i][j] == null) {
             return ("#efd94c")
         } else {
             return ("#00F")

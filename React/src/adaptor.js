@@ -5,6 +5,8 @@ class AdaptorComponent extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log("HERHBBGUBGHUJE")
+    console.log(this.props)
   }
 
     renderAdaptorBoard() {
@@ -617,7 +619,7 @@ class AdaptorComponent extends React.Component {
     xmlns="http://www.w3.org/2000/svg"
     >
     {this.renderAdaptorBoard()}
-    <CartridgeComponent />
+    <CartridgeComponent state={this.props.state}/>
     {this.renderConnector()}
   </svg> 
 )
