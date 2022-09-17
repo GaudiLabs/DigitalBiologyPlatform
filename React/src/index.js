@@ -143,145 +143,6 @@ function Send(props) {
   );
 }
 
-
-
-class Board extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(16).fill(Array(8).fill(null)),
-      serialPort: null
-    };
-  }
-
-  handleHover(i, j, e) {
-    console.log("MOUSE ENTER")
-    console.log(e)
-    if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
-      var newArray = this.state.squares.map(function (arr) {
-        return arr.slice();
-      });
-
-      if (newArray[i][j] != null) {
-        newArray[i][j] = null;
-      } else {
-        newArray[i][j] = '🟦';
-      }
-      console.log(i, j)
-
-      this.setState({
-        squares: newArray,
-      });
-    }
-  }
-  
-  async SelectSerialClick() {
-    console.log("CONNECT CLICKED")
-    //if ("serial" in navigator) {
-    //    console.log("The serial port is supported.")
-    // The Web Serial API is supported.
-    //} else {
-    //TODO :
-    //Propoer error message ?
-    //    alert("This web browser is not compatible with serial API")
-    //}
-    const port = await navigator.serial.requestPort();
-    this.setState({
-      serialPort: port
-    })
-    await port.open({ baudRate: 115200 });
-    console.log("serial connected successfully.")
-  }
-
-  bit_set(num, bit) {
-    return num | 1 << bit;
-  }
-
-  dec2bin(dec) {
-    return (dec >>> 0).toString(2);
-  }
-
-  squaresToBytes(squares) {
-    let output = new Uint8Array(32);
-
-    for (let i = 0; i < 16; i++) {
-      let byte = 0
-      for (let j = 0; j < 8; j++) {
-        if (squares[j][i] != null) {
-          byte = this.bit_set(byte, j)
-        }
-        output[i] = byte
-        //console.log(i,j)
-      }
-      console.log(this.dec2bin(byte))
-      // output.push(this.renderSquare(i,j));
-    }
-    console.log(output)
-    return output
-  }
-
-  async SendClick(serialPort, squares) {
-    console.log("SEND CLICKED")
-    const writer = serialPort.writable.getWriter();
-    // const data = new Uint8Array([
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    // ]);
-    // hello
-    let data = this.squaresToBytes(squares)
-    await writer.write(data);
-    // Allow the serial port to be closed later.
-    writer.releaseLock();
-  }
-
-  renderSquare(i, j) {
-    return (<Square
-      value={this.state.squares[i][j]}
-      onMouseEnter={(e) => this.handleHover(i, j, e)}
-      onClick={(e) => this.handleHover(i, j, e)}
-    />
-    );
-  }
-
-  renderRow(board, i) {
-    let cells = [];
-    for (let j = 0; j < 16; j++) {
-      cells.push(this.renderSquare(i, j));
-    }
-    return (
-      <div className="board-row">
-        {cells}
-      </div>
-    )
-  }
-
-  renderBoard(board) {
-    let rows = [];
-    for (let i = 0; i < 8; i++) {
-      rows.push(this.renderRow(board, i));
-    }
-    return rows
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="board-row">
-          {
-            this.renderBoard(this.state.squares)
-          }
-        </div>
-        <SelectSerial onClick={() => this.SelectSerialClick()} />
-        <Send onClick={() => this.SendClick(this.state.serialPort, this.state.squares)} />
-      </div>
-    );
-  }
-}
-
-
 class HeaderTop extends React.Component {
   render() {
     return (
@@ -311,9 +172,123 @@ class HeaderTop extends React.Component {
 }
 
 class Body extends React.Component {
-  state = {
-    currently_edited_frame : [0],
-  };
+
+  constructor(props) {
+    super(props);
+    let new_frames = new Array();
+    var times = 11;
+
+    for(var i = 0; i < times; i++){
+        new_frames.push(Array(16).fill(Array(8).fill(null)))
+    }
+    console.log(new_frames)
+
+        this.state = {
+            currently_edited_frame : [0],
+            frames: new_frames,
+            //squares: Array(16).fill(Array(8).fill("o")),
+            //electrodes: Array(128).fill(null),
+            instanciatedHooks: false,
+            serialPort: null,
+            clickHandle: this.handleHover.bind(this)
+        };
+
+    console.log(this.state.frames)
+  }
+
+  async SelectSerialClick() {
+    console.log("CONNECT CLICKED")
+    //if ("serial" in navigator) {
+    //    console.log("The serial port is supported.")
+    // The Web Serial API is supported.
+    //} else {
+    //TODO :
+    //Propoer error message ?
+    //    alert("This web browser is not compatible with serial API")
+    //}
+    const port = await navigator.serial.requestPort();
+    this.setState({
+      serialPort: port
+    })
+    await port.open({ baudRate: 115200 });
+    console.log("serial connected successfully.")
+  }
+
+  async SendClick() {
+    console.log("SEND CLICKED")
+    const writer = this.state.serialPort.writable.getWriter();
+    // const data = new Uint8Array([
+    //     100, 100, 100, 100, 100, 100, 100, 100,
+    //     100, 100, 100, 100, 100, 100, 100, 100,
+    //     100, 100, 100, 100, 100, 100, 100, 100,
+    //     100, 100, 100, 100, 100, 100, 100, 100,
+    // ]);
+    // hello
+    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
+    await writer.write(data);
+    // Allow the serial port to be closed later.
+    writer.releaseLock();
+  }
+
+  
+  bit_set(num, bit) {
+    return num | 1 << bit;
+  }
+
+  dec2bin(dec) {
+    return (dec >>> 0).toString(2);
+  }
+
+
+  squaresToBytes(squares) {
+    let output = new Uint8Array(32);
+
+    for (let i = 0; i < 16; i++) {
+      let byte = 0
+      for (let j = 0; j < 8; j++) {
+        if (squares[j][i] != null) {
+          byte = this.bit_set(byte, j)
+        }
+        output[i] = byte
+        //console.log(i,j)
+      }
+      console.log(this.dec2bin(byte))
+      // output.push(this.renderSquare(i,j));
+    }
+    console.log(output)
+    return output
+  }
+
+  handleHover(electrode_id, e) {
+    console.log("MOUSE ENTER TOP")
+    //console.log(e)
+    if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
+        var newArray = this.state.frames[this.state.currently_edited_frame[0]].map(function (arr) {
+            return arr.slice();
+        });
+
+        //convert electrode id to i/j coordinates:
+        var j = Math.floor(electrode_id / 8);
+        var i = electrode_id % 8;
+
+        if (newArray[i][j] != null) {
+            newArray[i][j] = null;
+        } else {
+            newArray[i][j] = '1';
+        }
+        //console.log(i, j)
+
+        var newFrames = this.state.frames.map(function (arr) {
+            return arr.slice();
+        });
+        newFrames[this.state.currently_edited_frame[0]] = newArray
+
+        this.setState({
+            frames: newFrames,
+        });
+    }
+    //console.log(this.state.squares)
+}
   
   render() {
     return (
@@ -394,6 +369,8 @@ class Body extends React.Component {
           )}
         />
         </div>
+        <SelectSerial onClick={() => this.SelectSerialClick()} />
+        <Send onClick={() => this.SendClick()} />
             </ResizableBox>
           </div>
       </React.Fragment>

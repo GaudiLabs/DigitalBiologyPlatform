@@ -4,28 +4,11 @@ class CartridgeComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        let new_frames = new Array();
-        var times = 10;
-
-        for(var i = 0; i < times; i++){
-            new_frames.push(Array(16).fill(Array(8).fill(null)))
-        }
-        console.log(new_frames)
-
-            this.state = {
-                frames: new_frames,
-                //squares: Array(16).fill(Array(8).fill("o")),
-                //electrodes: Array(128).fill(null),
-                instanciatedHooks: false,
-                serialPort: null
-            };
-
-        console.log(this.state.frames)
     }
 
     componentDidMount() {
         console.log("HERE - LINKING EVNET LISTENERS");
-        console.log(this.state.instanciatedHooks);
+        //console.log(this.state.instanciatedHooks);
 
         var electrodes = document.getElementsByClassName("electrode");
 
@@ -39,8 +22,10 @@ class CartridgeComponent extends React.Component {
             let current_electrode_id = current_electrode.getAttribute("electrode_id")
             console.log(current_electrode_id)
             
-            current_electrode.addEventListener('click', (e) => {this.handleHover(current_electrode_id, e)}, false);
-            current_electrode.addEventListener('mouseenter', (e) => {this.handleHover(current_electrode_id, e)}, false);
+            console.log("ICI MDR");
+            console.log(this.props.state);
+            current_electrode.addEventListener('click', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
+            current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             //current_electrode.setAttribute('fill', 'this.renderElectrodeFill(current_electrode_id);' )
             
         }
@@ -1480,47 +1465,17 @@ class CartridgeComponent extends React.Component {
         )
     }
 
-    handleHover(electrode_id, e) {
-        //console.log("MOUSE ENTER")
-        //console.log(e)
-        if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
-            var newArray = this.state.frames[this.props.state.currently_edited_frame[0]].map(function (arr) {
-                return arr.slice();
-            });
-
-            //convert electrode id to i/j coordinates:
-            var i = Math.floor(electrode_id / 8);
-            var j = electrode_id % 8;
-
-            if (newArray[i][j] != null) {
-                newArray[i][j] = null;
-            } else {
-                newArray[i][j] = '1';
-            }
-            //console.log(i, j)
-
-            var newFrames = this.state.frames.map(function (arr) {
-                return arr.slice();
-            });
-            newFrames[this.props.state.currently_edited_frame[0]] = newArray
-
-            this.setState({
-                frames: newFrames,
-            });
-        }
-        console.log(this.state.squares)
-    }
-
     renderElectrodeFill(electrode_id) {
         //convert electrode id to i/j coordinates:
-        var i = Math.floor(electrode_id / 8);
-        var j = electrode_id % 8;
+        var j = Math.floor(electrode_id / 8);
+        var i = electrode_id % 8;
 
         console.log("MODIFYING FRAME:")
-        console.log(this.props.state.currently_edited_frame[0])
-        console.log(this.state.frames)
-        console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
-        if (this.state.frames[this.props.state.currently_edited_frame[0]][i][j] == null) {
+        //console.log(this.props.state.currently_edited_frame[0])
+        //console.log(this.state.frames)
+        //console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+        console.log(this.props.state)
+        if (this.props.state.frames[this.props.state.currently_edited_frame[0]][i][j] == null) {
             return ("#efd94c")
         } else {
             return ("#00F")
