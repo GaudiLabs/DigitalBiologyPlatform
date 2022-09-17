@@ -214,6 +214,10 @@ class Body extends React.Component {
     console.log("serial connected successfully.")
   }
 
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   async SendClick() {
     console.log("SEND CLICKED")
     const writer = this.state.serialPort.writable.getWriter();
@@ -224,11 +228,24 @@ class Body extends React.Component {
     //     100, 100, 100, 100, 100, 100, 100, 100,
     // ]);
     // hello
+
+    var n=10
+    for (let i = 0; i < n; i++) { 
     let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
     await writer.write(data);
+    var newNb = this.state.currently_edited_frame[0] + 1
+    this.setState(
+      {
+        currently_edited_frame : [newNb]
+      }
+    )
     // Allow the serial port to be closed later.
+    await this.sleep(3000);
+    }
+    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
+    await writer.write(data);
     writer.releaseLock();
-  }
+ }
 
   
   bit_set(num, bit) {
