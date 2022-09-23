@@ -16,12 +16,12 @@ These feedback and features can require a certain device.
 Current data structure (WIP) :
 
 Table hardware.device_type {
-   id int [pk]
+   id int [pk, increment]
    name varchar
  }
 
 Table hardware.device {
-  id int [pk]
+  id int [pk, increment]
   name varchar
   svg varchar
   version varchar
@@ -29,32 +29,32 @@ Table hardware.device {
 }
 
 Table hardware.device_requirement {
-  id int [pk]
+  id int [pk, increment]
   parent_device_id int [ ref: > hardware.device.id ]
   child_device_id int [ ref: > hardware.device.id ]
 }
 
 
 Table hardware.electrode {
-  id int [pk]
-  cartridge_id int [ ref: > hardware.device.id ]
+  id int [pk, increment]
+  device_id int [ ref: > hardware.device.id ]
   svg_denomination varchar
  }
  
 Table hardware.feedback_type {
-   id int [pk]
+   id int [pk, increment]
    name varchar
    data_type varchar
  }
  
 Table hardware.feature_type {
-   id int [pk]
+   id int [pk, increment]
    name varchar
    data_type varchar
  }
  
 Table hardware.electrode_feedback {
-   id int [pk]
+   id int [pk, increment]
    feedback_type_id int [ ref: > hardware.feedback_type.id ]
    electrode_cartridge_id int [ ref: > hardware.electrode.id ]
    require_device_id int [ ref: > hardware.device.id ]
@@ -62,7 +62,7 @@ Table hardware.electrode_feedback {
 }
  
 Table hardware.electrode_feature {
-   id int [pk]
+   id int [pk, increment]
    feature_type_id int [ ref: > hardware.feature_type.id ]
    electrode_cartridge_id int [ ref: > hardware.electrode.id ]
    require_device_id int [ ref: > hardware.device.id ] 
@@ -70,7 +70,7 @@ Table hardware.electrode_feature {
 }
  
 Table protocols.protocol {
-  id int [pk]
+  id int [pk, increment]
   name varchar
   frame_count int
   total_duration int
@@ -78,30 +78,31 @@ Table protocols.protocol {
   date_created date
   version varchar
   fork_of int [ ref: > protocols.protocol.id ]
+  device_id int [ ref: > hardware.device.id ]
 }
 
 Table protocols.frame {
-  id int [pk]
+  id int [pk, increment]
   protocol_id int [ ref: > protocols.protocol.id]
   duration int
   rank int
 }
 
 Table protocols.nested_protocols {
-  id int [pk]
+  id int [pk, increment]
   parent_protocol_id int [ ref: > protocols.protocol.id]
   child_protocol_id int [ ref: > protocols.protocol.id]
 }
 
 Table protocols.frame_electrode {
-  id int [pk]
+  id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id ]
   value int
   electrode_id int [ ref: > hardware.electrode.id]
 }
 
 Table protocols.frame_feature {
-  id int [pk]
+  id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
   electrode_id int [ ref: > hardware.electrode.id]
   hardware_feature_id int [ ref: > hardware.electrode_feature.id]
@@ -109,7 +110,7 @@ Table protocols.frame_feature {
 }
 
 Table protocols.frame_log {
-  id int [pk]
+  id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
   electrode_id int [ ref: > hardware.electrode.id]
   hardware_feeback_id int [ ref: > hardware.electrode_feedback.id  ]
@@ -117,13 +118,13 @@ Table protocols.frame_log {
 }
 
 Table users.user {
-  id int [pk]
+  id int [pk, increment]
   login varchar
   password varchar
 }
 
 Table users.device {
-  id int [pk]
+  id int [pk, increment]
   hardware_uid varchar
   name varchar
   user_id int [ ref: > users.user.id]
@@ -131,21 +132,20 @@ Table users.device {
 }
 
 Table protocols.authors {
-  id int [pk]
+  id int [pk, increment]
   protocol_id int [ ref: > protocols.protocol.id]
-  user_id varchar [ ref: > users.user.id]
+  user_id int [ ref: > users.user.id]
   rank int
 }
 
 Table protocols.point_of_interest {
-  id int [pk]
+  id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
   electrode_id int [ ref: > hardware.electrode.id]
-  type_id varchar [ ref: > protocols.poi_types.id]
+  type_id int [ ref: > protocols.poi_types.id]
 }
 
 Table protocols.poi_types {
-  id int [pk]
+  id int [pk, increment]
   name varchar
 }
-
