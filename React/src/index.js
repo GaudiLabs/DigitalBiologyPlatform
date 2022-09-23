@@ -218,33 +218,39 @@ class Body extends React.Component {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  async SendSerialData(data){
+
+    const writer = this.state.serialPort.writable.getWriter();
+    await writer.write(data);
+    writer.releaseLock();
+  }
+
   async SendClick() {
     console.log("SEND CLICKED")
-    const writer = this.state.serialPort.writable.getWriter();
-    // const data = new Uint8Array([
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    //     100, 100, 100, 100, 100, 100, 100, 100,
-    // ]);
-    // hello
 
     var n=10
     for (let i = 0; i < n; i++) { 
-    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
-    await writer.write(data);
+    await this.sleep(1000);
+
     var newNb = this.state.currently_edited_frame[0] + 1
+      if (i == 10) {
+        //remove this break for infinite loop
+        break;
+        i = 0
+        var newNb = 0
+      }
+    let data = this.squaresToBytes(this.state.frames[newNb])
     this.setState(
       {
         currently_edited_frame : [newNb]
-      }
-    )
+      },() => { this.SendSerialData(data)} 
+   )
+
     // Allow the serial port to be closed later.
-    await this.sleep(3000);
     }
-    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
-    await writer.write(data);
-    writer.releaseLock();
+    //let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
+    //await writer.write(data);
+    //writer.releaseLock();
  }
 
   
