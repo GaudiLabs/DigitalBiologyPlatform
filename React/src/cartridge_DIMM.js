@@ -277,7 +277,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                     transform="scale(.26458)"
                 ></path>
-                <path
+               <path
                     className="electrode"
                     electrode_id="3"
                     fill={this.renderElectrodeFill(3)}
