@@ -14,17 +14,18 @@ FROM
 			/* json_agg("electrode"."electrodes") */
 			json_build_object(
 			'duration', "protocols"."frame"."duration", 
-			'electrodes', json_agg(COALESCE("electrode"."electrodes", '[]')),
+			'electrodes', "electrode"."electrodes",
 			'frame_id', "protocols"."frame"."id"
 			) AS electrodes
 		FROM
 			"protocols"."frame"
 			LEFT JOIN LATERAL (
 				SELECT
-					json_agg(json_build_object(
+					array_agg(jsonb_build_object(
 					'electrode_id', "protocols"."frame_electrode"."electrode_id",
 					'v', "protocols"."frame_electrode"."value"
-					)) AS electrodes,
+					))
+					 AS electrodes,
 					"protocols"."frame"."id",
 					"protocols"."frame"."duration"
 				FROM
@@ -34,7 +35,7 @@ FROM
 			WHERE
 				"protocols"."frame"."protocol_id" = "protocols"."protocol"."id"
 			GROUP BY
-				"protocols"."frame"."id"
+				"protocols"."frame"."id", "electrode"."electrodes"
 			ORDER BY
 				"protocols"."frame"."rank") frames ON TRUE
 WHERE
