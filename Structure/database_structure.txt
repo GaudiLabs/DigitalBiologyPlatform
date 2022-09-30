@@ -38,6 +38,7 @@ Table hardware.device_requirement {
   id int [pk, increment]
   parent_device_id int [ ref: > hardware.device.id ]
   child_device_id int [ ref: > hardware.device.id ]
+  depth int
 }
 
 
@@ -98,6 +99,7 @@ Table protocols.nested_protocols {
   id int [pk, increment]
   parent_protocol_id int [ ref: > protocols.protocol.id]
   child_protocol_id int [ ref: > protocols.protocol.id]
+  depth int
 }
 
 Table protocols.frame_electrode {

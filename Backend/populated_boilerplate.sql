@@ -91,7 +91,8 @@ ALTER SEQUENCE hardware.device_id_seq OWNED BY hardware.device.id;
 CREATE TABLE hardware.device_requirement (
     id integer NOT NULL,
     parent_device_id integer,
-    child_device_id integer
+    child_device_id integer,
+    depth integer
 );
 
 
@@ -590,7 +591,8 @@ ALTER SEQUENCE protocols.frame_id_seq OWNED BY protocols.frame.id;
 CREATE TABLE protocols.nested_protocols (
     id integer NOT NULL,
     parent_protocol_id integer,
-    child_protocol_id integer
+    child_protocol_id integer,
+    depth integer
 );
 
 
