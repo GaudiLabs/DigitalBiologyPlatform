@@ -28,6 +28,12 @@ Table hardware.device {
   device_type_id int [ ref: > hardware.device_type.id ]
 }
 
+Table hardware.liquid {
+  id int [pk, increment]
+  name varchar
+  description varchar
+}
+
 Table hardware.device_requirement {
   id int [pk, increment]
   parent_device_id int [ ref: > hardware.device.id ]
@@ -109,7 +115,7 @@ Table protocols.frame_feature {
   value int
 }
 
-Table protocols.frame_log {
+Table protocols.frame_feedback {
   id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
   electrode_id int [ ref: > hardware.electrode.id]
@@ -121,6 +127,13 @@ Table users.user {
   id int [pk, increment]
   login varchar
   password varchar
+}
+
+Table users.token {
+  id int [pk, increment]
+  user_id int [ ref: > users.user.id]
+  token varchar
+  expiration_date date
 }
 
 Table users.device {
@@ -138,11 +151,19 @@ Table protocols.authors {
   rank int
 }
 
+Table hardware.liquid_authors {
+  id int [pk, increment]
+  liquid_id int [ ref: > hardware.liquid.id]
+  user_id int [ ref: > users.user.id]
+  rank int
+}
+
 Table protocols.point_of_interest {
   id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
   electrode_id int [ ref: > hardware.electrode.id]
   type_id int [ ref: > protocols.poi_types.id]
+  liquid_id int [null, ref: > hardware.liquid.id]
 }
 
 Table protocols.poi_types {
