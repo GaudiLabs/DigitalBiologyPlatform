@@ -16,7 +16,7 @@ WITH frame AS (
 
 		SELECT 
 		      p.id as protocol_id
-		      , array_agg(DISTINCT u.login) as authors
+		      --, array_agg(DISTINCT u.login ORDER BY pa.rank) as authors
 			  , p.name
 		      , p.frame_count
 		      , p.total_duration
@@ -24,14 +24,21 @@ WITH frame AS (
 		       'duration', frame.duration,
 		       'electrodes', frame.electrodes
 		       )) as frames
-		      
 		FROM protocols.protocol as p 
-		LEFT JOIN protocols.authors as pa ON p.id = pa.protocol_id
-		LEFT JOIN users.user as u ON pa.user_id = u.id
-		LEFT JOIN frame ON p.id = frame.protocol_id
+		JOIN frame ON p.id = frame.protocol_id
 		WHERE p.id = 2
 		GROUP BY p.id
+), authors AS (
+		SELECT
+			array_agg(u.login ORDER BY pa.rank) AS list
+		FROM
+			protocols.authors as pa
+		LEFT JOIN users.user as u ON pa.user_id = u.id
+		JOIN protocol ON pa.protocol_id = protocol.protocol_id
+		--ORDER BY pa.rank
+		--WHERE pa.protocol_id = 2
 )
+
 SELECT
 	jsonb_build_object(
 	'id', protocol_id,
@@ -39,7 +46,7 @@ SELECT
 	'frame_count', frame_count,
 	'total_duration', total_duration,
 	'frames', frames,
-	'authors',  authors
+	'authors', authors.list
 	) AS protocol
-FROM protocol
-GROUP BY protocol_id, name, frame_count, total_duration, authors, frames
+FROM protocol, authors
+GROUP BY protocol_id, name, frame_count, total_duration, frames, authors.list
