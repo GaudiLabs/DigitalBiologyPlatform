@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"embed"
 	"log"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
@@ -11,6 +11,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 )
+
+// Embedding swaggerUI files
+//
+//go:embed swaggerui
+var embeddedSwaggerUI embed.FS
 
 func main() {
 	//Setting config (viper)
@@ -38,8 +43,10 @@ func main() {
 	serverHandlers := server.NewHandlers(repo)
 	server.RegisterHandlers(e, serverHandlers)
 
-	fmt.Printf("PORT:")
-	fmt.Println(viper.Get("PORT"))
+	//serving swaggerUI on /swaggerui
+	fs := echo.MustSubFS(embeddedSwaggerUI, "swaggerui")
+	e.StaticFS("/swaggerui", fs)
 
+	//Starting the server
 	e.Logger.Fatal(e.Start(viper.GetString("SERVER_HOST") + ":" + viper.GetString("SERVER_PORT")))
 }

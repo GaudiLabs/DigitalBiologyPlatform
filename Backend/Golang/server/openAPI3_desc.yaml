@@ -9,6 +9,7 @@ info:
   version: 1.0.11
 servers:
   - url: https://nohostnamefornow.io
+  - url: http://localhost:8080
 tags:
   - name: user
     description: Operations about user
@@ -42,6 +43,16 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
+  /swagger.json:
+    get:
+      tags:
+        - swagger
+      summary: Serve a json file representing this swaggerfile
+      description: ''
+      operationId: serveSwaggerFile
+      responses:
+        '200':
+          description: successful operation
   /user/login:
     get:
       security:

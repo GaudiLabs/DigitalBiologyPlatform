@@ -2,7 +2,9 @@ package repository
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
+	"log"
 
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/davecgh/go-spew/spew"
@@ -18,6 +20,9 @@ type PostgresRepo struct {
 	dbName   string
 	dbConn   *sql.DB
 }
+
+//go:embed POSTGRESQL/*.sql
+var embeddedSQL embed.FS
 
 func openConnection(repo PostgresRepo) (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
@@ -70,38 +75,19 @@ func (repo *PostgresRepo) GetUserTokens(username string) error {
 	return nil
 }
 
+// GetUser returns the infos about the user passed as parameter as well as its valid access tokens
 func (repo *PostgresRepo) GetUser(username string) (defines.User, error) {
-	var returnedUser defines.User
-	rows := repo.dbConn.QueryRow(
-		`
-		WITH users AS (
-			SELECT
-				*
-			FROM
-				users.user as u
-	), tokens AS (
-			SELECT 
-				COALESCE(json_agg(jsonb_build_object(
-			'token',ut.token,
-			'expiration_date',TO_CHAR( ut.expiration_date AT TIME ZONE 'UTC', 'yyyy-mm-dd"T"hh24:mi:ss"Z"')
-			)), '[]') AS tokens
-			FROM users.token as ut
-			JOIN users ON ut.user_id = users.id
-			WHERE ut.expiration_date > NOW()
-	)
-	SELECT
-		jsonb_build_object(
-			'id', users.id,
-			'login', users.login,
-			'tokens', tokens.tokens,
-			'password', users.password
-			)
-	FROM users, tokens
-	WHERE users.login = $1
-		`,
-		username)
 
-	err := rows.Scan(&returnedUser)
+	const filename = "POSTGRESQL/GetUser.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	var returnedUser defines.User
+	rows := repo.dbConn.QueryRow(string(queryBytes), username)
+
+	err = rows.Scan(&returnedUser)
 	if err != nil {
 		return returnedUser, err
 	}

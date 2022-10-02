@@ -1,7 +1,6 @@
 package server
 
 import (
-	//"errors"
 	"net/http"
 
 	"github.com/DigitalBiologyPlatform/Backend/repository"
@@ -86,5 +85,13 @@ func (w *Handlers) GetUserByName(ctx echo.Context, username string) error {
 func (w *Handlers) UpdateUser(ctx echo.Context, username string) error {
 	ctx.String(http.StatusOK, "Hello, World!")
 
+	return nil
+}
+
+func (w *Handlers) ServeSwaggerFile(ctx echo.Context) error {
+	swagger, _ := GetSwagger()
+	str, _ := swagger.MarshalJSON()
+	ctx.Response().Header().Add("Content-Type", "application/json")
+	ctx.Response().Write(str)
 	return nil
 }
