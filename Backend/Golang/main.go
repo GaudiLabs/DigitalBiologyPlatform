@@ -1,24 +1,37 @@
 package main
 
 import (
-	"os"
+	"fmt"
+	"log"
 
+	"github.com/DigitalBiologyPlatform/Backend/repository"
 	server "github.com/DigitalBiologyPlatform/Backend/server"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	// Set up echo server/router and middleware.
-	// The paths in out OpenAPI spec are defined w/o trailing slashes, but we want
-	// to accept requests *with* trailing slashes too - so use the
-	// RemoveTrailingSlash middleware.
+	//Setting config (viper)
+	viper.AutomaticEnv()
+	viper.SetConfigFile(".env")
+	viper.ReadInConfig()
+
+	//Creating new postgres repository
+	repo, err := repository.NewPostgresRepo()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
 
-	serverHandlers := server.NewHandlers()
+	serverHandlers := server.NewHandlers(repo)
 	server.RegisterHandlers(e, serverHandlers)
 
-	e.Logger.Fatal(e.Start("localhost:" + os.Getenv("SERVERPORT")))
+	fmt.Printf("PORT:")
+	fmt.Println(viper.Get("PORT"))
+
+	e.Logger.Fatal(e.Start(viper.GetString("SERVER_HOST") + ":" + viper.GetString("SERVER_PORT")))
 }
