@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/DigitalBiologyPlatform/Backend/auth"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
 	server "github.com/DigitalBiologyPlatform/Backend/server"
 	"github.com/labstack/echo/v4"
@@ -23,9 +24,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//Creating new authenticator
+	auth := auth.NewAuthentifier(repo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
+	e.Use(middleware.BasicAuth(auth.BasicAuthValidator))
 
 	serverHandlers := server.NewHandlers(repo)
 	server.RegisterHandlers(e, serverHandlers)

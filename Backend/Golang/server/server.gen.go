@@ -43,15 +43,6 @@ type User struct {
 // CreateUserJSONBody defines parameters for CreateUser.
 type CreateUserJSONBody = User
 
-// LoginUserParams defines parameters for LoginUser.
-type LoginUserParams struct {
-	// The user name for login
-	Username *string `form:"username,omitempty" json:"username,omitempty"`
-
-	// The password for login in clear text
-	Password *string `form:"password,omitempty" json:"password,omitempty"`
-}
-
 // UpdateUserJSONBody defines parameters for UpdateUser.
 type UpdateUserJSONBody = User
 
@@ -68,7 +59,7 @@ type ServerInterface interface {
 	CreateUser(ctx echo.Context) error
 	// Logs user into the system
 	// (GET /user/login)
-	LoginUser(ctx echo.Context, params LoginUserParams) error
+	LoginUser(ctx echo.Context) error
 	// Logs out current logged in user session
 	// (GET /user/logout)
 	LogoutUser(ctx echo.Context) error
@@ -103,24 +94,8 @@ func (w *ServerInterfaceWrapper) LoginUser(ctx echo.Context) error {
 
 	ctx.Set(BasicAuthScopes, []string{""})
 
-	// Parameter object where we will unmarshal all parameters from the context
-	var params LoginUserParams
-	// ------------- Optional query parameter "username" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "username", ctx.QueryParams(), &params.Username)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter username: %s", err))
-	}
-
-	// ------------- Optional query parameter "password" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "password", ctx.QueryParams(), &params.Password)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter password: %s", err))
-	}
-
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.LoginUser(ctx, params)
+	err = w.Handler.LoginUser(ctx)
 	return err
 }
 
@@ -223,25 +198,25 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"fwcAAP//sVn0ihEQAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

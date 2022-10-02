@@ -701,7 +701,7 @@ CREATE TABLE protocols.protocol (
     frame_count integer,
     total_duration integer,
     mask_frame_id integer,
-    date_created date,
+    date_created timestamp,
     version character varying,
     fork_of integer,
     device_id integer
@@ -777,7 +777,7 @@ CREATE TABLE users.token (
     id integer NOT NULL,
     user_id integer,
     token character varying,
-    expiration_date date
+    expiration_date timestamp
 );
 
 

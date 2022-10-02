@@ -82,7 +82,7 @@ Table protocols.protocol {
   frame_count int
   total_duration int
   mask_frame_id int [ ref: > protocols.frame.id ]
-  date_created date
+  date_created timestamp
   version varchar
   fork_of int [ ref: > protocols.protocol.id ]
   device_id int [ ref: > hardware.device.id ]
@@ -135,7 +135,7 @@ Table users.token {
   id int [pk, increment]
   user_id int [ ref: > users.user.id]
   token varchar
-  expiration_date date
+  expiration_date timestamp
 }
 
 Table users.device {
