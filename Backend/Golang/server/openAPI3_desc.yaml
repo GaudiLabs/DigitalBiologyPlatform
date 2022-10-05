@@ -19,10 +19,11 @@ paths:
       tags:
         - user
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: Create a user
       operationId: createUser
       requestBody:
         description: Created user object
+        required: true
         content:
           application/json:
             schema:
@@ -55,16 +56,21 @@ paths:
           description: successful operation
   /user/login:
     get:
-      security:
-        - basicAuth: []
       tags:
         - user
       summary: Logs user into the system
       description: ''
       operationId: loginUser
+      requestBody:
+        description: Request access token via username/password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginParams'
       responses:
-        '200':
-          description: successful operation
+        '201':
+          description: successful operation, token created
           content:
             application/json:
               schema:
@@ -85,7 +91,7 @@ paths:
   /user/{username}:
     get:
       security:
-        - basicAuth: []
+        - BearerAuth: []
       tags:
         - user
       summary: Get user by user name
@@ -112,8 +118,8 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
     put:
       tags:
         - user
@@ -162,12 +168,11 @@ paths:
           description: User not found
 components:
   responses:
+    ForbiddenError:
+      description: Authentication information is missing or invalid
     UnauthorizedError:
       description: Authentication information is missing or invalid
-      headers:
-        WWW_Authenticate:
-          schema:
-            type: string
+
   schemas:
     User:
       type: object
@@ -206,8 +211,20 @@ components:
           example: "2012-04-23T18:25:43.511Z"
       xml:
         name: user
+    LoginParams:
+      type: object
+      properties:
+        username:
+          type: string
+          example: theUser
+        password:
+          type: string
+          example: "Userpass"
+      xml:
+        name: user
  
   securitySchemes:
-    basicAuth:
+    BearerAuth:
       type: http
-      scheme: basic
+      scheme: bearer
+

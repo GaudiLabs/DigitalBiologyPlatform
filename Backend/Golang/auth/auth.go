@@ -1,38 +1,39 @@
 package auth
 
 import (
-	"crypto/rand"
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
+	"github.com/DigitalBiologyPlatform/Backend/utils"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/labstack/echo/v4"
+	"github.com/getkin/kin-openapi/openapi3filter"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type Authenticator interface {
-	BasicAuthValidator(username, password string, c echo.Context) (bool, error)
-}
+var (
+	ErrorInvalidCredentials = fmt.Errorf("Invalid credentials")
+	ErrorInvalidToken       = fmt.Errorf("Invalid token")
+)
 
 type Authentifier struct {
 	repo repository.RepositoryInterface
 }
 
+// Ensure auth interface is implemented
+var _ AuthInterface = (*Authentifier)(nil)
+
 func NewAuthentifier(repo repository.RepositoryInterface) *Authentifier {
 	return &Authentifier{repo: repo}
 }
 
-func tokenGenerator(length int) string {
-	b := make([]byte, length)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)
-}
-
-func NewToken(repo repository.RepositoryInterface, username string, password string) (token defines.LoginToken, err error) {
+/*
+func newToken() (token defines.LoginToken, err e) {
 	var returnedToken defines.LoginToken
 
-	newTokenString := tokenGenerator(32)
+	newTokenString := utils.TokenGenerator(32)
 
 	returnedToken.Token = newTokenString
 	returnedToken.ExpirationDate = time.Now()
@@ -40,18 +41,55 @@ func NewToken(repo repository.RepositoryInterface, username string, password str
 	spew.Dump(returnedToken)
 	return returnedToken, nil
 }
+*/
 
-func (a *Authentifier) BasicAuthValidator(username, password string, c echo.Context) (bool, error) {
+func (a *Authentifier) GetAuthenticator() openapi3filter.AuthenticationFunc {
+	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+		return a.authenticate(ctx, input)
+	}
+}
+
+// Authenticate uses the specified validator to ensure a JWT is valid, then makes
+// sure that the claims provided by the JWT match the scopes as required in the API.
+func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+	// Our security scheme is named BearerAuth, ensure this is the case
+	if input.SecuritySchemeName != "BearerAuth" {
+		return fmt.Errorf("security scheme %s != 'BearerAuth'", input.SecuritySchemeName)
+	}
+
+	//TODO: validate token
+	return nil
+}
+
+// Authenticate uses the specified validator to ensure a JWT is valid, then makes
+// sure that the claims provided by the JWT match the scopes as required in the API.
+func (a *Authentifier) NewAccessToken(username string, password string) (*defines.LoginToken, error) {
+	// Our security scheme is named BearerAuth, ensure this is the case
+	var returnedToken defines.LoginToken
+
 	user, err := a.repo.GetUser(username)
 	if err != nil {
 		//TODO: handle error
 		spew.Dump(err)
-		return false, nil
+		return nil, err
 	}
-	//TODO: bcrypt pass compare
-	if user.Password == password {
-		return true, nil
+
+	/*
+		bts, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		spew.Dump(string(bts))
+	*/
+
+	// Comparing the password with the hash
+	hashCompareError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if hashCompareError != nil {
+		return nil, ErrorInvalidCredentials
 	}
-	//spew.Dump(a)
-	return false, nil
+
+	//TODO: make this configurable via viper
+	returnedToken.Token = utils.TokenGenerator(32)
+	returnedToken.ExpirationDate = time.Now().Add(1 * time.Hour)
+
+	//TODO:store token in DB
+
+	return &returnedToken, nil
 }

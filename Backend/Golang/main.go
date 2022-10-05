@@ -31,16 +31,19 @@ func main() {
 
 	//Creating new authenticator
 	auth := auth.NewAuthentifier(repo)
+	authMiddleWare, err := server.CreateAuthMiddleware(auth)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error creating auth middleware:", err)
 	}
 
+	//Creating echo server & attaching middleware
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
-	e.Use(middleware.BasicAuth(auth.BasicAuthValidator))
+	e.Use(authMiddleWare)
+	//e.Use(middleware.BasicAuth(auth.BasicAuthValidator))
 
-	serverHandlers := server.NewHandlers(repo)
+	serverHandlers := server.NewHandlers(repo, auth)
 	server.RegisterHandlers(e, serverHandlers)
 
 	//serving swaggerUI on /swaggerui

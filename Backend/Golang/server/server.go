@@ -1,22 +1,45 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/DigitalBiologyPlatform/Backend/auth"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/deepmap/oapi-codegen/pkg/middleware"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo/v4"
 )
 
 type Handlers struct {
 	repository repository.RepositoryInterface
+	auth       auth.AuthInterface
 	data       string
 }
 
-func NewHandlers(repository repository.RepositoryInterface) *Handlers {
+func NewHandlers(repository repository.RepositoryInterface, auth auth.AuthInterface) *Handlers {
 	return &Handlers{
-		data:       "oh",
 		repository: repository,
+		auth:       auth,
+		data:       "oh",
 	}
+}
+
+func CreateAuthMiddleware(a auth.AuthInterface) (echo.MiddlewareFunc, error) {
+	spec, err := GetSwagger()
+	if err != nil {
+		return nil, fmt.Errorf("loading spec: %w", err)
+	}
+
+	validator := middleware.OapiRequestValidatorWithOptions(spec,
+		&middleware.Options{
+			Options: openapi3filter.Options{
+				AuthenticationFunc: a.GetAuthenticator(),
+			},
+		})
+
+	return validator, nil
 }
 
 // CreateUser converts echo context to params.
@@ -28,35 +51,26 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 
 // LoginUser converts echo context to params.
 func (w *Handlers) LoginUser(ctx echo.Context) error {
-	//spew.Dump(params)
-	//spew.Dump(viper.GetString("SERVER_HOST"))
-	//var returnedToken LoginToken
+	var loginParams LoginParams
+	err := ctx.Bind(&loginParams)
+	if err != nil {
+		return err
+	}
+	generatedToken, err := w.auth.NewAccessToken(*loginParams.Username, *loginParams.Password)
+	if err != nil {
+		spew.Dump(err)
+		ctx.NoContent(http.StatusUnauthorized)
+		return err
+	}
 
-	/*
-		token, err := auth.NewToken(w.repository, params.Username, params.Password)
-		if err != nil {
-			//TODO : handle error
-			return (err)
-		}
-		returnedToken.Token = &token.Token
-		returnedToken.Username = &token.Username
-		expirationDateString := token.ExpirationDate.String()
-		returnedToken.ExpirationDate = &(expirationDateString)
+	//Mapping returned object
+	var returnedToken LoginToken
+	returnedToken.Token = &generatedToken.Token
+	returnedDateStr := (&generatedToken.ExpirationDate).String()
+	returnedToken.ExpirationDate = &returnedDateStr
+	returnedToken.Username = loginParams.Username
 
-		ctx.JSON(http.StatusOK, returnedToken)
-	*/
-	return nil
-	/*
-		if params.Username == nil || params.Password == nil {
-			ctx.String(http.StatusUnprocessableEntity, "Unable to process the request")
-			//return errors.New(ctx.Response().S, ctx.Request().Response)
-			return nil
-		}
-		if *params.Username != "uname" && *params.Password != "password" {
-			ctx.String(http.StatusUnauthorized, "Unauthorized")
-		}
-		ctx.String(http.StatusOK, "Hello, World!")
-	*/
+	ctx.JSON(http.StatusCreated, returnedToken)
 	return nil
 }
 
