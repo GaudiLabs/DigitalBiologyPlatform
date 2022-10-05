@@ -89,7 +89,7 @@ func (a *Authentifier) NewAccessToken(username string, password string) (*define
 	returnedToken.Token = utils.TokenGenerator(32)
 	returnedToken.ExpirationDate = time.Now().Add(1 * time.Hour)
 
-	//TODO:store token in DB
+	a.repo.StoreToken(username, returnedToken)
 
 	return &returnedToken, nil
 }

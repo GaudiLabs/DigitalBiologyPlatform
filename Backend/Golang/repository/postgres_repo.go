@@ -21,6 +21,9 @@ type PostgresRepo struct {
 	dbConn   *sql.DB
 }
 
+// Ensure auth interface is implemented
+var _ RepositoryInterface = (*PostgresRepo)(nil)
+
 //go:embed POSTGRESQL/*.sql
 var embeddedSQL embed.FS
 
@@ -66,11 +69,20 @@ func (repo *PostgresRepo) CreateUser(defines.User) error {
 	return nil
 }
 
-func (repo *PostgresRepo) StoreToken(defines.LoginToken) error {
-	return nil
-}
+func (repo *PostgresRepo) StoreToken(username string, loginToken defines.LoginToken) error {
+	const filename = "POSTGRESQL/StoreToken.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
 
-func (repo *PostgresRepo) GetUserTokens(username string) error {
+	result, err := repo.dbConn.Exec(string(queryBytes), username, loginToken.Token, loginToken.ExpirationDate)
+	if err != nil {
+		return err
+	}
+
+	//TODO : what is this, check ?
+	_ = result
 
 	return nil
 }
@@ -87,6 +99,7 @@ func (repo *PostgresRepo) GetUser(username string) (defines.User, error) {
 	var returnedUser defines.User
 	rows := repo.dbConn.QueryRow(string(queryBytes), username)
 
+	//TODO: check SQL error ?
 	err = rows.Scan(&returnedUser)
 	if err != nil {
 		return returnedUser, err

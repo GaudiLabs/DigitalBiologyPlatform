@@ -4,7 +4,6 @@ import "github.com/DigitalBiologyPlatform/Backend/defines"
 
 type RepositoryInterface interface {
 	CreateUser(defines.User) error
-	StoreToken(defines.LoginToken) error
-	GetUserTokens(username string) error
+	StoreToken(username string, loginToken defines.LoginToken) error
 	GetUser(username string) (defines.User, error)
 }

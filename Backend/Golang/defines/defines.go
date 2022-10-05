@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 type LoginToken struct {
@@ -22,6 +24,7 @@ type User struct {
 // Make the Attrs struct implement the sql.Scanner interface. This method
 // simply decodes a JSON-encoded value into the struct fields.
 func (a *User) Scan(value interface{}) error {
+	spew.Dump(value)
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")
