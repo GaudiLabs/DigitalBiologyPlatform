@@ -108,3 +108,40 @@ func (repo *PostgresRepo) GetUser(username string) (defines.User, error) {
 
 	return returnedUser, nil
 }
+
+// GetUserProtocols returns the infos about the user passed as parameter as well as its valid access tokens
+func (repo *PostgresRepo) GetUserProtocols(username string) ([]defines.ShortProtocol, error) {
+
+	const filename = "POSTGRESQL/GetUserProtocols.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	//TODO : implement with new struct
+	var returnedProtocols []defines.ShortProtocol
+	rows, err := repo.dbConn.Query(string(queryBytes), username)
+	if err != nil {
+		//TODO: handle error
+	}
+
+	for rows.Next() {
+		var shortProtocol defines.ShortProtocol
+		err := rows.Scan(&shortProtocol)
+		if err != nil {
+			//TODO: handle error
+		}
+		returnedProtocols = append(returnedProtocols, shortProtocol)
+	}
+
+	//TODO: check SQL error ?
+	/*
+		err = rows.Scan(&returnedUser)
+		if err != nil {
+			return returnedUser, err
+		}
+		spew.Dump(returnedUser)
+	*/
+
+	return returnedProtocols, nil
+}

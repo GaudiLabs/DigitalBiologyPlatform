@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,9 @@ type Handlers struct {
 	auth       auth.AuthInterface
 	data       string
 }
+
+// Ensure server interface is implemented
+var _ ServerInterface = (*Handlers)(nil)
 
 func NewHandlers(repository repository.RepositoryInterface, auth auth.AuthInterface) *Handlers {
 	return &Handlers{
@@ -49,6 +53,60 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 	return nil
 }
 
+func (w *Handlers) GetSelfUser(ctx echo.Context) error {
+	tokenBearer, err := auth.GetTokenObjectFromRequest(ctx.Request())
+	if err != nil {
+		return err
+	}
+
+	user, err := w.repository.GetUser(tokenBearer.Username)
+	if err != nil {
+		return err
+	}
+
+	//Mapping returned Object
+	var returnedUser User
+	returnedUser.Id = &user.Id
+	returnedUser.Username = &user.Login
+	//TODO: auto parse token generate returned logintokens
+	//returnedUser.Tokens = user.Tokens
+
+	ctx.JSON(http.StatusOK, returnedUser)
+
+	return nil
+}
+
+func (w *Handlers) GetSelfProtocolList(ctx echo.Context) error {
+	tokenBearer, err := auth.GetTokenObjectFromRequest(ctx.Request())
+	if err != nil {
+		return err
+	}
+
+	protocols, err := w.repository.GetUserProtocols(tokenBearer.Username)
+	if err != nil {
+		return err
+	}
+	spew.Dump(protocols)
+
+	//Mapping returned Object
+	//Attempt at automatic mapping
+	var returnedProtocols UserProtocolsList
+	bytes, _ := json.Marshal(protocols)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocols.Protocols)
+	//returnedProtocols.Protocols = make([]ShortProtocol, len(protocols))
+	//automapper.Map(protocols, &returnedProtocols.Protocols)
+
+	//returnedUser.Id = &user.Id
+	//returnedUser.Username = &user.Login
+	//TODO: auto parse token generate returned logintokens
+	//returnedUser.Tokens = user.Tokens
+
+	ctx.JSON(http.StatusOK, returnedProtocols)
+
+	return nil
+}
+
 // LoginUser converts echo context to params.
 func (w *Handlers) LoginUser(ctx echo.Context) error {
 	var loginParams LoginParams
@@ -68,7 +126,6 @@ func (w *Handlers) LoginUser(ctx echo.Context) error {
 	returnedToken.Token = &generatedToken.Token
 	returnedDateStr := (&generatedToken.ExpirationDate).String()
 	returnedToken.ExpirationDate = &returnedDateStr
-	returnedToken.Username = loginParams.Username
 
 	ctx.JSON(http.StatusCreated, returnedToken)
 	return nil

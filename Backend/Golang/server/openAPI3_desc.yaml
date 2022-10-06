@@ -12,8 +12,20 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: user
-    description: Operations about user
+    description: Operations about users
+  - name: protocol
+    description: Operations about protocols
 paths:
+  /swagger.json:
+    get:
+      tags:
+        - swagger
+      summary: Serve a json file representing this swaggerfile
+      description: ''
+      operationId: serveSwaggerFile
+      responses:
+        '200':
+          description: successful operation
   /user:
     post:
       tags:
@@ -44,16 +56,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
-  /swagger.json:
-    get:
-      tags:
-        - swagger
-      summary: Serve a json file representing this swaggerfile
-      description: ''
-      operationId: serveSwaggerFile
-      responses:
-        '200':
-          description: successful operation
   /user/login:
     get:
       tags:
@@ -77,17 +79,30 @@ paths:
                 $ref: '#/components/schemas/LoginToken'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /user/logout:
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+  /user/me:
     get:
+      security:
+        - BearerAuth: []
       tags:
         - user
-      summary: Logs out current logged in user session
+      summary: Get user infos of token bearer
       description: ''
-      operationId: logoutUser
-      parameters: []
+      operationId: getSelfUser
       responses:
-        default:
+        '200':
           description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '404':
+          description: User not found
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
   /user/{username}:
     get:
       security:
@@ -118,8 +133,6 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
     put:
       tags:
         - user
@@ -166,14 +179,109 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
+  /protocol/me:
+    get:
+      tags:
+        - protocol
+      summary: Get token bearer protocols list
+      description: return a list of protocols created by this user
+      operationId: getSelfProtocolList
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProtocolsList'
+ 
 components:
   responses:
-    ForbiddenError:
-      description: Authentication information is missing or invalid
     UnauthorizedError:
-      description: Authentication information is missing or invalid
+      description: Authentication information is present but wrong
+    BadRequestError:
+      description: Request body is baddly formated, authentication information is missing or invalid
+
 
   schemas:
+
+    Electrode:
+      type: object
+      required: 
+        - "value"
+        - "electrode_id"
+      properties: 
+        value: 
+          type: "number"
+        electrode_id: 
+          type: "string"
+
+    Frame:
+      type: object
+      required: 
+        - "duration"
+        - "rank"
+        - "electrodes"
+      properties: 
+        duration: 
+          type: "number"
+        rank: 
+          type: "number"
+        electrodes: 
+          type: "array"
+          items:
+             $ref: '#/components/schemas/Electrode'
+
+    RankedAuthor:
+      type: object
+      required: 
+        - "rank"
+        - "author"
+      properties: 
+        rank: 
+          type: "number"
+        author: 
+          type: "string"
+
+    ShortProtocol:
+      type: object
+      required: 
+        - "id"
+        - "name"
+        - "mask_frame"
+        - "author_list"
+        - "author_rank"
+        - "frame_count"
+        - "total_duration"
+      properties: 
+        id: 
+          type: "number"
+        name: 
+          type: "string"
+        mask_frame: 
+          type: "array"
+          items: 
+            $ref : '#/components/schemas/Frame'
+        author_list: 
+          type: "array"
+          items: 
+            $ref: '#/components/schemas/RankedAuthor'
+        author_rank: 
+          type: "number"
+        frame_count: 
+          type: "number"
+        total_duration: 
+          type: "number"
+
+ 
+    UserProtocolsList:
+      type: object
+      required: 
+        - "protocols"
+      properties:
+        protocols:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShortProtocol'
     User:
       type: object
       properties:
@@ -187,22 +295,15 @@ components:
         email:
           type: string
           example: john@email.com
-        password:
-          type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginToken'
       xml:
         name: user
     LoginToken:
       type: object
       properties:
-        username:
-          type: string
-          example: theUser
         token:
           type: string
           example: "Xz5Re76tlCTYddIVwUOpBI"

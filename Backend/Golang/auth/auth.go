@@ -2,7 +2,11 @@ package auth
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/defines"
@@ -16,6 +20,8 @@ import (
 var (
 	ErrorInvalidCredentials = fmt.Errorf("Invalid credentials")
 	ErrorInvalidToken       = fmt.Errorf("Invalid token")
+	ErrNoAuthHeader         = fmt.Errorf("Authorization header is missing")
+	ErrInvalidAuthHeader    = fmt.Errorf("Authorization header is malformed")
 )
 
 type Authentifier struct {
@@ -49,6 +55,33 @@ func (a *Authentifier) GetAuthenticator() openapi3filter.AuthenticationFunc {
 	}
 }
 
+func GetTokenObjectFromRequest(req *http.Request) (defines.AuthToken, error) {
+	var returnedToken defines.AuthToken
+
+	authHdr := req.Header.Get("Authorization")
+	// Check for the Authorization header.
+	if authHdr == "" {
+		return returnedToken, ErrNoAuthHeader
+	}
+
+	// We expect a header value of the form "Bearer <token>", with 1 space after
+	prefix := "Bearer "
+	if !strings.HasPrefix(authHdr, prefix) {
+		return returnedToken, ErrInvalidAuthHeader
+	}
+	trimmedToken := strings.TrimPrefix(authHdr, prefix)
+
+	//TODO: b64 error check
+	token, _ := base64.StdEncoding.DecodeString(trimmedToken)
+
+	err := json.Unmarshal(token, &returnedToken)
+	if err != nil {
+		return returnedToken, err
+	}
+
+	return returnedToken, nil
+}
+
 // Authenticate uses the specified validator to ensure a JWT is valid, then makes
 // sure that the claims provided by the JWT match the scopes as required in the API.
 func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
@@ -57,8 +90,26 @@ func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.A
 		return fmt.Errorf("security scheme %s != 'BearerAuth'", input.SecuritySchemeName)
 	}
 
-	//TODO: validate token
-	return nil
+	tokenObj, err := GetTokenObjectFromRequest(input.RequestValidationInput.Request)
+	if err != nil {
+		return err
+	}
+	spew.Dump(tokenObj)
+	//TODO : clean expired tokens here ?
+
+	user, err := a.repo.GetUser(tokenObj.Username)
+	if err != nil {
+		return err
+	}
+	spew.Dump(user)
+
+	for _, element := range user.Tokens {
+		if element.Token == tokenObj.Token {
+			//Token found, access granted
+			return nil
+		}
+	}
+	return ErrorInvalidToken
 }
 
 // Authenticate uses the specified validator to ensure a JWT is valid, then makes
