@@ -22,7 +22,6 @@ class CartridgeComponent extends React.Component {
             let current_electrode_id = current_electrode.getAttribute("electrode_id")
             console.log(current_electrode_id)
             
-            console.log("ICI MDR");
             console.log(this.props.state);
             current_electrode.addEventListener('click', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
@@ -1475,7 +1474,7 @@ class CartridgeComponent extends React.Component {
         //console.log(this.state.frames)
         //console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
         console.log(this.props.state)
-        if (this.props.state.frames[this.props.state.currently_edited_frame[0]][i][j] == null) {
+        if (this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[i][j] == null) {
             return ("#efd94c")
         } else {
             return ("#00F")

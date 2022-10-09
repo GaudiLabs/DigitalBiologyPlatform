@@ -73,5 +73,12 @@ body {
     box-sizing: border-box;
     cursor: se-resize;
   }
+  .btn {
+    border : 1px solid black !important;
+  }
   
-  
+  .logo-title {
+    color : white;
+    font-size:x-large;
+    margin-left: 30px;
+  }

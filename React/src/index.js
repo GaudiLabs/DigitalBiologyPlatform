@@ -159,13 +159,11 @@ class HeaderTop extends React.Component {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="#features">Features</Nav.Link>
-              <Nav.Link href="#pricing">Pricing</Nav.Link>
+              <Nav className="logo-title">Platform for Digital Biology</Nav>
             </Nav>
             <Nav>
-              <Nav.Link href="#deets">More deets</Nav.Link>
-              <Nav.Link eventKey={2} href="#memes">
-                Dank memes
+              <Nav.Link href="#login" onClick={() => this.openModal()}>
+                Login
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -177,14 +175,28 @@ class HeaderTop extends React.Component {
 
 class Body extends React.Component {
 
+
   constructor(props) {
     super(props);
-    let new_frames = new Array();
-    var times = 11;
 
-    for(var i = 0; i < times; i++){
-        new_frames.push(Array(16).fill(Array(8).fill(null)))
+
+    let new_frames = new Array();
+
+    const frame = {
+      duration: 0,
+      electrodes: []
+    };
+
+    var framesAmountSet = 20;
+
+    for(var i = 0; i <= framesAmountSet; i++){
+
+        var new_frame = Object.create(frame);
+        new_frame.duration = 1000;
+        new_frame.electrodes = Array(16).fill(Array(8).fill(null));
+        new_frames.push(new_frame)
     }
+
     console.log(new_frames)
 
         this.state = {
@@ -194,7 +206,11 @@ class Body extends React.Component {
             //electrodes: Array(128).fill(null),
             instanciatedHooks: false,
             serialPort: null,
-            clickHandle: this.handleHover.bind(this)
+            clickHandle: this.handleHover.bind(this),
+            framesAmount : framesAmountSet,
+            showModal: false,
+            loading: false,
+            error: null
         };
 
     console.log(this.state.frames)
@@ -232,32 +248,44 @@ class Body extends React.Component {
   async SendClick() {
     console.log("SEND CLICKED")
 
-    var n=10
-    for (let i = 0; i < n; i++) { 
-    await this.sleep(1000);
+    var n= this.state.framesAmount
 
-    var newNb = this.state.currently_edited_frame[0] + 1
-      if (i == 10) {
-        //remove this break for infinite loop
-        break;
-        i = 0
-        var newNb = 0
-      }
-    let data = this.squaresToBytes(this.state.frames[newNb])
+    //send first frame
+    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
     this.setState(
       {
-        currently_edited_frame : [newNb]
+        currently_edited_frame : [this.state.currently_edited_frame[0]]
       },() => { this.SendSerialData(data)} 
    )
 
-    // Allow the serial port to be closed later.
+    await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
+
+    //loop through frames
+    for (let i = 0; i < n; i++) { 
+
+    var oldNb = this.state.currently_edited_frame[0]
+    var newNb = this.state.currently_edited_frame[0] + 1
+      if (i == this.state.framesAmount) {
+        //remove this break for infinite loop
+        break;
+      }
+    let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
+    this.setState(
+      {
+        currently_edited_frame : [newNb]
+      }, () => { 
+        this.SendSerialData(data);
+      } 
+   )
+
+        await this.sleep(this.state.frames[newNb].duration);
+
     }
     //let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
     //await writer.write(data);
     //writer.releaseLock();
  }
 
-  
   bit_set(num, bit) {
     return num | 1 << bit;
   }
@@ -265,7 +293,6 @@ class Body extends React.Component {
   dec2bin(dec) {
     return (dec >>> 0).toString(2);
   }
-
 
   squaresToBytes(squares) {
     let output = new Uint8Array(32);
@@ -287,10 +314,10 @@ class Body extends React.Component {
   }
 
   handleHover(electrode_id, e) {
-    console.log("MOUSE ENTER TOP")
+    console.log("MOUSE ENTER")
     //console.log(e)
     if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
-        var newArray = this.state.frames[this.state.currently_edited_frame[0]].map(function (arr) {
+        var newArray = this.state.frames[this.state.currently_edited_frame[0]].electrodes.map(function (arr) {
             return arr.slice();
         });
 
@@ -306,9 +333,10 @@ class Body extends React.Component {
         //console.log(i, j)
 
         var newFrames = this.state.frames.map(function (arr) {
-            return arr.slice();
+            //return arr.slice();
+            return {...arr}
         });
-        newFrames[this.state.currently_edited_frame[0]] = newArray
+        newFrames[this.state.currently_edited_frame[0]].electrodes = newArray
 
         this.setState({
             frames: newFrames,
@@ -316,15 +344,11 @@ class Body extends React.Component {
     }
     //console.log(this.state.squares)
 }
-  
-  render() {
-    return (
+
+  FrameSelector(){
+
+  return (
       <React.Fragment>
-        <HeaderTop />
-          {/* <div class ="mn" > */}
-          <GridLayout className="layout" cols={12} rowHeight={30} width={1200} draggableCancel=".not_draggable">
-        <div key="b" data-grid={{ x: 0, y: 0, w: 3, h: 6, minW: 2, maxW: 10, minH: 4 }} className = "not_draggable">
-           <AdaptorComponent state={this.state}/>
                       <div
         style={{
           display: "flex",
@@ -337,7 +361,7 @@ class Body extends React.Component {
           values={this.state.currently_edited_frame}
           step={1}
           min={0}
-          max={10}
+          max={this.state.framesAmount}
           onChange={(value) => {
             console.log("ici")
             console.log(value)
@@ -364,7 +388,7 @@ class Body extends React.Component {
                     values: this.state.currently_edited_frame,
                     colors: ["#548BF4", "#ccc"],
                     min: 0,
-                    max: 10
+                    max: this.state.framesAmount
                   }),
                   alignSelf: "center"
                 }}
@@ -396,15 +420,128 @@ class Body extends React.Component {
             </div> 
         <SelectSerial onClick={() => this.SelectSerialClick()} />
         <Send onClick={() => this.SendClick()} />
- 
+      </React.Fragment>
+)
+}
+
+handleDurationChange(event) {
+
+  var newFrames = this.state.frames.map(function (arr) {
+    //return arr.slice();
+    return {...arr}
+});
+newFrames[this.state.currently_edited_frame[0]].duration = event.target.value
+
+this.setState({
+    frames: newFrames,
+});
+}
+
+handleFrameAmountChange(event) {
+
+  const frame = {
+    duration: 0,
+    electrodes: []
+  };
+
+  var newFrames = this.state.frames.map(function (arr) {
+    //return arr.slice();
+    return {...arr}
+  });
+
+  var framesAmountSet = 0;
+  if (this.state.framesAmount < event.target.value) {
+    framesAmountSet = this.state.framesAmount - event.target.value
+  }
+  //TODO: handle case where new amount of frames is lower
+
+  for(var i = 0; i <= framesAmountSet; i++){
+
+      var new_frame = Object.create(frame);
+      new_frame.duration = 1000;
+      new_frame.electrodes = Array(16).fill(Array(8).fill(null));
+      newFrames.push(new_frame)
+  }
+
+this.setState({
+    frames: newFrames,
+    framesAmount: event.target.value,
+});
+}
+
+openModal() {
+  this.setState({
+    showModal: true
+  });
+}
+
+closeModal() {
+  this.setState({
+    showModal: false,
+    error: null
+  });
+}
+
+onLoginSuccess(method, response) {
+  console.log("logged successfully with " + method);
+}
+
+onLoginFail(method, response) {
+  console.log("logging failed with " + method);
+  this.setState({
+    error: response
+  });
+}
+
+startLoading() {
+  this.setState({
+    loading: true
+  });
+}
+
+finishLoading() {
+  this.setState({
+    loading: false
+  });
+}
+
+afterTabsChange() {
+  this.setState({
+    error: null
+  });
+}
+
+renderDurationInput(){
+  return (
+  <form >
+  <label>
+    Duration (ms):
+    <input type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+  </label>
+  <label>
+    Total amount of frames:
+    <input type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
+  </label>
+  </form>
+  )
+}
+  
+  render() {
+    return (
+      <React.Fragment>
+        <HeaderTop />
+          {/* <div class ="mn" > */}
+          <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
+        <div key="b" data-grid={{ x: 0, y: 0, w: 9, h: 6, minW: 2, maxW: 10, minH: 4 }} className = "not_draggable">
+           <AdaptorComponent state={this.state}/>
+                {this.FrameSelector()}
+                {this.renderDurationInput()}
         </div>
+
+        {/* <div key="c" data-grid={{ x: 4, y: 0, w: 3, h: 6, minW: 2, maxW: 10, minH: 4 }}>
+                {this.FrameSelector()}
+        </div> */}
       </GridLayout>
-          {/* <ResizableBox width={'300'} lockAspectRatio={false} 
-          axis="x"
-          handleSize={[20, 20]}
-    minConstraints={[100, 0]}  maxConstraints={[801, 0]}> */}
-           {/* </ResizableBox> */}
-          {/* </div> */}
       </React.Fragment>
     )
   }
