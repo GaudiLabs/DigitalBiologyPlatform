@@ -13,6 +13,7 @@ import CartridgeComponent from './cartridge_DIMM';
 import AdaptorComponent from './adaptor';
 import { Range, getTrackBackground } from "react-range";
 import GridLayout from "react-grid-layout";
+import LoginPrompt from "./react-modal-login-wrapper";
 
 
 function OpenDropLogo() {
@@ -148,7 +149,7 @@ function Send(props) {
 }
 
 class HeaderTop extends React.Component {
-  render() {
+  render(props) {
     return (
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
@@ -162,8 +163,8 @@ class HeaderTop extends React.Component {
               <Nav className="logo-title">Platform for Digital Biology</Nav>
             </Nav>
             <Nav>
-              <Nav.Link href="#login" onClick={() => this.openModal()}>
-                Login
+              <Nav.Link href="#login">
+                <LoginPrompt state={this.props.state}/> 
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -208,16 +209,41 @@ class Body extends React.Component {
             serialPort: null,
             clickHandle: this.handleHover.bind(this),
             framesAmount : framesAmountSet,
-            showModal: false,
-            loading: false,
-            error: null
+            loggedInHandle: this.loggedInHandler.bind(this),
+            SetlogginToggle: this.setLogginToggle.bind(this),
+            GetlogginToggle: this.getLogginToggle.bind(this),
+            username : "oh",
+            loggedIn : false,
+            accessToken : "ah",
+            showLoginPopup : false
         };
 
     console.log(this.state.frames)
   }
+  
+  loggedInHandler(username, token){
+    this.setState({
+      username: username,
+      accessToken : token
+    })
+  }
+
+  setLogginToggle(show_login){
+    this.setState({
+      showLoginPopup: show_login
+    })
+  }
+
+  getLogginToggle(){
+    return this.state.showLoginPopup
+  }
+
 
   async SelectSerialClick() {
     console.log("CONNECT CLICKED")
+    //this.setLogginToggle(true)
+    console.log("USERNAME :")
+    console.log(this.state.username)
     //if ("serial" in navigator) {
     //    console.log("The serial port is supported.")
     // The Web Serial API is supported.
@@ -469,48 +495,6 @@ this.setState({
 });
 }
 
-openModal() {
-  this.setState({
-    showModal: true
-  });
-}
-
-closeModal() {
-  this.setState({
-    showModal: false,
-    error: null
-  });
-}
-
-onLoginSuccess(method, response) {
-  console.log("logged successfully with " + method);
-}
-
-onLoginFail(method, response) {
-  console.log("logging failed with " + method);
-  this.setState({
-    error: response
-  });
-}
-
-startLoading() {
-  this.setState({
-    loading: true
-  });
-}
-
-finishLoading() {
-  this.setState({
-    loading: false
-  });
-}
-
-afterTabsChange() {
-  this.setState({
-    error: null
-  });
-}
-
 renderDurationInput(){
   return (
   <form >
@@ -529,7 +513,7 @@ renderDurationInput(){
   render() {
     return (
       <React.Fragment>
-        <HeaderTop />
+        <HeaderTop state={this.state}/>
           {/* <div class ="mn" > */}
           <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
         <div key="b" data-grid={{ x: 0, y: 0, w: 9, h: 6, minW: 2, maxW: 10, minH: 4 }} className = "not_draggable">
