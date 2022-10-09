@@ -7,9 +7,13 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import './index.css';
 import './bootstrap.scss';
+import '../node_modules/react-grid-layout/css/styles.css'
+import '../node_modules/react-resizable/css/styles.css'
 import CartridgeComponent from './cartridge_DIMM';
 import AdaptorComponent from './adaptor';
 import { Range, getTrackBackground } from "react-range";
+import GridLayout from "react-grid-layout";
+
 
 function OpenDropLogo() {
   return (
@@ -317,13 +321,11 @@ class Body extends React.Component {
     return (
       <React.Fragment>
         <HeaderTop />
-          <div class ="mn" >
-          <ResizableBox width={'400'} height={'100%'} lockAspectRatio={false}
-          axis="x"
-          handleSize={[20, 20]}
-          minConstraints={[100, 100]} maxConstraints={[800, 800]}>
-            <AdaptorComponent state={this.state}/>
-            <div
+          {/* <div class ="mn" > */}
+          <GridLayout className="layout" cols={12} rowHeight={30} width={1200} draggableCancel=".not_draggable">
+        <div key="b" data-grid={{ x: 0, y: 0, w: 3, h: 6, minW: 2, maxW: 10, minH: 4 }} className = "not_draggable">
+           <AdaptorComponent state={this.state}/>
+                      <div
         style={{
           display: "flex",
           justifyContent: "center",
@@ -387,15 +389,22 @@ class Body extends React.Component {
               }}
             >
               {this.state.currently_edited_frame[0]}
-            </div>
+            </div> 
 
           )}
         />
-        </div>
+            </div> 
         <SelectSerial onClick={() => this.SelectSerialClick()} />
         <Send onClick={() => this.SendClick()} />
-            </ResizableBox>
-          </div>
+ 
+        </div>
+      </GridLayout>
+          {/* <ResizableBox width={'300'} lockAspectRatio={false} 
+          axis="x"
+          handleSize={[20, 20]}
+    minConstraints={[100, 0]}  maxConstraints={[801, 0]}> */}
+           {/* </ResizableBox> */}
+          {/* </div> */}
       </React.Fragment>
     )
   }
