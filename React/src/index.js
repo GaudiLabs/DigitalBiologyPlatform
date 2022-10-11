@@ -477,19 +477,24 @@ handleFrameAmountChange(event) {
 
   var framesAmountSet = 0;
   if (this.state.framesAmount < event.target.value) {
-    framesAmountSet = this.state.framesAmount - event.target.value
-  }
-  //TODO: handle case where new amount of frames is lower
+    framesAmountSet = event.target.value - this.state.framesAmount 
 
-  for(var i = 0; i <= framesAmountSet; i++){
-
+  console.log("FRAME AMOUNT TO ADD:")
+  console.log(framesAmountSet)
+  
+    for(var i = 0; i <= framesAmountSet; i++){
       var new_frame = Object.create(frame);
       new_frame.duration = 1000;
       new_frame.electrodes = Array(16).fill(Array(8).fill(null));
       newFrames.push(new_frame)
+  } 
   }
+  //TODO: handle case where new amount of frames is lower
 
+  console.log("NEW FRAMES:")
+  console.log(newFrames)
 this.setState({
+    currently_edited_frame : [0],
     frames: newFrames,
     framesAmount: event.target.value,
 });
@@ -499,7 +504,7 @@ renderDurationInput(){
   return (
   <form >
   <label>
-    Duration (ms):
+    Current Frame Duration (ms):
     <input type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
   </label>
   <label>

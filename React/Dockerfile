@@ -5,4 +5,6 @@ COPY package-lock.json ./
 COPY ./ ./
 #ENV NODE_PATH=./src
 RUN npm install
-CMD ["npm", "run", "start"]
+RUN npm run build
+RUN npm install -g serve
+CMD ["serve", "-s", "build"]
