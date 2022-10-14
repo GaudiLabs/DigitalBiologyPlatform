@@ -82,7 +82,7 @@ Table protocols.protocol {
   frame_count int
   total_duration int
   mask_frame_id int [ ref: > protocols.frame.id ]
-  date_created timestamp
+  date_created date
   version varchar
   fork_of int [ ref: > protocols.protocol.id ]
   device_id int [ ref: > hardware.device.id ]
@@ -100,6 +100,8 @@ Table protocols.nested_protocols {
   parent_protocol_id int [ ref: > protocols.protocol.id]
   child_protocol_id int [ ref: > protocols.protocol.id]
   depth int
+  parent_start_frame_id int [ ref: > protocols.frame.id]
+  start_poi int [ref: > hardware.electrode.id]
 }
 
 Table protocols.frame_electrode {
