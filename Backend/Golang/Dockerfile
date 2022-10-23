@@ -23,4 +23,4 @@ COPY ./.env /.env
 
 EXPOSE 8080
 
-ENTRYPOINT [ "./dbp_api" ]
+ENTRYPOINT [ "/dbp_api" ]
