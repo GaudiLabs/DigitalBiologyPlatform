@@ -7,8 +7,8 @@ class CartridgeComponent extends React.Component {
     }
 
     componentDidMount() {
-        console.log("HERE - LINKING EVNET LISTENERS");
-        //console.log(this.state.instanciatedHooks);
+        //console.log("HERE - LINKING EVNET LISTENERS");
+        ////console.log(this.state.instanciatedHooks);
 
         var electrodes = document.getElementsByClassName("electrode");
 
@@ -18,11 +18,11 @@ class CartridgeComponent extends React.Component {
 
         for (var i = 0; i < electrodes.length; i++) {
             let current_electrode = electrodes[i];
-            console.log(current_electrode)
+            //console.log(current_electrode)
             let current_electrode_id = current_electrode.getAttribute("electrode_id")
-            console.log(current_electrode_id)
+            //console.log(current_electrode_id)
             
-            console.log(this.props.state);
+            //console.log(this.props.state);
             current_electrode.addEventListener('click', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             //current_electrode.setAttribute('fill', 'this.renderElectrodeFill(current_electrode_id);' )
@@ -1469,11 +1469,11 @@ class CartridgeComponent extends React.Component {
         var j = Math.floor(electrode_id / 8);
         var i = electrode_id % 8;
 
-        console.log("MODIFYING FRAME:")
-        //console.log(this.props.state.currently_edited_frame[0])
-        //console.log(this.state.frames)
-        //console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
-        console.log(this.props.state)
+        //console.log("MODIFYING FRAME:")
+        ////console.log(this.props.state.currently_edited_frame[0])
+        ////console.log(this.state.frames)
+        ////console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+        //console.log(this.props.state)
         if (this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[i][j] == null) {
             return ("#efd94c")
         } else {

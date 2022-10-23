@@ -57,7 +57,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
   /user/login:
-    get:
+    post:
       tags:
         - user
       summary: Logs user into the system

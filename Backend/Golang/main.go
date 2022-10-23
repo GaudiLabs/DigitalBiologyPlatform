@@ -40,6 +40,7 @@ func main() {
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 	e.Use(authMiddleWare)
 	//e.Use(middleware.BasicAuth(auth.BasicAuthValidator))
 
