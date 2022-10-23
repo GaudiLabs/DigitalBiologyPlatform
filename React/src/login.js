@@ -1,6 +1,8 @@
 import React from 'react';
 import './Login.scss';
 import OpenDropLogo from './logo';
+import { Navigate } from "react-router-dom";
+import  HeaderTop  from './header';
 
 class LoginForm extends React.Component {
 
@@ -9,7 +11,10 @@ class LoginForm extends React.Component {
 
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      error: false,
+      errorMessage: "",
+      redirectToHome: false,
     }
   }
 
@@ -21,27 +26,66 @@ class LoginForm extends React.Component {
   }
 
   handleErrors(response) {
-    if (!response.ok) {
-      throw Error(response.statusText);
+    console.log("HANDLE ERROR TRIGGER")
+    console.log(response)
+    if (response.ok) {
+      return false
     }
-    return response;
+    //401 Unauthorized
+    if (response.status == 401) {
+      this.setState(
+        {
+          error : true,
+          errorMessage : "Invalid Username/Password",
+        })
+    } else {
+      this.setState(
+        {
+          error : true,
+          errorMessage : "Unexpected error happened",
+        })
+    }
+    return true
   }
 
   async loginUser(credentials) {
-    return fetch('http://localhost:8080/user/login', {
+
+    let requestResp
+    try {
+      requestResp = await fetch('http://localhost:8080/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(credentials)
     })
-      .then(this.handleErrors)
-      .then(data => data.json())
-      .catch(error => console.log(error));
-  }
+    }
+    catch (error) {
+      this.setState(
+        {
+          error : true,
+          errorMessage : "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleErrors(requestResp)) {
+    //TODO : empty body error case
+    //console.log(requestResp)
+    return requestResp.json()
+    }
+ }
 
   async handleLoginSubmit(e) {
     e.preventDefault();
+      this.setState(
+        {
+          error : false,
+        }
+      )
+ 
     console.log("HANDLE SUBMIT TRIGGER");
 
     let username = this.state.username;
@@ -51,9 +95,16 @@ class LoginForm extends React.Component {
       password
     });
     console.log(token)
+    if (token) {
     //TODO : local store the token
-    //sessionStorage.setItem('token', JSON.stringify(token));
+    //localStorage.setItem('token', JSON.stringify(token));
+    this.props.state.loggedInCallback(username,token)
     //setToken(token);
+    this.setState({
+      redirectToHome : true
+    })
+    }
+
   }
 
   setUsername(event) {
@@ -69,13 +120,23 @@ class LoginForm extends React.Component {
   }
 
   render() {
+    if ( this.state.redirectToHome ){
+      return <Navigate to="/"/>
+    }
     return (
+      <React.Fragment>
+         <HeaderTop state={this.props.state}/> 
+
       <div className="login_container">
-        <div className="logo_container">
+       <div className="logo_container">
           {OpenDropLogo()}
           <br></br>
           OpenDrop
         </div>
+        <div className="notification_panel" style={{display:  this.state.error ? 'table-cell' : 'none' }}>
+          {this.state.errorMessage}
+        </div>
+ 
         <input id="signin" type="radio" name="tab" />
         <input id="register" type="radio" name="tab" />
         <div className="pages">
@@ -119,6 +180,7 @@ class LoginForm extends React.Component {
             Register</label>
         </div>
       </div>
+      </React.Fragment>
     )
   }
 }

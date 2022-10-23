@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Resizable, ResizableBox } from 'react-resizable';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+
 import './index.css';
 import './bootstrap.scss';
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
-import CartridgeComponent from './cartridge_DIMM';
 import AdaptorComponent from './adaptor';
 import { Range, getTrackBackground } from "react-range";
 import GridLayout from "react-grid-layout";
 import Preferences from './Preferences';
 import LoginForm from './login';
-import OpenDropLogo from './logo';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import  HeaderTop  from './header';
 
 
 function SelectSerial(props) {
@@ -35,38 +30,36 @@ function Send(props) {
   );
 }
 
-class HeaderTop extends React.Component {
-  render(props) {
-    return (
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Container>
-          <Navbar.Brand href="#home">
-            {OpenDropLogo()}
-            OpenDrop
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto">
-              <Nav className="logo-title">Platform for Digital Biology</Nav>
-            </Nav>
-            <Nav>
-              <Nav.Link href="#login">
-              <NavLink to="/login" exact >
-	            Log In
-              </NavLink>
-                {/* <LoginPrompt state={this.props.state}/>  */}
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    )
-  }
-}
+// class HeaderTop extends React.Component {
+//   render(props) {
+//     return (
+//       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+//         <Container>
+//           <Navbar.Brand href="#home">
+//             {OpenDropLogo()}
+//             OpenDrop
+//           </Navbar.Brand>
+//           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+//           <Navbar.Collapse id="responsive-navbar-nav">
+//             <Nav className="me-auto">
+//               <Nav className="logo-title">Platform for Digital Biology</Nav>
+//             </Nav>
+//             <Nav>
+//               <Nav.Link href="#login">
+//               <NavLink to="/login" exact >
+// 	            Log In
+//               </NavLink>
+//                 {/* <LoginPrompt state={this.props.state}/>  */}
+//               </Nav.Link>
+//             </Nav>
+//           </Navbar.Collapse>
+//         </Container>
+//       </Navbar>
+//     )
+//   }
+// }
 
 class Body extends React.Component {
-
-
   constructor(props) {
     super(props);
 
@@ -98,17 +91,50 @@ class Body extends React.Component {
             instanciatedHooks: false,
             serialPort: null,
             clickHandle: this.handleHover.bind(this),
+            loggedInCallback: this.loggedInCallback.bind(this),
+            logOut: this.logOut.bind(this),
             framesAmount : framesAmountSet,
             username : "oh",
             loggedIn : false,
-            accessToken : "ah",
-            showLoginPopup : false
+            accessToken : null,
         };
 
-    //console.log(this.state.frames)
+    //retreive logged in infos
+    var atoken = localStorage.getItem('token')
+    var ausername = localStorage.getItem('username')
+    console.log("TOKEN SET:")
+    console.log(atoken)
+    console.log(ausername)
+    if (atoken != null && ausername != null) {
+      this.state.loggedIn = true
+      this.state.username = ausername
+      this.state.accessToken = JSON.parse(atoken)
+    }
   }
-  
-    
+
+  loggedInCallback(username, token) {
+    console.log("LOGGED IN CALLBACK")
+    console.log(username)
+    console.log(token)
+    localStorage.setItem('token', JSON.stringify(token));
+    localStorage.setItem('username', username);
+    this.setState({
+      loggedIn : true,
+      username : username,
+      accessToken : token,
+    })
+  }
+
+  logOut() {
+    console.log("LOG OUT CALL")
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    this.setState({
+      loggedIn : false,
+      username : "",
+      accessToken : null,
+    })
+  }
 
   async SelectSerialClick() {
     //console.log("CONNECT CLICKED")
@@ -386,10 +412,10 @@ renderDurationInput(){
   )
 }
   
-  render() {
+renderMain() {
     return (
       <React.Fragment>
-        <HeaderTop state={this.state}/>
+         <HeaderTop state={this.state}/> 
           {/* <div class ="mn" > */}
           <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
         <div key="b" data-grid={{ x: 0, y: 0, w: 9, h: 6, minW: 2, maxW: 10, minH: 4 }} className = "not_draggable">
@@ -405,32 +431,25 @@ renderDurationInput(){
       </React.Fragment>
     )
   }
-}
 
-function RenderRouter(){
-  const [token, setToken] = useState();
-
-  // if(!token) {
-  //   return <Login setToken={setToken} />
-  // }
+render (){
 
   return (
-    <div className="wrapper">
-    <BrowserRouter>
-    <Routes>
-          <Route path="/" element={<Body />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/preferences" element={<Preferences />} />
-    </Routes>
-    </BrowserRouter>
-  </div>
-  )
+  <div className="wrapper">
+  <BrowserRouter>
+  <Routes>
+        <Route path="/" element={this.renderMain()} />
+        <Route path="/login" element={<LoginForm state={this.state} />} />
+        <Route path="/preferences" element={<Preferences />} />
+  </Routes>
+  </BrowserRouter>
+</div>
+)
 }
-
-// ========================================
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 //root.render(<Game />);
 root.render(
-      <RenderRouter/>
+      <Body/>
 );
