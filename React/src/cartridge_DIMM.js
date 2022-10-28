@@ -4,6 +4,10 @@ class CartridgeComponent extends React.Component {
 
     constructor(props) {
         super(props);
+        
+        this.state = {
+            a : "b"
+          }
     }
 
     componentDidMount() {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.css';
@@ -64,7 +64,7 @@ class Body extends React.Component {
     super(props);
 
 
-    let new_frames = new Array();
+    let new_frames = [];
 
     const frame = {
       duration: 0,
@@ -186,9 +186,9 @@ class Body extends React.Component {
     //loop through frames
     for (let i = 0; i < n; i++) { 
 
-    var oldNb = this.state.currently_edited_frame[0]
+    //var oldNb = this.state.currently_edited_frame[0]
     var newNb = this.state.currently_edited_frame[0] + 1
-      if (i == this.state.framesAmount) {
+      if (i === this.state.framesAmount) {
         //remove this break for infinite loop
         break;
       }
@@ -210,7 +210,7 @@ class Body extends React.Component {
  }
 
   bit_set(num, bit) {
-    return num | 1 << bit;
+    return num | (1 << bit);
   }
 
   dec2bin(dec) {
