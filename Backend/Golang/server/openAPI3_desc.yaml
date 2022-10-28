@@ -7,9 +7,10 @@ info:
   contact:
     email: apiteam@swagger.io
   version: 1.0.11
-servers:
-  - url: https://nohostnamefornow.io
-  - url: http://localhost:8080
+#servers:
+#  - url: https://nohostnamefornow.io
+#  - url: http://localhost:8080
+#  - url: https://dbp-backend-api-production.up.railway.app
 tags:
   - name: user
     description: Operations about users

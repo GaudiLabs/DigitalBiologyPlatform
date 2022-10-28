@@ -32,7 +32,7 @@ func openConnection(repo PostgresRepo) (*sql.DB, error) {
 		"dbname=%s sslmode=disable password=%s",
 		repo.host, repo.port, repo.user, repo.dbName, repo.password)
 
-	spew.Dump(psqlInfo)
+	//spew.Dump(psqlInfo)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func NewPostgresRepo() (*PostgresRepo, error) {
 		return nil, err
 	}
 
-	spew.Dump(outputRepo)
+	//spew.Dump(outputRepo)
 	return &outputRepo, nil
 }
 
