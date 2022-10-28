@@ -51,8 +51,10 @@ class LoginForm extends React.Component {
   async loginUser(credentials) {
 
     let requestResp
+    const route = "/user/login"
+    const api_url = process.env.REACT_APP_API_URL
     try {
-      requestResp = await fetch('http://localhost:8080/user/login', {
+      requestResp = await fetch(api_url + route, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
