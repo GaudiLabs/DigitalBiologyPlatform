@@ -32,7 +32,7 @@ class LoginForm extends React.Component {
       return false
     }
     //401 Unauthorized
-    if (response.status == 401) {
+    if (response.status === 401) {
       this.setState(
         {
           error : true,
