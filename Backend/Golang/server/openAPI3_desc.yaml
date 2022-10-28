@@ -7,6 +7,8 @@ info:
   contact:
     email: apiteam@swagger.io
   version: 1.0.11
+#commented because casing deployment problems
+#TODO : investigate
 #servers:
 #  - url: https://nohostnamefornow.io
 #  - url: http://localhost:8080

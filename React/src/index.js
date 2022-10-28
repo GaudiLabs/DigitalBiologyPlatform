@@ -8,10 +8,11 @@ import '../node_modules/react-resizable/css/styles.css'
 import AdaptorComponent from './adaptor';
 import { Range, getTrackBackground } from "react-range";
 import GridLayout from "react-grid-layout";
-import Preferences from './Preferences';
+//import Preferences from './Preferences';
 import LoginForm from './login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import  HeaderTop  from './header';
+import ProtocolsLister from './protocols_lister';
 
 
 function SelectSerial(props) {
@@ -29,35 +30,6 @@ function Send(props) {
     </button>
   );
 }
-
-// class HeaderTop extends React.Component {
-//   render(props) {
-//     return (
-//       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-//         <Container>
-//           <Navbar.Brand href="#home">
-//             {OpenDropLogo()}
-//             OpenDrop
-//           </Navbar.Brand>
-//           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-//           <Navbar.Collapse id="responsive-navbar-nav">
-//             <Nav className="me-auto">
-//               <Nav className="logo-title">Platform for Digital Biology</Nav>
-//             </Nav>
-//             <Nav>
-//               <Nav.Link href="#login">
-//               <NavLink to="/login" exact >
-// 	            Log In
-//               </NavLink>
-//                 {/* <LoginPrompt state={this.props.state}/>  */}
-//               </Nav.Link>
-//             </Nav>
-//           </Navbar.Collapse>
-//         </Container>
-//       </Navbar>
-//     )
-//   }
-// }
 
 class Body extends React.Component {
   constructor(props) {
@@ -93,6 +65,7 @@ class Body extends React.Component {
             clickHandle: this.handleHover.bind(this),
             loggedInCallback: this.loggedInCallback.bind(this),
             logOut: this.logOut.bind(this),
+            loadProtocol: this.loadProtocol.bind(this),
             framesAmount : framesAmountSet,
             username : "oh",
             loggedIn : false,
@@ -134,6 +107,11 @@ class Body extends React.Component {
       username : "",
       accessToken : null,
     })
+  }
+
+  loadProtocol(protocol_id) {
+    console.log("LOAD PROTOCOL CALL")
+    console.log(protocol_id)
   }
 
   async SelectSerialClick() {
@@ -424,9 +402,9 @@ renderMain() {
                 {this.renderDurationInput()}
         </div>
 
-        {/* <div key="c" data-grid={{ x: 4, y: 0, w: 3, h: 6, minW: 2, maxW: 10, minH: 4 }}>
-                {this.FrameSelector()}
-        </div> */}
+        <div key="c" data-grid={{ x: 4, y: 0, w: 6, h: 6, minW: 6, maxW: 10, minH: 4 }}>
+           <ProtocolsLister state={this.state}/>
+        </div>
       </GridLayout>
       </React.Fragment>
     )
@@ -440,7 +418,7 @@ render (){
   <Routes>
         <Route path="/" element={this.renderMain()} />
         <Route path="/login" element={<LoginForm state={this.state} />} />
-        <Route path="/preferences" element={<Preferences />} />
+        {/* <Route path="/preferences" element={<Preferences />} /> */}
   </Routes>
   </BrowserRouter>
 </div>
