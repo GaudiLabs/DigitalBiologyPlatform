@@ -30,7 +30,7 @@ paths:
         '200':
           description: successful operation
   /user:
-    post:
+    put:
       tags:
         - user
       summary: Create user
@@ -171,6 +171,8 @@ paths:
           description: User not found
   /protocol/me:
     get:
+      security:
+        - BearerAuth: []
       tags:
         - protocol
       summary: Get token bearer protocols list
@@ -315,6 +317,10 @@ components:
         name: user
     CreateUserParams:
       type: object
+      required: 
+        - "username"
+        - "password"
+        - "email"
       properties:
         username:
           type: string

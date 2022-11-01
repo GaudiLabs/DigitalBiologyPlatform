@@ -3,7 +3,8 @@ WITH users AS (
 				*
 			FROM
 				users.user as u
-	), tokens AS (
+	), 
+	tokens AS (
 			SELECT 
 				COALESCE(json_agg(jsonb_build_object(
 			'token',ut.token,
@@ -12,6 +13,7 @@ WITH users AS (
 			FROM users.token as ut
 			JOIN users ON ut.user_id = users.id
 			WHERE ut.expiration_date > NOW()
+			AND users.login = $1
 	)
 	SELECT
 		jsonb_build_object(

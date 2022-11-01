@@ -24,9 +24,9 @@ const (
 
 // CreateUserParams defines model for CreateUserParams.
 type CreateUserParams struct {
-	Email    *string `json:"email,omitempty"`
-	Password *string `json:"password,omitempty"`
-	Username *string `json:"username,omitempty"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Username string `json:"username"`
 }
 
 // Electrode defines model for Electrode.
@@ -111,7 +111,7 @@ type ServerInterface interface {
 	// (GET /swagger.json)
 	ServeSwaggerFile(ctx echo.Context) error
 	// Create user
-	// (POST /user)
+	// (PUT /user)
 	CreateUser(ctx echo.Context) error
 	// Logs user into the system
 	// (POST /user/login)
@@ -138,6 +138,8 @@ type ServerInterfaceWrapper struct {
 // GetSelfProtocolList converts echo context to params.
 func (w *ServerInterfaceWrapper) GetSelfProtocolList(ctx echo.Context) error {
 	var err error
+
+	ctx.Set(BearerAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetSelfProtocolList(ctx)
@@ -262,7 +264,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/protocol/me", wrapper.GetSelfProtocolList)
 	router.GET(baseURL+"/swagger.json", wrapper.ServeSwaggerFile)
-	router.POST(baseURL+"/user", wrapper.CreateUser)
+	router.PUT(baseURL+"/user", wrapper.CreateUser)
 	router.POST(baseURL+"/user/login", wrapper.LoginUser)
 	router.GET(baseURL+"/user/me", wrapper.GetSelfUser)
 	router.DELETE(baseURL+"/user/:username", wrapper.DeleteUser)
@@ -274,32 +276,32 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"GAAA",
+	"H4sIAAAAAAAC/8xYW2/bOBP9KwN+36PiS5J2F35q0xsCBJugSRa7WwQBLY5sNhKpkqMkbuH/vuBFsmXJ",
+	"idsmxT4lpjTDMzNnDof6xlJdlFqhIssm35hBW2pl0f844uIjfqnQ0jtjtHFLAm1qZElSKzZh8SlMtViA",
+	"tDDlQuQLyLQpOKFIgFc0R0Uy5c4CpAqP/P8WCmmtVDPQBqS65bkUbJmwS+WstJFfUWzZ9/WDbkuDFhXB",
+	"tCK4M1rN2HKZMJvOseA+rjcGOeGlRXPGDS/8Wml0iYZkiBwLLnP/zz0vyhzZhPHB9FU6ECxhtCjdgiUj",
+	"ne+EldzaO21E28D5d0/6LCqLRvEC2xY096C6BsuEGfxSSYOCTT6trNe2TiLmq8ZYTz9jSixh94UPJezn",
+	"jb3HdzmmZLTAnvDrR9fSB9XBf8vzCteeqKqYRrfrQMNrSdtfB+EyYe9NTEYbh6gMDyXv7LTm1L8qCUMh",
+	"/28wYxP2v+GK2MNY++Eq5GUDghvDF+634erm8ZAaSNGghaMvtBM9k2obz34Fc3akg8d5oW9Q9fDhvpQh",
+	"7GvBaWPv/dF4f290uLd/cDH+fbL/YnJ4MHgxHv/Th55q/yvzv76++Ii/vaT8zcXfQhz/eXd5Wh4d/0wk",
+	"H7m6QfHai0g3Ft6sd9DtxoBY9uinr+Tnc23ozGjSqc63IbjOpaWdmduKqYe80eeWCBKWuQa7TnWlqPd5",
+	"q89XywW3N9dZ3Zw7IQ2t3AOxZm0PKYjn1w/0+kYBpFO7qH9rAJNWYtspaSegs2VfEX0/7XIwfNZz9cqv",
+	"D1Jd9LFetvt7PEpYOLDYhElFLw9XRlIRzkLufa/srm1r/duT/GeTDX+KRqrbk0jpDZGrH+8cS7uBOuFs",
+	"8GHlv1tHd/BjWhlJi3PnPA42yA0a103ul9/VGU398iobc6KSLZ0PN2G4V1OtiKe0xgTGS0nIi1f2js9m",
+	"aAZSO8DteeUcEWaS5tUUhE6rAhWFaYUTuE3sZDgMzx2Fhh94JeQJn9rhWzmTxPMjqXM9W5zlnBxxHEI0",
+	"hT3NztHcyrTG+gNuJHkixBcgvgH1K/D67Bj24LRE5f47GIxYwm7R2BDXeDAajMcuXl2i4qVkE3YwGA0O",
+	"/GRCc5/sYV2fYaDfDKk70Rmkyijg4JoXdAZNUSH105qA6QJoLi1UgbGOYT6Jx4JN2Aekc8yzmjMnQQJa",
+	"06zAjFc51WXEoIS8LPM4Rw4/2yA/gYaPkbTLfE+Vdly2SlO0NqtyaAC3WMkmn9p8/HS1vEqYrYqCm0WI",
+	"DLwUQKDnWmai0BGf2fU+YFdug2FNyDqqmPd23hyB8Dy8+V7muJm0/dGoW6ztQTWovV/g4DaHTOYIBuNc",
+	"7iZ+X8gIMAvb1lHE1RhEVatw1UOaMMcD76fEaspnQS/Q0pEWiycjQOca0VP/N5G8DiE0WrpSLzIVLrcT",
+	"9bvzHlMSE1Ln1P9cJXSYu7PCp1XbHlL4o+QZE7c+EvfkrL5Vch9tJP+tDGV2589w7dbzcCr3R+OnRR0P",
+	"2N0aPYnYo4I5nTwM/dS3TwN8uHnv9nbjx+26N+c2OU70LMgnSEUaaI5gF5aweIAqLc3u1dyGKF3ZeDKd",
+	"3V1af32KneVht1kdbFCaINOVEt+v+bFOmbbuOFw/AR6o1re6RZYBUI7httaGduHUN+UKtMoXMEUQWmE4",
+	"XxFyPZuhAKk8gkFHVt96p7HopWtiJDTWx7S5DYLDAjTnBApRuGb2+3kfrn2dDPlRoR7pJ+tfN9rNnawR",
+	"ZnNevdog4GHfuXUcPjI1OgK2cqysO3PHIjZVCpnYorXJ1p5xPo8Wf9Tfb34ogRlSOkcxgEsbAIwh0wYI",
+	"rTteB/CMmX2G1k5aLuJF41nF4Tl48d3NPV2Ev7EkHQL1zjw/1buXpeC79W6bds/btk8/YPTzau/u7m7P",
+	"3Wr2KpOjSrVA8V/gaqgKcAV4L62Lvhb/cESTNv6DypMNiXHDLUPislnadH1a+7PAp7oKMG2bAmyZPGq2",
+	"urA3ps3dZXm1/DcAAP//pmXo1pQYAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

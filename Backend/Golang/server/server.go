@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/mail"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
@@ -58,9 +59,28 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 	}
 
 	//Handle user already exists case
-	_, err = w.repository.GetUser(*receivedUser.Username)
+	_, err = w.repository.GetUser(receivedUser.Username)
 	if err == nil {
 		ctx.JSON(http.StatusConflict, defines.SimpleReturnMessage{Message: "Username already exists"})
+		return nil
+	}
+
+	//Handle empty username case
+	if receivedUser.Username == "" {
+		ctx.JSON(http.StatusBadRequest, defines.SimpleReturnMessage{Message: "Username cannot be empty"})
+		return nil
+	}
+
+	//Handle empty password case
+	if receivedUser.Password == "" {
+		ctx.JSON(http.StatusBadRequest, defines.SimpleReturnMessage{Message: "Password cannot be empty"})
+		return nil
+	}
+
+	//Handle bad mail address case
+	_, err = mail.ParseAddress(receivedUser.Email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, defines.SimpleReturnMessage{Message: "Provided email is invalid"})
 	}
 
 	//Mappping received object to application object
@@ -77,7 +97,7 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 	}
 
 	//Status OK
-	ctx.NoContent(http.StatusOK)
+	ctx.NoContent(http.StatusCreated)
 	return nil
 }
 

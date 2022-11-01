@@ -91,10 +91,10 @@ func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.A
 	}
 
 	tokenObj, err := GetTokenObjectFromRequest(input.RequestValidationInput.Request)
+	spew.Dump(tokenObj)
 	if err != nil {
 		return err
 	}
-	spew.Dump(tokenObj)
 	//TODO : clean expired tokens here ?
 
 	user, err := a.repo.GetUser(tokenObj.Username)
@@ -124,11 +124,6 @@ func (a *Authentifier) NewAccessToken(username string, password string) (*define
 		spew.Dump(err)
 		return nil, err
 	}
-
-	/*
-		bts, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		spew.Dump(string(bts))
-	*/
 
 	// Comparing the password with the hash
 	hashCompareError := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
