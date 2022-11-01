@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
+	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/deepmap/oapi-codegen/pkg/middleware"
@@ -48,8 +49,35 @@ func CreateAuthMiddleware(a auth.AuthInterface) (echo.MiddlewareFunc, error) {
 
 // CreateUser converts echo context to params.
 func (w *Handlers) CreateUser(ctx echo.Context) error {
-	ctx.String(http.StatusOK, "Hello, World!")
 
+	//Binding params
+	var receivedUser CreateUserParams
+	err := ctx.Bind(&receivedUser)
+	if err != nil {
+		return err
+	}
+
+	//Handle user already exists case
+	_, err = w.repository.GetUser(*receivedUser.Username)
+	if err == nil {
+		ctx.JSON(http.StatusConflict, defines.SimpleReturnMessage{Message: "Username already exists"})
+	}
+
+	//Mappping received object to application object
+	bytes, _ := json.Marshal(receivedUser)
+	//TODO: properly handle error
+	var userToCreate defines.User
+	json.Unmarshal(bytes, &userToCreate)
+	spew.Dump(userToCreate)
+
+	//Effictively create the user
+	err = w.repository.CreateUser(userToCreate)
+	if err != nil {
+		return err
+	}
+
+	//Status OK
+	ctx.NoContent(http.StatusOK)
 	return nil
 }
 

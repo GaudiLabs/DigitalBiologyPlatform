@@ -42,7 +42,6 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	e.Use(authMiddleWare)
-	//e.Use(middleware.BasicAuth(auth.BasicAuthValidator))
 
 	serverHandlers := server.NewHandlers(repo, auth)
 	server.RegisterHandlers(e, serverHandlers)

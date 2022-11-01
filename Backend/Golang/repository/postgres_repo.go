@@ -10,6 +10,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type PostgresRepo struct {
@@ -65,7 +66,27 @@ func NewPostgresRepo() (*PostgresRepo, error) {
 	return &outputRepo, nil
 }
 
-func (repo *PostgresRepo) CreateUser(defines.User) error {
+func (repo *PostgresRepo) CreateUser(user defines.User) error {
+	const filename = "POSTGRESQL/CreateUser.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	//spew.Dump(string(bts))
+
+	result, err := repo.dbConn.Exec(string(queryBytes), user.Login, hashedPassword, user.Email)
+	if err != nil {
+		return err
+	}
+
+	//TODO : what is this, check ?
+	_ = result
+
 	return nil
 }
 

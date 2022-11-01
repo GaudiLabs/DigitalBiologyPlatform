@@ -7,7 +7,7 @@ info:
   contact:
     email: apiteam@swagger.io
   version: 1.0.11
-#commented because casing deployment problems
+#commented because causing deployment problems
 #TODO : investigate
 #servers:
 #  - url: https://nohostnamefornow.io
@@ -42,23 +42,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/CreateUserParams'
       responses:
         default:
           description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
   /user/login:
     post:
       tags:
@@ -326,6 +313,21 @@ components:
           example: "Userpass"
       xml:
         name: user
+    CreateUserParams:
+      type: object
+      properties:
+        username:
+          type: string
+          example: theUser
+        password:
+          type: string
+          example: "Userpass"
+        email:
+          type: string
+          example: "a.b@c.d"
+      xml:
+        name: user
+ 
  
   securitySchemes:
     BearerAuth:

@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type SimpleReturnMessage struct {
+	Message string `json:"message,omitempty"`
+}
+
 type LoginToken struct {
 	ExpirationDate time.Time `json:"expiration_date,omitempty"`
 	Token          string    `json:"token,omitempty"`
@@ -20,7 +24,8 @@ type AuthToken struct {
 type User struct {
 	Id       int64  `json:"id,omitempty"`
 	Password string `json:"password,omitempty"`
-	Login    string `json:"login,omitempty"`
+	Login    string `json:"username,omitempty"`
+	Email    string `json:"email,omitempty"`
 	Tokens   []LoginToken
 }
 
