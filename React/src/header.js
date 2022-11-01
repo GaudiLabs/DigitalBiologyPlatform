@@ -5,7 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import OpenDropLogo from './logo';
 import { NavLink } from 'react-router-dom';
 import './header.scss';
-import LoggedPicto from "./graphics";
+import {LoggedPicto} from "./graphics";
 
 class HeaderTop extends React.Component {
 

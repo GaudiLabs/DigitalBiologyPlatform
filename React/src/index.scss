@@ -1,0 +1,117 @@
+body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+  }
+
+  .react-grid-item.react-grid-placeholder {
+    background-color: transparent !important;
+  }
+  
+  ol, ul {
+    padding-left: 30px;
+  }
+  
+  .board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+  }
+  
+  .status {
+    margin-bottom: 10px;
+  }
+  
+  .square {
+    background: #fff;
+    border: 1px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 34px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 34px;
+  }
+
+
+  .disparea {
+    background-color: blue;
+    position: absolute;
+    top: 10;
+  }
+  
+  .square:focus {
+    outline: none;
+  }
+  
+  .kbd-navigation .square:focus {
+    background: #ddd;
+  }
+  
+  .game {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .game-info {
+    margin-left: 20px;
+  }
+
+  .react-resizable {
+    position: relative;
+  }
+
+  .react-grid-item.custom_resize_handle > .react-resizable-handle {
+    position: absolute;
+    width: 20px !important ;
+    height: 100px !important;
+    bottom: 0;
+    right: -15px !important;
+    top: 50%;
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3C!-- Created with Inkscape (http://www.inkscape.org/) --%3E%3Csvg width='3.3687401mm' height='24.396919mm' viewBox='0 0 3.3687401 24.396919' version='1.1' id='svg9347' inkscape:version='1.2.1 (9c6d41e, 2022-07-14)' sodipodi:docname='Tab_Resize.svg' xmlns:inkscape='http://www.inkscape.org/namespaces/inkscape' xmlns:sodipodi='http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd' xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg'%3E%3Csodipodi:namedview id='namedview9349' pagecolor='%23ffffff' bordercolor='%23666666' borderopacity='1.0' inkscape:pageshadow='2' inkscape:pageopacity='0.0' inkscape:pagecheckerboard='0' inkscape:document-units='mm' showgrid='false' inkscape:zoom='1.1326109' inkscape:cx='136.85194' inkscape:cy='52.974945' inkscape:window-width='1280' inkscape:window-height='456' inkscape:window-x='38' inkscape:window-y='1220' inkscape:window-maximized='0' inkscape:current-layer='layer1' inkscape:showpageshadow='2' inkscape:deskcolor='%23d1d1d1' /%3E%3Cdefs id='defs9344' /%3E%3Cg inkscape:label='Layer 1' inkscape:groupmode='layer' id='layer1'%3E%3Cpath id='rect440740-3' style='display:inline;fill:%23f2f2f2;stroke:%232f2f2f;stroke-width:0.15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:%23000000' d='m 0.075,0.075 c 1.78318,0 3.21874,1.43556 3.21874,3.21874 v 17.80943 c 0,1.78318 -1.43556,3.21875 -3.21874,3.21875 z' sodipodi:nodetypes='csscc' /%3E%3Cpath id='path1540-6-3' style='display:inline;fill:%23000000;stroke:none;stroke-width:0.0219313' d='m 1.36227,13.13947 0.47492,-0.46852 0.47492,-0.46852 -0.0586,-0.0633 C 2.22131,12.10423 2.00756,11.89149 1.7786,11.66619 l -4e-5,-4e-5 -0.41629,-0.40964 -0.2531,-0.25523 c -0.0593,-0.10389 -0.0247,-0.14012 -0.0179,-0.16902 0.006,-0.0269 0.0383,-0.0619 0.0724,-0.0776 0.0533,-0.0245 0.071,-0.0224 0.12428,0.0144 0.10515,0.0727 1.34848,1.31053 1.37303,1.36698 0.0271,0.0625 0.0271,0.071 -0.002,0.13178 l 6.7e-4,-7e-5 c -0.0247,0.0529 -1.27726,1.29482 -1.3717,1.36011 -0.0533,0.0368 -0.071,0.0389 -0.12428,0.0144 -0.0341,-0.0157 -0.0552,-0.0424 -0.0724,-0.0777 -0.0172,-0.0353 -0.0404,-0.0855 0.0166,-0.16437' sodipodi:nodetypes='ccccsccccsccccsszc' /%3E%3C/g%3E%3C/svg%3E%0A")
+    !important;
+    background-position: right;
+    padding: 0 3px 3px 0;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    box-sizing: border-box;
+    cursor: se-resize;
+    opacity: 1;
+    cursor: col-resize !important;
+  }
+
+  .main-cont {
+    background-color: #999;
+  }
+
+  .react-grid-item > .react-resizable-handle::after {
+    content: "";
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 5px;
+    height: 5px;
+    border-right: 2px solid rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+    opacity: 0;
+ }
+
+  .btn {
+    border : 1px solid black !important;
+  }
+  
+  .logo-title {
+    color : white;
+    font-size:x-large;
+    margin-left: 30px;
+  }
+
+  label { 
+    float: left;
+    /* display: inline-block;  */
+    width: 100%; 
+    text-align: right; 
+  }

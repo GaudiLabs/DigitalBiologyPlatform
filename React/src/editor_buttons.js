@@ -1,6 +1,7 @@
 import * as React from "react"
 import './editor_buttons.scss';
 import { Range, getTrackBackground } from "react-range";
+import {ArrowLeft, ArrowRight } from "./graphics";
 
 
 function SelectSerial(props) {
@@ -22,7 +23,7 @@ function Send(props) {
 function PreviousFrame(props) {
   return (
     <button className="btn" onClick={props.onClick}>
-      Prev Frame
+      {ArrowLeft()}
     </button>
   );
 }
@@ -30,7 +31,7 @@ function PreviousFrame(props) {
 function NextFrame(props) {
   return (
     <button className="btn" onClick={props.onClick}>
-      Next Frame
+      {ArrowRight()}
     </button>
   );
 }

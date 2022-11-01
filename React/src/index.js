@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import './index.css';
+import './index.scss';
 import './bootstrap.scss';
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
 import AdaptorComponent from './adaptor';
 import { Range, getTrackBackground } from "react-range";
-import GridLayout from "react-grid-layout";
+//import GridLayout from "react-grid-layout";
 //import Preferences from './Preferences';
 import LoginForm from './login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -15,6 +15,8 @@ import HeaderTop from './header';
 import ProtocolsLister from './protocols_lister';
 import SideButtons from './side_buttons';
 import EditorButtons from './editor_buttons';
+import { Responsive, WidthProvider } from "react-grid-layout";
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
 
@@ -123,8 +125,8 @@ class Body extends React.Component {
     var n = this.state.framesAmount
 
     //send first frame
-        let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
-        this.SendSerialData(data) 
+    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
+    this.SendSerialData(data)
 
     await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
 
@@ -307,28 +309,59 @@ class Body extends React.Component {
     )
   }
 
+  layout = [
+    { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH : 6, maxH : 6, maxW : 7},
+    { i: "SideControls", x: 1, y: 0, w: 1, h: 1 },
+    { i: "Protocols", x: 1, y: 1, w: 3, h: 4 },
+  ];
   renderMain() {
     return (
       <React.Fragment>
-        <HeaderTop state={this.state} />
-        {/* <div class ="mn" > */}
-        <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
-          <div key="b" data-grid={{ x: 0, y: 0, w: 9, h: 6, minW: 2, maxW: 10, minH: 4 }} className="not_draggable">
-            <AdaptorComponent state={this.state} />
-            <EditorButtons state={this.state} />
-            {/* {this.FrameSelector()} */}
-            {this.renderDurationInput()}
-          </div>
+         <HeaderTop state={this.state} />
+      <ResponsiveGridLayout
+        layouts={{ lg: this.layout }}
+        breakpoints={{ lg: 1200}}//, sm: 768, xs: 400 }}
+        cols={{ lg: 10}}//, sm: 7, xs: 5 }}
+        rowHeight={100}
+        width={1000}
+        draggableCancel=".not_draggable"
+        compactType="horizontal"
+        maxRows={6}
+      >
+        <div key="Adaptor" className="not_draggable custom_resize_handle main_cont">
+          <AdaptorComponent state={this.state} />
+          <EditorButtons state={this.state} />
+          {this.renderDurationInput()}
+        </div>
+        <div key="SideControls">
+          <SideButtons state={this.state} />
+        </div>
+        <div key="Protocols">
+          <ProtocolsLister state={this.state} />
+        </div>
 
-          <div key="d" data-grid={{ x: 4, y: 0, w: 6, h: 4, minW: 6, maxW: 10, minH: 4 }}>
-            <SideButtons state={this.state} />
-          </div>
 
-          <div key="c" data-grid={{ x: 4, y: 5, w: 6, h: 6, minW: 6, maxW: 10, minH: 4 }}>
-            <ProtocolsLister state={this.state} />
-          </div>
-        </GridLayout>
+      </ResponsiveGridLayout>
       </React.Fragment>
+
+      // <React.Fragment>
+      //   <HeaderTop state={this.state} />
+      //   {/* <div class ="mn" > */}
+      //   <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
+      //     <div key="Adaptor" data-grid={{ x: 0, y: 0, w: 9, h: 20, minW: 2, maxW: 10, minH: 4 }} className="not_draggable">
+      //       <AdaptorComponent state={this.state} />
+      //       <EditorButtons state={this.state} />
+      //       {this.renderDurationInput()}
+      //     </div>
+
+      //     <div key="SideControls" data-grid={{ x: 4, y: 0, w: 6, h: 4, minW: 6, maxW: 10, minH: 4 }}>
+      //       <SideButtons state={this.state} />
+      //     </div>
+      //     <div key="Protocols" data-grid={{ x: 4, y: 5, w: 6, h: 6, minW: 6, maxW: 10, minH: 4 }}>
+      //       <ProtocolsLister state={this.state} />
+      //     </div>
+      //   </GridLayout>
+      // </React.Fragment>
     )
   }
 
