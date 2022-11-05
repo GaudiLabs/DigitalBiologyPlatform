@@ -333,10 +333,10 @@ class Body extends React.Component {
           <EditorButtons state={this.state} />
           {this.renderDurationInput()}
         </div>
-        <div key="SideControls">
+        <div key="SideControls" className="not_draggable" >
           <SideButtons state={this.state} />
         </div>
-        <div key="Protocols">
+        <div key="Protocols" className="not_draggable" >
           <ProtocolsLister state={this.state} />
         </div>
 

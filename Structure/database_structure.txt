@@ -75,10 +75,18 @@ Table hardware.electrode_feature {
    require_device_id int [ ref: > hardware.device.id ] 
   
 }
+
+Table users.protocol_access {
+  id int [pk, increment]
+  protocol_id int [ ref: > protocols.protocol.id ]
+  user_id int [ ref: > users.user.id ]
+  can_edit boolean
+}
  
 Table protocols.protocol {
   id int [pk, increment]
   name varchar
+  description varchar
   frame_count int
   total_duration int
   mask_frame_id int [ ref: > protocols.frame.id ]
@@ -86,6 +94,7 @@ Table protocols.protocol {
   version varchar
   fork_of int [ ref: > protocols.protocol.id ]
   device_id int [ ref: > hardware.device.id ]
+  public  boolean
 }
 
 Table protocols.frame {
@@ -131,6 +140,7 @@ Table users.user {
   id int [pk, increment]
   login varchar
   password varchar
+  email varchar
 }
 
 Table users.token {
