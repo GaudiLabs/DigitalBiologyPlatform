@@ -42,6 +42,17 @@ type Frame struct {
 	Rank       float32     `json:"rank"`
 }
 
+// FullProtocol defines model for FullProtocol.
+type FullProtocol struct {
+	AuthorList    *[]RankedAuthor `json:"author_list,omitempty"`
+	Description   *string         `json:"description,omitempty"`
+	FrameCount    float32         `json:"frame_count"`
+	Frames        []Frame         `json:"frames"`
+	Id            float32         `json:"id"`
+	Name          string          `json:"name"`
+	TotalDuration float32         `json:"total_duration"`
+}
+
 // LoginParams defines model for LoginParams.
 type LoginParams struct {
 	Password *string `json:"password,omitempty"`
@@ -64,6 +75,7 @@ type RankedAuthor struct {
 type ShortProtocol struct {
 	AuthorList    []RankedAuthor `json:"author_list"`
 	AuthorRank    float32        `json:"author_rank"`
+	Description   string         `json:"description"`
 	FrameCount    float32        `json:"frame_count"`
 	Id            float32        `json:"id"`
 	MaskFrame     []Frame        `json:"mask_frame"`
@@ -90,28 +102,25 @@ type CreateUserJSONBody = CreateUserParams
 // LoginUserJSONBody defines parameters for LoginUser.
 type LoginUserJSONBody = LoginParams
 
-// UpdateUserJSONBody defines parameters for UpdateUser.
-type UpdateUserJSONBody = User
-
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
 type CreateUserJSONRequestBody = CreateUserJSONBody
 
 // LoginUserJSONRequestBody defines body for LoginUser for application/json ContentType.
 type LoginUserJSONRequestBody = LoginUserJSONBody
 
-// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody = UpdateUserJSONBody
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get token bearer protocols list
 	// (GET /protocol/me)
 	GetSelfProtocolList(ctx echo.Context) error
+	// Get a particular protocol by its ID
+	// (GET /protocol/{protocolID})
+	GetProtocol(ctx echo.Context, protocolID int) error
 	// Serve a json file representing this swaggerfile
 	// (GET /swagger.json)
 	ServeSwaggerFile(ctx echo.Context) error
 	// Create user
-	// (PUT /user)
+	// (POST /user)
 	CreateUser(ctx echo.Context) error
 	// Logs user into the system
 	// (POST /user/login)
@@ -119,15 +128,6 @@ type ServerInterface interface {
 	// Get user infos of token bearer
 	// (GET /user/me)
 	GetSelfUser(ctx echo.Context) error
-	// Delete user
-	// (DELETE /user/{username})
-	DeleteUser(ctx echo.Context, username string) error
-	// Get user by user name
-	// (GET /user/{username})
-	GetUserByName(ctx echo.Context, username string) error
-	// Update user
-	// (PUT /user/{username})
-	UpdateUser(ctx echo.Context, username string) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -143,6 +143,24 @@ func (w *ServerInterfaceWrapper) GetSelfProtocolList(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetSelfProtocolList(ctx)
+	return err
+}
+
+// GetProtocol converts echo context to params.
+func (w *ServerInterfaceWrapper) GetProtocol(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "protocolID" -------------
+	var protocolID int
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "protocolID", runtime.ParamLocationPath, ctx.Param("protocolID"), &protocolID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter protocolID: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetProtocol(ctx, protocolID)
 	return err
 }
 
@@ -184,56 +202,6 @@ func (w *ServerInterfaceWrapper) GetSelfUser(ctx echo.Context) error {
 	return err
 }
 
-// DeleteUser converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteUser(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "username" -------------
-	var username string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "username", runtime.ParamLocationPath, ctx.Param("username"), &username)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter username: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteUser(ctx, username)
-	return err
-}
-
-// GetUserByName converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUserByName(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "username" -------------
-	var username string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "username", runtime.ParamLocationPath, ctx.Param("username"), &username)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter username: %s", err))
-	}
-
-	ctx.Set(BearerAuthScopes, []string{""})
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUserByName(ctx, username)
-	return err
-}
-
-// UpdateUser converts echo context to params.
-func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "username" -------------
-	var username string
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "username", runtime.ParamLocationPath, ctx.Param("username"), &username)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter username: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UpdateUser(ctx, username)
-	return err
-}
-
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -263,45 +231,41 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/protocol/me", wrapper.GetSelfProtocolList)
+	router.GET(baseURL+"/protocol/:protocolID", wrapper.GetProtocol)
 	router.GET(baseURL+"/swagger.json", wrapper.ServeSwaggerFile)
-	router.PUT(baseURL+"/user", wrapper.CreateUser)
+	router.POST(baseURL+"/user", wrapper.CreateUser)
 	router.POST(baseURL+"/user/login", wrapper.LoginUser)
 	router.GET(baseURL+"/user/me", wrapper.GetSelfUser)
-	router.DELETE(baseURL+"/user/:username", wrapper.DeleteUser)
-	router.GET(baseURL+"/user/:username", wrapper.GetUserByName)
-	router.PUT(baseURL+"/user/:username", wrapper.UpdateUser)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"urA3ps3dZXm1/DcAAP//pmXo1pQYAAA=",
+	"H4sIAAAAAAAC/7xY3W7bOBN9FYLfd6ladpJ2F7pq07RFgGAbNO1id4sgoKWRzUYiVXKY1C307gv+6M+S",
+	"Y3fb9M4mNcOZM+cMR/pGU1lWUoBATZNvVIGupNDg/pyy7B18NqDxlVJS2aUMdKp4hVwKmtCwS5Yy2xCu",
+	"yZJlWbEhuVQlQ8giwgyuQSBPmbUgXPgt91uTkmvNxYpIRbi4YwXPaB3RD8JaScW/Qrbj3BcPuq0UaBBI",
+	"lgbJvZJiRes6ojpdQ8lcXi8VMIQPGtQlU6x0a5WSFSjkPnMoGS/cjy+srAqgCWWz5fN0ltGI4qayCxoV",
+	"t74jWjGt76XKhgbWv92ZsjAalGAlDC1w7YIaG9QRVfDZcAUZTT521r2joxDzdWssl58gRRrRL6VLxZ/n",
+	"jJ3HVwWkqGQGE+k3WzfcJTWK/44VBno7wpTL4LYfqH8sGvobRVhH9LUKYAzjyIxivuSjk3pO3aMcwRfy",
+	"/wpymtD/xR2x41D7uEu5boNgSrGN/a+YuN2fUhtSMBjEMZmaKYpLJVGmshhn6Kl+U3CNB2fxjolbyF44",
+	"y6lEBlqZKF5uwb5JpRE4CazbPxxUX7uJOAbc6dw3vB/FhRJZcfNAzbdKwS3rgw5CzFEAVNNhmiPnU5W6",
+	"kCsudnWEX6HxA4Xr4nwvb0FMKPdLxX2KNxnDrbOP5oujJ/OTJ0fH7xe/J0dPk5Pj2dPF4p+p6LHx35n/",
+	"9fXpO/jtGRYv3/+dZed/3n94W52e/0gmAybv0MYkVQ7TahBo8DNV8qu1VPhr1Rl87sjgx9W7Q3Ul07c3",
+	"edNmf0zYj6LgXoDRAPghZHt0PcRvquROfYdc+J/kWjx367NUllMa4cNusJhH1A8iNKFc4LOTzogLhJWv",
+	"hFPW4e21p/aJUjxak3HTURCGvggC2GqJzfbBuQzlNkpnix2d/3Ed7UAHqVEcN1fWeRhYgSlQVnv2nzvV",
+	"Gi3dcofGGrGitfVhJ0f7aCoFshR7TKCs4gisfK7v2WoFasblSJ30CoCsOK7NkmQyNSUI9FMoQ2IP0Ukc",
+	"+31LofgNMxm/YEsdn/EVR1acclnI1eayYGiJYyMEVeq3+RWoO542sf4HNxwdEc5OL2lE70BpH/BiNp8t",
+	"FjYRWYFgFacJPZ7NZ8dulMS1QzFugI89r1aA4xFcARolCCNWo0TmpK0WSd14nZHlhuCaa2I8FS11HDrn",
+	"GU3oG8ArKPKGDBde6YPXjwxyZgps6gO+4bGqKsLgH3/Svst4fu1j35jSjgPDvLRJU9A6NwVpAx7QjSYf",
+	"h0T7eF1fR1SbsmRq4zMjTuPE866HTOhnyFa6T3B6bQ/oYP/W/Do/q/cXoPUyAfFlt1fZwQYQlHYZDJ39",
+	"YUpQPCXnZ7aUuIbWK0FJ7PlWKzRxJGl6dkK7OGlfuqgMRL2ibPdAi9ejVnowcz9akRmpmEKemoJ1Rbas",
+	"56iJg2RHoZuW0iQV6jusnm0BcOWffM0L2FbH0Xw+JsXuxNrInV/CiD2c5LwAoiC8Mdt3cafYEGDuj22y",
+	"CKshCdPco1JPsNO/YhM2Lf7uBTzwBjSeymzz0wgwesOfIMHL0KZshKS9DocsrncT9buBD5AEQBpQ3d8O",
+	"0biw130f1yFybhp4ROD670ATmDUffJjLNrS5O+7LbJtC3Psg8TCUR/PFz406zEiHqT0KsYe7yt6IJ15Q",
+	"U+e0gcfbn8Sc3WK/3fij1pAcF3LlL0rCBUrXgfVGI5QPUGVwO0/eri1Rxn3jp92oh/fXXw+xtTwZi9WG",
+	"TYREkksjsu9v/KFOudTutuzd9RPVqtul7TDeNtBowpbSeL+6u139LB7tNevm5NHFfIh509Zb42ahvq7/",
+	"DQAA//88kHBtHxYAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

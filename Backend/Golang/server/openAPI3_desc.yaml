@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Digital Biology Platform API - OpenAPI 3.0
+  title: DBP
   description: |-
     See github documentation at https://github.com/GaudiLabs/DigitalBiologyPlatform
   termsOfService: https://github.com/GaudiLabs/DigitalBiologyPlatform
@@ -18,6 +18,8 @@ tags:
     description: Operations about users
   - name: protocol
     description: Operations about protocols
+  - name: swagger
+    description: Operations about swagger
 paths:
   /swagger.json:
     get:
@@ -30,7 +32,7 @@ paths:
         '200':
           description: successful operation
   /user:
-    put:
+    post:
       tags:
         - user
       summary: Create user
@@ -93,82 +95,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '400':
           $ref: '#/components/responses/BadRequestError'
-  /user/{username}:
-    get:
-      security:
-        - BearerAuth: []
-      tags:
-        - user
-      summary: Get user by user name
-      description: ''
-      operationId: getUserByName
-      parameters:
-        - name: username
-          in: path
-          description: 'The name that needs to be fetched. Use user1 for testing. '
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-    put:
-      tags:
-        - user
-      summary: Update user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Update an existent user in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        default:
-          description: successful operation
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
   /protocol/me:
     get:
       security:
@@ -185,6 +111,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProtocolsList'
+  /protocol/{protocolID}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - protocol
+      summary: Get a particular protocol by its ID
+      description: return a protocol
+      parameters:
+        - in: path
+          name: protocolID
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the protocol to get
+      operationId: getProtocol
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullProtocol'
  
 components:
   responses:
@@ -195,6 +144,35 @@ components:
 
 
   schemas:
+
+    FullProtocol:
+      type : object
+      required: 
+        - "id"
+        - "name"
+        - "frames"
+        - "authors"
+        - "frame_count"
+        - "total_duration"
+      properties: 
+        id: 
+          type: "number"
+        name: 
+          type: "string"
+        description: 
+          type: "string"
+        frames: 
+          type: "array"
+          items: 
+            $ref : '#/components/schemas/Frame'
+        author_list: 
+          type: "array"
+          items: 
+            $ref: '#/components/schemas/RankedAuthor'
+        frame_count: 
+          type: "number"
+        total_duration: 
+          type: "number"
 
     Electrode:
       type: object
@@ -244,10 +222,13 @@ components:
         - "author_rank"
         - "frame_count"
         - "total_duration"
+        - "description"
       properties: 
         id: 
           type: "number"
         name: 
+          type: "string"
+        description: 
           type: "string"
         mask_frame: 
           type: "array"
@@ -333,7 +314,6 @@ components:
           example: "a.b@c.d"
       xml:
         name: user
- 
  
   securitySchemes:
     BearerAuth:

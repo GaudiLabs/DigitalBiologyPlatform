@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -204,6 +205,27 @@ func (w *Handlers) GetUserByName(ctx echo.Context, username string) error {
 func (w *Handlers) UpdateUser(ctx echo.Context, username string) error {
 	ctx.String(http.StatusOK, "Hello, World!")
 
+	return nil
+}
+
+func (w *Handlers) GetProtocol(ctx echo.Context, protocolID int) error {
+
+	protocol, err := w.repository.GetProtocol(protocolID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})
+		}
+		return err
+	}
+	spew.Dump(protocol)
+
+	//Mapping returned Object
+	var returnedProtocol FullProtocol
+	bytes, _ := json.Marshal(protocol)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocol)
+
+	ctx.JSON(http.StatusOK, returnedProtocol)
 	return nil
 }
 

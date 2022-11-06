@@ -56,6 +56,18 @@ type ShortProtocol struct {
 	Id            int            `json:"id"`
 	MaskFrame     []Frame        `json:"mask_frame"`
 	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	TotalDuration int            `json:"total_duration"`
+}
+
+// ShortProtocol defines model for ShortProtocol.
+type FullProtocol struct {
+	AuthorList    []RankedAuthor `json:"author_list"`
+	FrameCount    int            `json:"frame_count"`
+	Id            int            `json:"id"`
+	Frames        []Frame        `json:"frames"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
 	TotalDuration int            `json:"total_duration"`
 }
 
@@ -76,5 +88,9 @@ func (a *User) Scan(value interface{}) error {
 }
 
 func (sp *ShortProtocol) Scan(value interface{}) error {
+	return bytesUnmarshall(&sp, value)
+}
+
+func (sp *FullProtocol) Scan(value interface{}) error {
 	return bytesUnmarshall(&sp, value)
 }

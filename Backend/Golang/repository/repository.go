@@ -7,4 +7,5 @@ type RepositoryInterface interface {
 	StoreToken(username string, loginToken defines.LoginToken) error
 	GetUser(username string) (defines.User, error)
 	GetUserProtocols(username string) ([]defines.ShortProtocol, error)
+	GetProtocol(protocolID int) (defines.FullProtocol, error)
 }

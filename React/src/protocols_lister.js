@@ -98,9 +98,7 @@ componentWillUnmount() {
               <div class="protocol_title">
                 {protocol.name}
               </div>
-
                 {protocol.description}
-                LoremIpsum dolores sin amet
             </div>
             <div class="protocol_meta">
               Frames : {protocol.frame_count}<br/>
@@ -112,17 +110,20 @@ componentWillUnmount() {
   }
 
   renderProtocolsList(){
+    console.log("PROTOCOL LIST RENDER")
+    console.log(this.state)
 
     let protocolsList=[];
-    console.log("here")
-    console.log(this.state)
-    if ( this.state.protocols == undefined ) {
+    if ( this.state.protocols === undefined ) {
       return 
     }
     if (this.state.protocols === null || Object.keys(this.state.protocols).length == 0 )
     {
     return (
-        "You don't have any protocol yet"
+      <React.Fragment>
+       <br/>
+        You don't have any protocol yet
+      </React.Fragment>
     )
     }
     for (var i = 0; i < Object.keys(this.state.protocols).length; i++) {

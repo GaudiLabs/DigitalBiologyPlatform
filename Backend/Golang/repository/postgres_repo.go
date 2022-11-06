@@ -130,6 +130,28 @@ func (repo *PostgresRepo) GetUser(username string) (defines.User, error) {
 	return returnedUser, nil
 }
 
+// GetUser returns the infos about the user passed as parameter as well as its valid access tokens
+func (repo *PostgresRepo) GetProtocol(protocolID int) (defines.FullProtocol, error) {
+
+	const filename = "POSTGRESQL/GetProtocolFull.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	var returnedProtocol defines.FullProtocol
+	rows := repo.dbConn.QueryRow(string(queryBytes), protocolID)
+
+	//TODO: check SQL error ?
+	err = rows.Scan(&returnedProtocol)
+	if err != nil {
+		return returnedProtocol, err
+	}
+	spew.Dump(returnedProtocol)
+
+	return returnedProtocol, nil
+}
+
 // GetUserProtocols returns the infos about the user passed as parameter as well as its valid access tokens
 func (repo *PostgresRepo) GetUserProtocols(username string) ([]defines.ShortProtocol, error) {
 
