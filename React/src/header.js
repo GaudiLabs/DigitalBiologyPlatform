@@ -20,7 +20,7 @@ class HeaderTop extends React.Component {
     if (state.loggedIn) {
         return (
           <Nav>
-              <div class="username_container">
+              <div className="username_container">
                 <span> {state.username} </span>
                  {LoggedPicto()}
               </div>
@@ -31,7 +31,7 @@ class HeaderTop extends React.Component {
     return (
             <Nav>
               <NavLink to="/login" exact >
-	            <div class="login_link">Log In </div>
+	            <div className="login_link">Log In </div>
               </NavLink>
             </Nav>
     )

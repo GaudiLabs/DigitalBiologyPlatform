@@ -18,6 +18,9 @@ class ProtocolsLister extends React.Component {
 
 
  async componentDidMount() {
+  if (!this.props.state.loggedIn){
+    return
+  }
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
@@ -94,13 +97,13 @@ componentWillUnmount() {
     }
     return (
            <li onClick={this.props.state.loadProtocol}>
-            <div class="protocol_text">
-              <div class="protocol_title">
+            <div className="protocol_text">
+              <div className="protocol_title">
                 {protocol.name}
               </div>
                 {protocol.description}
             </div>
-            <div class="protocol_meta">
+            <div className="protocol_meta">
               Frames : {protocol.frame_count}<br/>
               Duration : {protocol.total_duration} ms <br/>
               By : {authorsList} <br/>

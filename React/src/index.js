@@ -25,28 +25,18 @@ class Body extends React.Component {
     super(props);
 
 
-    let new_frames = [];
-
-    const frame = {
-      duration: 0,
-      electrodes: []
-    };
-
-    var framesAmountSet = 20;
-
-    for (var i = 0; i <= framesAmountSet; i++) {
-
-      var new_frame = Object.create(frame);
-      new_frame.duration = 1000;
-      new_frame.electrodes = Array(16).fill(Array(8).fill(null));
-      new_frames.push(new_frame)
-    }
-
-    ////console.log(new_frames)
-
     this.state = {
       currently_edited_frame: [0],
-      frames: new_frames,
+      frames: [{
+        duration: 0,
+        electrodes: Array(16).fill(Array(8).fill(null))
+      }
+      ,
+    {
+        duration: 0,
+        electrodes: Array(16).fill(Array(8).fill(null))
+      }
+    ],
       //squares: Array(16).fill(Array(8).fill("o")),
       //electrodes: Array(128).fill(null),
       instanciatedHooks: false,
@@ -60,7 +50,7 @@ class Body extends React.Component {
       serialSendClick: this.serialSendClick.bind(this),
       goToNextFrame: this.goToNextFrame.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
-      framesAmount: framesAmountSet,
+      framesAmount: 2,
       username: "oh",
       loggedIn: false,
       accessToken: null,
@@ -77,6 +67,35 @@ class Body extends React.Component {
       this.state.username = ausername
       this.state.accessToken = JSON.parse(atoken)
     }
+  }
+
+  async componentDidMount() {
+    console.log("COMPONENT DID MOUNT : Main")
+    this.allocCleanFrames(20)
+
+  }
+
+  allocCleanFrames(framesAmount) {
+    let new_frames = [];
+
+    const frame = {
+      duration: 0,
+      electrodes: []
+    };
+
+    for (var i = 0; i < framesAmount; i++) {
+
+      var new_frame = Object.create(frame);
+      new_frame.duration = 1000;
+      new_frame.electrodes = Array(16).fill(Array(8).fill(null));
+      new_frames.push(new_frame)
+    }
+
+    console.log("HERE")
+    this.setState({
+      frames: new_frames,
+      framesAmount: framesAmount
+    })
   }
 
   goToPreviousFrame() {
@@ -259,34 +278,50 @@ class Body extends React.Component {
 
   handleFrameAmountChange(event) {
 
+    //Parse new amount, default to 0 if NaN
+    var newAmount = (parseInt(event.target.value) || 0 )
+
+    if (newAmount == 0) {
+      this.setState({
+        currently_edited_frame: [0],
+        framesAmount: newAmount,
+      });
+      return
+    }
+
     const frame = {
       duration: 0,
       electrodes: []
     };
 
+    //copy frames
     var newFrames = this.state.frames.map(function (arr) {
-      //return arr.slice();
       return { ...arr }
     });
 
+
+    console.log("NEWAMOUNT:")
+    console.log(newAmount)
+
     var framesAmountSet = 0;
-    if (this.state.framesAmount < event.target.value) {
-      framesAmountSet = event.target.value - this.state.framesAmount
+    if (this.state.framesAmount < newAmount) {
+      framesAmountSet = newAmount - this.state.framesAmount
 
-      //console.log("FRAME AMOUNT TO ADD:")
-      //console.log(framesAmountSet)
+      console.log("FRAME AMOUNT TO ADD:")
+      console.log(framesAmountSet)
 
-      for (var i = 0; i <= framesAmountSet; i++) {
+      //pushing new frames
+      for (var i = 0; i < framesAmountSet; i++) {
         var new_frame = Object.create(frame);
         new_frame.duration = 1000;
         new_frame.electrodes = Array(16).fill(Array(8).fill(null));
         newFrames.push(new_frame)
       }
+    } else {
+    newFrames = newFrames.slice(0, newAmount)
     }
-    //TODO: handle case where new amount of frames is lower
-
-    //console.log("NEW FRAMES:")
-    //console.log(newFrames)
+    console.log("SLICE:")
+    console.log(newFrames)
     this.setState({
       currently_edited_frame: [0],
       frames: newFrames,

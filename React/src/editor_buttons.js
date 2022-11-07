@@ -51,6 +51,13 @@ function Enlarge(props) {
     </button>
   );
 }
+function Save(props) {
+  return (
+    <button className="btn" onClick={props.onClick}>
+      Save
+    </button>
+  );
+}
 
 
 class EditorButtons extends React.Component {
@@ -103,7 +110,7 @@ class EditorButtons extends React.Component {
             values={this.props.state.currently_edited_frame}
             step={1}
             min={0}
-            max={this.props.state.framesAmount}
+            max={this.props.state.framesAmount - 1}
             onChange={(value) => {
               //console.log("ici")
               //console.log(value)
@@ -166,6 +173,7 @@ class EditorButtons extends React.Component {
           <SelectSerial onClick={() => this.SelectSerialClick()} />
           <Settings onClick={() => this.SelectSerialClick()} />
           <Enlarge onClick={() => this.SelectSerialClick()} />
+          <Save onClick={() => this.SelectSerialClick()} />
         </React.Fragment>
   )
   }
