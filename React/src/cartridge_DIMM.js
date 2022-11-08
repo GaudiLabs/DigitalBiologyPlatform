@@ -1481,7 +1481,7 @@ class CartridgeComponent extends React.Component {
         if (this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[i][j] == null) {
             return ("#efd94c")
         } else {
-            return ("#00F")
+            return ("#275599")
         }
     }
 

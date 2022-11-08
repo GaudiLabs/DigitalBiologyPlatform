@@ -310,6 +310,7 @@ class Body extends React.Component {
       console.log("FRAME AMOUNT TO ADD:")
       console.log(framesAmountSet)
 
+
       //pushing new frames
       for (var i = 0; i < framesAmountSet; i++) {
         var new_frame = Object.create(frame);

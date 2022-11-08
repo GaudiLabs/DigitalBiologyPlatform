@@ -39,6 +39,7 @@ WITH frame AS (
 			  , p.name
 		      , p.frame_count
 		      , p.total_duration
+			  , p.description
 		      , authors.login as author
 		      , authors_list.list as authors_list
 		      , authors.rank as author_rank
@@ -51,7 +52,7 @@ WITH frame AS (
 		JOIN authors ON authors.protocol_id = p.id
 		JOIN authors_list ON authors_list.protocol_id = p.id
 		WHERE authors.login = $1
-		GROUP BY p.id, authors_list.list, authors.login, authors.rank
+		GROUP BY p.id, authors_list.list, authors.login, authors.rank, p.description
 )
 SELECT
 	jsonb_build_object(
@@ -61,7 +62,8 @@ SELECT
 	'total_duration', total_duration,
 	'mask_frame', mask_frame,
 	'author_list', protocol.authors_list,
-	'author_rank', protocol.author_rank
+	'author_rank', protocol.author_rank,
+	'description', protocol.description
 	) AS protocols
 FROM protocol
-GROUP BY protocol.protocol_id, name, frame_count, total_duration, mask_frame, protocol.authors_list, protocol.author_rank
+GROUP BY protocol.protocol_id, name, frame_count, total_duration, mask_frame, protocol.authors_list, protocol.author_rank, protocol.description
