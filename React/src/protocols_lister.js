@@ -120,7 +120,7 @@ componentWillUnmount() {
     if ( this.state.protocols === undefined ) {
       return 
     }
-    if (this.state.protocols === null || Object.keys(this.state.protocols).length == 0 )
+    if (this.state.protocols === null || Object.keys(this.state.protocols).length === 0 )
     {
     return (
       <React.Fragment>

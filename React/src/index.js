@@ -6,7 +6,6 @@ import './bootstrap.scss';
 import '../node_modules/react-grid-layout/css/styles.css'
 import '../node_modules/react-resizable/css/styles.css'
 import AdaptorComponent from './adaptor';
-import { Range, getTrackBackground } from "react-range";
 //import GridLayout from "react-grid-layout";
 //import Preferences from './Preferences';
 import LoginForm from './login';
@@ -99,7 +98,7 @@ class Body extends React.Component {
   }
 
   goToPreviousFrame() {
-    if (this.state.currently_edited_frame[0] != 0) {
+    if (this.state.currently_edited_frame[0] !== 0) {
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] - 1],
       })
@@ -107,7 +106,7 @@ class Body extends React.Component {
   }
 
   goToNextFrame() {
-    if (this.state.currently_edited_frame[0] != this.state.framesAmount) {
+    if (this.state.currently_edited_frame[0] !== this.state.framesAmount) {
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
       })
@@ -281,7 +280,7 @@ class Body extends React.Component {
     //Parse new amount, default to 0 if NaN
     var newAmount = (parseInt(event.target.value) || 0 )
 
-    if (newAmount == 0) {
+    if (newAmount === 0) {
       this.setState({
         currently_edited_frame: [0],
         framesAmount: newAmount,
