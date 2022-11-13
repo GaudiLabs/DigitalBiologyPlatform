@@ -96,7 +96,7 @@ componentWillUnmount() {
       authorsList += protocol.author_list[i].author + ' '
     }
     return (
-           <li onClick={this.props.state.loadProtocol}>
+           <li onClick={() => this.props.state.loadProtocol(protocol.id)}>
             <div className="protocol_text">
               <div className="protocol_title">
                 {protocol.name}

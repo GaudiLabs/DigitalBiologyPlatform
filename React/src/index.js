@@ -15,6 +15,7 @@ import ProtocolsLister from './protocols_lister';
 import SideButtons from './side_buttons';
 import EditorButtons from './editor_buttons';
 import { Responsive, WidthProvider } from "react-grid-layout";
+import { GenerateAuthHeader } from "./utils";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
@@ -30,12 +31,14 @@ class Body extends React.Component {
         duration: 0,
         electrodes: Array(16).fill(Array(8).fill(null))
       }
-      ,
-    {
+        ,
+      {
         duration: 0,
         electrodes: Array(16).fill(Array(8).fill(null))
       }
-    ],
+      ],
+      protocolName : "Protcol Name",
+      protocolDescription : "Protocol desc",
       //squares: Array(16).fill(Array(8).fill("o")),
       //electrodes: Array(128).fill(null),
       instanciatedHooks: false,
@@ -198,9 +201,129 @@ class Body extends React.Component {
     })
   }
 
-  loadProtocol(protocol_id) {
+  handleloadProtocolErrors(response) {
+    console.log("HANDLE LOAD PROTOCOL ERROR TRIGGER")
+    console.log(response)
+    if (response.ok) {
+      return false
+    }
+    //401 Unauthorized
+    if (response.status === 401) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Invalid Authentication, try re-loging in ?",
+        })
+    } else {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unexpected error happened",
+        })
+    }
+    return true
+  }
+
+
+  async retreiveProtocol(protocolID) {
+
+    let requestResp
+    const route = "/protocol/" + protocolID
+    const api_url = process.env.REACT_APP_API_URL
+
+    try {
+      requestResp = await fetch(api_url + route, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + GenerateAuthHeader(this.state.username, this.state.accessToken)
+        },
+      })
+    }
+    catch (error) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleloadProtocolErrors(requestResp)) {
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp.json()
+    }
+  }
+
+  loadBackendProtocolToState(backendProtocol) {
+//Parse new amount, default to 0 if NaN
+var newAmount = (parseInt(backendProtocol.frame_count) || 0)
+
+if (newAmount === 0) {
+  this.setState({
+    currently_edited_frame: [0],
+    framesAmount: newAmount,
+  });
+  return
+}
+
+const frame = {
+  duration: 0,
+  electrodes: []
+};
+
+var newFrames = Array()
+
+
+console.log("NEWAMOUNT:")
+console.log(newAmount)
+
+  //pushing new frames
+  for (var i = 0; i < newAmount; i++) {
+    var new_frame = Object.create(frame);
+    new_frame.duration = backendProtocol.frames[i].duration;
+    new_frame.electrodes = Array(16);
+    for (var k = 0; k < 16; k++){
+      new_frame.electrodes[k] = Array(8).fill(null)
+    }
+    //populating with electrodes
+    for (var j = 0; j < backendProtocol.frame_count; j++){
+      var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
+      var y = Math.floor(electrode_id / 8);
+      var x = electrode_id % 8;
+      new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value 
+    }
+    newFrames.push(new_frame)
+  }
+    this.setState(
+      {
+         currently_edited_frame : [0],
+         frames : newFrames,
+         framesAmount : backendProtocol.frame_count,
+         protocolName : backendProtocol.name,
+         protocolDescription : backendProtocol.description,
+      }
+    )
+
+  }
+
+  async loadProtocol(protocol_id) {
     console.log("LOAD PROTOCOL CALL")
     console.log(protocol_id)
+    let BackendProtocol = await this.retreiveProtocol(protocol_id)
+    console.log(BackendProtocol)
+
+    this.loadBackendProtocolToState(BackendProtocol)
+    /*
+    this.setState(
+      {
+        protocols : BackendProtocol
+      }
+    )
+    */
   }
 
   bit_set(num, bit) {
@@ -275,10 +398,27 @@ class Body extends React.Component {
     });
   }
 
+handleNameChange(event) {
+  this.setState(
+    {
+      protocolName : event.target.value
+    }
+  )
+  }
+
+handleDescriptionChange(event) {
+  this.setState(
+    {
+      protocolDescription : event.target.value
+    }
+  )
+  }
+
+
   handleFrameAmountChange(event) {
 
     //Parse new amount, default to 0 if NaN
-    var newAmount = (parseInt(event.target.value) || 0 )
+    var newAmount = (parseInt(event.target.value) || 0)
 
     if (newAmount === 0) {
       this.setState({
@@ -318,7 +458,7 @@ class Body extends React.Component {
         newFrames.push(new_frame)
       }
     } else {
-    newFrames = newFrames.slice(0, newAmount)
+      newFrames = newFrames.slice(0, newAmount)
     }
     console.log("SLICE:")
     console.log(newFrames)
@@ -344,39 +484,55 @@ class Body extends React.Component {
     )
   }
 
+  renderMetadataInput() {
+    return (
+      <form >
+        <label>
+          Protocol name:
+          <input type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
+        </label>
+        <label>
+          Protocol description:
+          <input type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
+        </label>
+      </form>
+    )
+  }
+
   layout = [
-    { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH : 6, maxH : 6, maxW : 7},
+    { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
     { i: "SideControls", x: 1, y: 0, w: 2, h: 1 },
     { i: "Protocols", x: 1, y: 1, w: 3, h: 4 },
   ];
   renderMain() {
     return (
       <React.Fragment>
-         <HeaderTop state={this.state} />
-      <ResponsiveGridLayout
-        layouts={{ lg: this.layout }}
-        breakpoints={{ lg: 1200}}//, sm: 768, xs: 400 }}
-        cols={{ lg: 10}}//, sm: 7, xs: 5 }}
-        rowHeight={100}
-        width={1000}
-        draggableCancel=".not_draggable"
-        compactType="horizontal"
-        maxRows={6}
-      >
-        <div key="Adaptor" className="not_draggable custom_resize_handle main_cont">
-          <AdaptorComponent state={this.state} />
-          <EditorButtons state={this.state} />
-          {this.renderDurationInput()}
-        </div>
-        <div key="SideControls" className="not_draggable" >
-          <SideButtons state={this.state} />
-        </div>
-        <div key="Protocols" className="not_draggable" >
-          <ProtocolsLister state={this.state} />
-        </div>
+        <HeaderTop state={this.state} />
+        <ResponsiveGridLayout
+          layouts={{ lg: this.layout }}
+          breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
+          cols={{ lg: 10 }}//, sm: 7, xs: 5 }}
+          rowHeight={100}
+          width={1000}
+          draggableCancel=".not_draggable"
+          compactType="horizontal"
+          maxRows={6}
+        >
+          <div key="Adaptor" className="not_draggable custom_resize_handle main_cont">
+            <AdaptorComponent state={this.state} />
+            <EditorButtons state={this.state} />
+            {this.renderDurationInput()}
+            {this.renderMetadataInput()}
+          </div>
+          <div key="SideControls" className="not_draggable" >
+            <SideButtons state={this.state} />
+          </div>
+          <div key="Protocols" className="not_draggable" >
+            <ProtocolsLister state={this.state} />
+          </div>
 
 
-      </ResponsiveGridLayout>
+        </ResponsiveGridLayout>
       </React.Fragment>
 
       // <React.Fragment>

@@ -617,7 +617,7 @@ class AdaptorComponent extends React.Component {
     render() { 
         return(
     <svg
-    viewBox="0 0 100.149 74.773"
+    viewBox="0 0 101.149 74.773"
     xmlns="http://www.w3.org/2000/svg"
     >
     {this.renderAdaptorBoard()}
