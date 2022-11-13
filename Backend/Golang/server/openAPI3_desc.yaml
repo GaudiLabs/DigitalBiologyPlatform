@@ -154,8 +154,11 @@ components:
         - "authors"
         - "frame_count"
         - "total_duration"
+        - "device_id"
       properties: 
         id: 
+          type: "number"
+        device_id:
           type: "number"
         name: 
           type: "string"
@@ -223,8 +226,11 @@ components:
         - "frame_count"
         - "total_duration"
         - "description"
+        - "device_id"
       properties: 
         id: 
+          type: "number"
+        device_id:
           type: "number"
         name: 
           type: "string"

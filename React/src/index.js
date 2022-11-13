@@ -346,7 +346,7 @@ class Body extends React.Component {
 
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH : 6, maxH : 6, maxW : 7},
-    { i: "SideControls", x: 1, y: 0, w: 1, h: 1 },
+    { i: "SideControls", x: 1, y: 0, w: 2, h: 1 },
     { i: "Protocols", x: 1, y: 1, w: 3, h: 4 },
   ];
   renderMain() {

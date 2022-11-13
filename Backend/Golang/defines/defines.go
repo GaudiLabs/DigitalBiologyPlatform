@@ -58,6 +58,7 @@ type ShortProtocol struct {
 	Name          string         `json:"name"`
 	Description   string         `json:"description"`
 	TotalDuration int            `json:"total_duration"`
+	DeviceID      int            `json:"device_id"`
 }
 
 // ShortProtocol defines model for ShortProtocol.
@@ -69,6 +70,7 @@ type FullProtocol struct {
 	Name          string         `json:"name"`
 	Description   string         `json:"description"`
 	TotalDuration int            `json:"total_duration"`
+	DeviceID      int            `json:"device_id"`
 }
 
 // bytesUnmarshall is used to make objets implement the Scan interface to decode json from database into proper objects.
