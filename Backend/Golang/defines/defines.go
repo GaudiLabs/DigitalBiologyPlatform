@@ -71,6 +71,7 @@ type FullProtocol struct {
 	Description   string         `json:"description"`
 	TotalDuration int            `json:"total_duration"`
 	DeviceID      int            `json:"device_id"`
+	MaskFrame     Frame          `json:"mask_frame"`
 }
 
 // bytesUnmarshall is used to make objets implement the Scan interface to decode json from database into proper objects.

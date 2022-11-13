@@ -134,6 +134,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullProtocol'
+  /protocol/add:
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - protocol
+      summary: Upload a protocol
+      description: Upload a protocol to the server
+      requestBody:
+        description: Protocol description in json
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadProtocolParams'
+      operationId: uploadProtocol
+      responses:
+        default:
+          description: successful operation
+          #content:
+            #application/json:
+              # schema:
+              #   $ref: '#/components/schemas/FullProtocol'
+ 
  
 components:
   responses:
@@ -144,6 +168,28 @@ components:
 
 
   schemas:
+    UploadProtocolParams:
+      type : object
+      required: 
+        - "name"
+        - "frames"
+        - "author_list"
+        - "device_id"
+      properties: 
+        device_id:
+          type: "number"
+        name: 
+          type: "string"
+        description: 
+          type: "string"
+        frames: 
+          type: "array"
+          items: 
+            $ref : '#/components/schemas/Frame'
+        author_list: 
+          type: "array"
+          items: 
+            $ref: '#/components/schemas/RankedAuthor'
 
     FullProtocol:
       type : object

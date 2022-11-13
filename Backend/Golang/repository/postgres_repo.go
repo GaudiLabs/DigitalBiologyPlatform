@@ -90,6 +90,37 @@ func (repo *PostgresRepo) CreateUser(user defines.User) error {
 	return nil
 }
 
+func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol) (int, error) {
+	const filename = "POSTGRESQL/CreateProtocol.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	// THIS HAS TO BE A TRANSACTION
+	//Store mask frame, keep mask_frame_id
+	//Store enriched protocol with link to mask frame, keep protocol_id
+	//Create frames linked to protocol_id, keep list of frames_id
+	//For each frames create ascociated electrodes linked with frame_id
+
+	dbTransaction, err := repo.dbConn.Begin()
+	if err != nil {
+		return -1, err
+	}
+	defer dbTransaction.Rollback()
+
+	result, err := repo.dbConn.Exec(string(queryBytes), protocol)
+	if err != nil {
+		return -1, err
+	}
+
+	//TODO : what is this, check ?
+	//TODO : this ID needs to be returned
+	_ = result
+
+	return -1, nil
+}
+
 func (repo *PostgresRepo) StoreToken(username string, loginToken defines.LoginToken) error {
 	const filename = "POSTGRESQL/StoreToken.sql"
 	queryBytes, err := embeddedSQL.ReadFile(filename)

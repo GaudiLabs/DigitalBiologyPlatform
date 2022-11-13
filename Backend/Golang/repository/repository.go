@@ -8,4 +8,5 @@ type RepositoryInterface interface {
 	GetUser(username string) (defines.User, error)
 	GetUserProtocols(username string) ([]defines.ShortProtocol, error)
 	GetProtocol(protocolID int) (defines.FullProtocol, error)
+	CreateProtocol(defines.FullProtocol) (protocolID int, err error)
 }

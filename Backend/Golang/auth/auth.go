@@ -133,7 +133,7 @@ func (a *Authentifier) NewAccessToken(username string, password string) (*define
 
 	//TODO: make this configurable via viper
 	returnedToken.Token = utils.TokenGenerator(32)
-	returnedToken.ExpirationDate = time.Now().Add(1 * time.Hour)
+	returnedToken.ExpirationDate = time.Now().Add(7 * time.Hour)
 
 	a.repo.StoreToken(username, returnedToken)
 
