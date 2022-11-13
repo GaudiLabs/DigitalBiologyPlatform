@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/davecgh/go-spew/spew"
@@ -66,6 +67,35 @@ func NewPostgresRepo() (*PostgresRepo, error) {
 	return &outputRepo, nil
 }
 
+func (repo *PostgresRepo) getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error) {
+	var returnedMap = make(map[string]int, len(svgDenominations))
+
+	const filename = "POSTGRESQL/GetElectrodeIDsBySVGDenomination.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	rows, err := repo.dbConn.Query(string(queryBytes), svgDenominations, deviceID)
+	if err != nil {
+		//TODO: handle error
+		return returnedMap, err
+	}
+
+	for rows.Next() {
+		var svgDenomination string
+		var electrodeID int
+		err := rows.Scan(&svgDenomination, &electrodeID)
+		if err != nil {
+			//TODO: handle error
+			return returnedMap, err
+		}
+		returnedMap[svgDenomination] = electrodeID
+	}
+
+	return returnedMap, err
+}
+
 func (repo *PostgresRepo) CreateUser(user defines.User) error {
 	const filename = "POSTGRESQL/CreateUser.sql"
 	queryBytes, err := embeddedSQL.ReadFile(filename)
@@ -90,9 +120,29 @@ func (repo *PostgresRepo) CreateUser(user defines.User) error {
 	return nil
 }
 
-func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol) (int, error) {
-	const filename = "POSTGRESQL/CreateProtocol.sql"
-	queryBytes, err := embeddedSQL.ReadFile(filename)
+func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol, username string) (int, error) {
+	var filename string
+
+	filename = "POSTGRESQL/CreateFrameElectrode.sql"
+	createFrameElectrodeQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/CreateFrame.sql"
+	createFrameQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/CreateProtocol.sql"
+	createProtocolQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/CreateAuthor.sql"
+	createAuthorQuery, err := embeddedSQL.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
 	}
@@ -109,16 +159,86 @@ func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol) (int, er
 	}
 	defer dbTransaction.Rollback()
 
-	result, err := repo.dbConn.Exec(string(queryBytes), protocol)
+	//Creating mask frame
+	var maskFrameID int64
+	row := dbTransaction.QueryRow(string(createFrameQuery), nil, protocol.MaskFrame.Duration, -1)
+	//TODO: check SQL error ?
+	err = row.Scan(&maskFrameID)
 	if err != nil {
 		return -1, err
 	}
 
-	//TODO : what is this, check ?
-	//TODO : this ID needs to be returned
-	_ = result
+	//Populating mask frame
+	for _, maskFrameElectrode := range protocol.MaskFrame.Electrodes {
+		_, err := dbTransaction.Exec(string(createFrameElectrodeQuery),
+			maskFrameID,
+			maskFrameElectrode.Value,
+			maskFrameElectrode.ElectrodeId,
+			protocol.DeviceID,
+		)
+		if err != nil {
+			return -1, err
+		}
+	}
 
-	return -1, nil
+	//Creating protocol
+	var protocolID int64
+	row = dbTransaction.QueryRow(string(createProtocolQuery),
+		protocol.Name,
+		protocol.Description,
+		protocol.FrameCount,
+		protocol.TotalDuration,
+		maskFrameID,
+		time.Now(),
+		1,   //Version
+		nil, //Fork of
+		protocol.DeviceID,
+		false, //Public bool
+	)
+	//TODO: check SQL error ?
+	err = row.Scan(&protocolID)
+	if err != nil {
+		return -1, err
+	}
+
+	//Create frames & populate these
+	for _, frame := range protocol.Frames {
+		//Creating frame
+		var frameID int64
+		row := dbTransaction.QueryRow(string(createFrameQuery), protocolID, frame.Duration, frame.Rank)
+		err = row.Scan(&frameID)
+		if err != nil {
+			return -1, err
+		}
+		//Populating create frame
+		for _, electrode := range frame.Electrodes {
+			_, err := dbTransaction.Exec(string(createFrameElectrodeQuery),
+				frameID,
+				electrode.Value,
+				electrode.ElectrodeId,
+				protocol.DeviceID,
+			)
+			if err != nil {
+				return -1, err
+			}
+		}
+	}
+
+	_, err = dbTransaction.Exec(string(createAuthorQuery),
+		protocolID,
+		username,
+		1, //Rank //TODO
+	)
+	if err != nil {
+		return -1, err
+	}
+
+	// Commit the transaction.
+	if err = dbTransaction.Commit(); err != nil {
+		return -1, err
+	}
+
+	return int(protocolID), nil
 }
 
 func (repo *PostgresRepo) StoreToken(username string, loginToken defines.LoginToken) error {

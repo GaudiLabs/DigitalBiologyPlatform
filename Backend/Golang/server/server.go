@@ -219,6 +219,11 @@ func (w *Handlers) UploadProtocol(ctx echo.Context) error {
 
 	spew.Dump("AFTER META:")
 	spew.Dump(protocolToStore)
+	protocolID, err := w.repository.CreateProtocol(protocolToStore, tokenBearer.Username)
+	if err != nil {
+		return err
+	}
+	spew.Dump(protocolID)
 
 	_ = tokenBearer
 	ctx.JSON(http.StatusCreated, "")
