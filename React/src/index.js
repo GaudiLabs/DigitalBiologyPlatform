@@ -37,8 +37,8 @@ class Body extends React.Component {
         electrodes: Array(16).fill(Array(8).fill(null))
       }
       ],
-      protocolName : "Protcol Name",
-      protocolDescription : "Protocol desc",
+      protocolName : "New Protocol",
+      protocolDescription : "Protocol description",
       //squares: Array(16).fill(Array(8).fill("o")),
       //electrodes: Array(128).fill(null),
       instanciatedHooks: false,
@@ -56,6 +56,7 @@ class Body extends React.Component {
       username: "oh",
       loggedIn: false,
       accessToken: null,
+      playing : false
     };
 
     //retreive logged in infos
@@ -142,7 +143,20 @@ class Body extends React.Component {
 
   async serialSendClick() {
     //console.log("SEND CLICKED")
+    this.setState(
+      {
+        playing : !this.state.playing
+      },
+      () => {
+        if (this.state.playing)
+        {
+          this.playProtocol()
+        }
+      }
+    )
+  }
 
+  async playProtocol() {
     var n = this.state.framesAmount
 
     //send first frame
@@ -152,7 +166,11 @@ class Body extends React.Component {
     await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
 
     //loop through frames
-    for (let i = 0; i < n; i++) {
+    console.log(this.state.currently_edited_frame[0])
+    for (let i = this.state.currently_edited_frame[0]; i < n - 1; i++) {
+      if (!this.state.playing) {
+        return
+      }
 
       //var oldNb = this.state.currently_edited_frame[0]
       var newNb = this.state.currently_edited_frame[0] + 1
@@ -169,9 +187,18 @@ class Body extends React.Component {
         }
       )
 
-      await this.sleep(this.state.frames[newNb].duration);
-
+      if (newNb != this.state.framesAmount - 1) {
+        await this.sleep(this.state.frames[newNb].duration);
+      } else {
+        //End of frames reached
+        break;
+      }
     }
+    this.setState(
+      {
+        playing : false
+      }
+      )
     //let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
     //await writer.write(data);
     //writer.releaseLock();
@@ -472,14 +499,14 @@ handleDescriptionChange(event) {
   renderDurationInput() {
     return (
       <form >
-        <label>
-          Current Frame Duration (ms):
-          <input type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+        <label for="frame_duration">
+          Current Frame Duration
         </label>
-        <label>
-          Total amount of frames:
-          <input type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
+          <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+        <label for="frame_amount">
+          Total amount of frames
         </label>
+          <input className="control_input" name="frame_amount" type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
       </form>
     )
   }
@@ -487,14 +514,14 @@ handleDescriptionChange(event) {
   renderMetadataInput() {
     return (
       <form >
-        <label>
-          Protocol name:
-          <input type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
+        <label for="protocol_name" >
+          Protocol name
         </label>
-        <label>
-          Protocol description:
-          <input type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
+          <input className="control_input" name="protocol_name" type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
+        <label for="protocol_description">
+          Protocol description
         </label>
+          <input  className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
       </form>
     )
   }
@@ -521,8 +548,10 @@ handleDescriptionChange(event) {
           <div key="Adaptor" className="not_draggable custom_resize_handle main_cont">
             <AdaptorComponent state={this.state} />
             <EditorButtons state={this.state} />
+            <div className="fields_container">
             {this.renderDurationInput()}
             {this.renderMetadataInput()}
+            </div>
           </div>
           <div key="SideControls" className="not_draggable" >
             <SideButtons state={this.state} />

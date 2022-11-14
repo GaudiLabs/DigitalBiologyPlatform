@@ -1,60 +1,80 @@
 import * as React from "react"
 import './editor_buttons.scss';
 import { Range, getTrackBackground } from "react-range";
-import {ArrowLeft, ArrowRight } from "./graphics";
+import {ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft, faArrowRight, faCircleArrowLeft, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
 
 
 function SelectSerial(props) {
+  if (props.state.serialPort === null ) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      Select serial port & connect
+    <button title="Connect to device" className="editor_btn" onClick={props.onClick}>
+      {ConnectPictoVoid()}
+      {/* {ConnectPictoConnected()} */}
+    </button>
+  );
+  }
+
+  return (
+    <button title="Connect to device" className="editor_btn" onClick={props.onClick}>
+      {/* {ConnectPictoVoid()} */}
+      {ConnectPictoConnected()}
     </button>
   );
 }
 
 function Send(props) {
+
+  if (props.state.playing) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      Send
+    <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faPause}/>
+    </button>
+  );
+  }
+  return (
+    <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faPlay}/>
     </button>
   );
 }
 
 function PreviousFrame(props) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      {ArrowLeft()}
+    <button title="Previous frame" className="editor_btn start_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faArrowLeft}/>
     </button>
   );
 }
 
 function NextFrame(props) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      {ArrowRight()}
+    <button title="Next frame" className="editor_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faArrowRight}/>
     </button>
   );
 }
 
 function Settings(props) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      Settings
+    <button title="Settings" className="editor_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faCog}/>
     </button>
   );
 }
 
 function Enlarge(props) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      Big
+    <button title="Enlarge Adaptor" className="editor_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faExpand}/>
     </button>
   );
 }
 function Save(props) {
   return (
-    <button className="btn" onClick={props.onClick}>
-      Save
+    <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
+      <FontAwesomeIcon icon={faFloppyDisk}/>
     </button>
   );
 }
@@ -98,14 +118,7 @@ class EditorButtons extends React.Component {
 
     return (
         <React.Fragment>
-                        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            margin: "5%"
-          }}
-        >
+          <div className="range_container">
               <Range
             values={this.props.state.currently_edited_frame}
             step={1}
@@ -137,7 +150,7 @@ class EditorButtons extends React.Component {
                       values: this.props.state.currently_edited_frame,
                       colors: ["#548BF4", "#ccc"],
                       min: 0,
-                      max: this.props.state.framesAmount
+                      max: this.props.state.framesAmount - 1
                     }),
                     alignSelf: "center"
                   }}
@@ -167,13 +180,15 @@ class EditorButtons extends React.Component {
             )}
           />
               </div> 
-          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame()} />
-          <Send onClick={() => this.props.state.serialSendClick()} />
+          <div class="buttons_container">
+          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame() } />
+          <Send state={this.props.state} onClick={() => this.props.state.serialSendClick()} />
           <NextFrame onClick={() => this.props.state.goToNextFrame()} />
-          <SelectSerial onClick={() => this.SelectSerialClick()} />
+          <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
           <Settings onClick={() => this.SelectSerialClick()} />
           <Enlarge onClick={() => this.SelectSerialClick()} />
           <Save onClick={() => this.SelectSerialClick()} />
+          </div>
         </React.Fragment>
   )
   }

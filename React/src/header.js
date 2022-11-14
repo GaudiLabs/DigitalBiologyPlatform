@@ -6,6 +6,8 @@ import OpenDropLogo from './logo';
 import { NavLink } from 'react-router-dom';
 import './header.scss';
 import {LoggedPicto} from "./graphics";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLocation, faSignOut } from '@fortawesome/free-solid-svg-icons'
 
 class HeaderTop extends React.Component {
 
@@ -24,7 +26,9 @@ class HeaderTop extends React.Component {
                 <span> {state.username} </span>
                  {LoggedPicto()}
               </div>
-              <button onClick={this.props.state.logOut}>Log out</button>
+              <button title="Log out" className="header_btn" onClick={this.props.state.logOut}>
+                <FontAwesomeIcon icon={faSignOut}/>
+              </button>
           </Nav> 
         )
     }

@@ -16,9 +16,9 @@ class SideButtons extends React.Component {
       <React.Fragment>
         Commands
         <br/>
-        <button>Copy Last Frame</button>
+        <button className="side_btn">Copy Last Frame</button>
         <br/>
-        <button>Clear Frame</button>
+        <button className="side_btn">Clear Frame</button>
         <br/>
       </React.Fragment>
     )

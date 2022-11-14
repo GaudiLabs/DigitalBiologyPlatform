@@ -1,42 +1,62 @@
-  ul {
-    list-style-type: none;
-    padding: 5px;
-  }
-  
-  ul li {
-    overflow:hidden;
-    margin: 5px;
-    border-radius: 5px;
-    background: #999;
-    padding: 2px;
-    color:white;
-    position: relative;
-  }
+.editor_btn {
+  background-color: rgba(224, 224, 224);
+  //border-radius: 8px;
+  border-width: 0;
+  color: #333333;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  text-align: center;
+  transition: all 200ms;
+  vertical-align: baseline;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  height: 40px;
+}
 
-  .protocol_text {
-    float: left;
-    position: relative;
-    width: 65%
-  }
 
-  .protocol_meta {
-    display: flex;
-    align-items: center;
-    width: 35%;
-    border-left: 1px solid white;
-    padding-left: 5px;
-    height: 100%;
-    right: 0;
-    position: absolute;
-    font-size: 0.8em;
-  }
-  
-  .protocol_title {
-    border : 1px solid #333;
-    border-radius: 2px;
-    padding: 2px;
-    margin-top: 10px;
-    background: #666;
-    width: 70%;
-    font-size: 1.2em;
-  }
+.editor_btn:disabled {
+  color: #999999;
+}
+
+.end_btn {
+  border-bottom-right-radius : 8px;
+  border-top-right-radius : 8px;
+}
+
+.start_btn {
+  border-bottom-left-radius : 8px;
+  border-top-left-radius : 8px;
+}
+
+.editor_btn:hover:enabled {
+  background-color: rgba(185, 185, 185);
+}
+
+.editor_btn:hover:active:enabled {
+  background-color: rgba(165, 165, 165);
+}
+
+.range_container {
+  display: "flex";
+  justify-content: "center";
+  flex-wrap: "wrap";
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.buttons_container{
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}

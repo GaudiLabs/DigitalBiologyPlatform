@@ -3,8 +3,13 @@
     padding: 5px;
     overflow: scroll;
   }
+
   li:active:hover { 
     background-color: #777;
+  }
+
+  li:hover { 
+    background-color: #888;
   }
   
   ul li {
@@ -20,7 +25,8 @@
   .protocol_text {
     float: left;
     position: relative;
-    width: 65%
+    width: 65%;
+    font-size: 0.9em;
   }
 
   .protocol_meta {
@@ -36,11 +42,14 @@
   }
   
   .protocol_title {
-    border : 1px solid #333;
+   // border : 1px solid #333;
     border-radius: 2px;
     padding: 2px;
-    margin-top: 10px;
+    margin-top: 5px;
     background: #666;
     width: 70%;
-    font-size: 1.2em;
+    font-size: 1em;
+    box-shadow: 3px 3px 3px gray;
+    margin-bottom: 5px;
+    font-weight: bold;
   }
