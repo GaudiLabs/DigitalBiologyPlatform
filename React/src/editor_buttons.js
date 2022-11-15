@@ -187,7 +187,7 @@ class EditorButtons extends React.Component {
           <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
           <Settings onClick={() => this.SelectSerialClick()} />
           <Enlarge onClick={() => this.SelectSerialClick()} />
-          <Save onClick={() => this.SelectSerialClick()} />
+          <Save onClick={() => this.props.state.saveClick()} />
           </div>
         </React.Fragment>
   )

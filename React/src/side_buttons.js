@@ -1,7 +1,7 @@
 import * as React from "react"
 import './side_buttons.scss';
 
-class SideButtons extends React.Component {
+class SideButtons extends React.PureComponent {
 
   constructor(props) {
     super(props);
@@ -12,6 +12,7 @@ class SideButtons extends React.Component {
   }
 
   render() {
+    console.log("RENDER SIDE BUTTONS")
     return (
       <React.Fragment>
         Commands

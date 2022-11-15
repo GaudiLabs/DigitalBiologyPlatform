@@ -3,7 +3,7 @@ import './protocol_lister.scss';
 import { GenerateAuthHeader } from "./utils";
 
 
-class ProtocolsLister extends React.Component {
+class ProtocolsLister extends React.PureComponent {
 
   constructor(props) {
     super(props);
@@ -18,76 +18,17 @@ class ProtocolsLister extends React.Component {
 
 
  async componentDidMount() {
-  if (!this.props.state.loggedIn){
+  if (!this.props.loggedIn){
     return
   }
-    let BackendProtocolsResponse = await this.retreiveUserProtocols()
-    this.setState(
-      {
-        protocols : BackendProtocolsResponse.protocols
-      }
-    )
+   
   }
 
 componentWillUnmount() {
     //TO-DO
 }
 
-  handleErrors(response) {
-    console.log("HANDLE ERROR TRIGGER")
-    console.log(response)
-    if (response.ok) {
-      return false
-    }
-    //401 Unauthorized
-    if (response.status === 401) {
-      this.setState(
-        {
-          error : true,
-          errorMessage : "Invalid Authentication, try re-loging in ?",
-        })
-    } else {
-      this.setState(
-        {
-          error : true,
-          errorMessage : "Unexpected error happened",
-        })
-    }
-    return true
-  }
 
-  async retreiveUserProtocols(state) {
-
-    let requestResp
-    const route = "/protocol/me"
-    const api_url = process.env.REACT_APP_API_URL
-
-    try {
-      requestResp = await fetch(api_url + route, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + GenerateAuthHeader(this.props.state.username, this.props.state.accessToken) 
-      },
-    })
-    }
-    catch (error) {
-      this.setState(
-        {
-          error : true,
-          errorMessage : "Unable to reach server"
-        }
-      )
-      console.log(error)
-      return
-    }
-    //No network error, handle regular errors
-    if (!this.handleErrors(requestResp)) {
-    //TODO : empty body error case
-    //console.log(requestResp.json())
-    return requestResp.json()
-    }
- }
 
   renderSingleProtocol(protocol){
     var authorsList = ""
@@ -96,7 +37,7 @@ componentWillUnmount() {
       authorsList += protocol.author_list[i].author + ' '
     }
     return (
-           <li onClick={() => this.props.state.loadProtocol(protocol.id)}>
+           <li onClick={() => this.props.protocolClick(protocol.id)}>
             <div className="protocol_text">
               <div className="protocol_title">
                 {protocol.name}
@@ -114,13 +55,12 @@ componentWillUnmount() {
 
   renderProtocolsList(){
     console.log("PROTOCOL LIST RENDER")
-    console.log(this.state)
 
     let protocolsList=[];
-    if ( this.state.protocols === undefined ) {
+    if ( this.props.protocols === undefined ) {
       return 
     }
-    if (this.state.protocols === null || Object.keys(this.state.protocols).length === 0 )
+    if (this.props.protocols === null || Object.keys(this.props.protocols).length === 0 )
     {
     return (
       <React.Fragment>
@@ -129,8 +69,8 @@ componentWillUnmount() {
       </React.Fragment>
     )
     }
-    for (var i = 0; i < Object.keys(this.state.protocols).length; i++) {
-      var currentProtocol = this.state.protocols[i]
+    for (var i = 0; i < Object.keys(this.props.protocols).length; i++) {
+      var currentProtocol = this.props.protocols[i]
       protocolsList.push(this.renderSingleProtocol(currentProtocol))
     }
 
@@ -142,7 +82,7 @@ componentWillUnmount() {
   }
 
   render() {
-    if (!this.props.state.loggedIn) 
+    if (!this.props.loggedIn) 
     {
      return (
       <React.Fragment>

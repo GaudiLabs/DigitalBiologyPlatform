@@ -1,4 +1,5 @@
 export function GenerateAuthHeader(username, token) {
+    console.log(token)
     const accessHeaderTemplate = {
         u: "username",
         t: "token",

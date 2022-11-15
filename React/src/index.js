@@ -16,6 +16,7 @@ import SideButtons from './side_buttons';
 import EditorButtons from './editor_buttons';
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { GenerateAuthHeader } from "./utils";
+import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
@@ -37,8 +38,8 @@ class Body extends React.Component {
         electrodes: Array(16).fill(Array(8).fill(null))
       }
       ],
-      protocolName : "New Protocol",
-      protocolDescription : "Protocol description",
+      protocolName: "New Protocol",
+      protocolDescription: "Protocol description",
       //squares: Array(16).fill(Array(8).fill("o")),
       //electrodes: Array(128).fill(null),
       instanciatedHooks: false,
@@ -52,11 +53,13 @@ class Body extends React.Component {
       serialSendClick: this.serialSendClick.bind(this),
       goToNextFrame: this.goToNextFrame.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
+      saveClick: this.saveClick.bind(this),
       framesAmount: 2,
       username: "oh",
       loggedIn: false,
       accessToken: null,
-      playing : false
+      playing: false,
+      authHeader: ""
     };
 
     //retreive logged in infos
@@ -65,10 +68,13 @@ class Body extends React.Component {
     console.log("TOKEN SET:")
     console.log(atoken)
     console.log(ausername)
+    var tokenObj = JSON.parse(atoken)
+    //TODO : here check if token is expired 
     if (atoken != null && ausername != null) {
       this.state.loggedIn = true
       this.state.username = ausername
-      this.state.accessToken = JSON.parse(atoken)
+      this.state.accessToken = tokenObj
+      this.state.authHeader = GenerateAuthHeader(ausername, tokenObj)
     }
   }
 
@@ -76,6 +82,12 @@ class Body extends React.Component {
     console.log("COMPONENT DID MOUNT : Main")
     this.allocCleanFrames(20)
 
+    let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    this.setState(
+      {
+        protocols : BackendProtocolsResponse.protocols
+      }
+    )
   }
 
   allocCleanFrames(framesAmount) {
@@ -145,11 +157,10 @@ class Body extends React.Component {
     //console.log("SEND CLICKED")
     this.setState(
       {
-        playing : !this.state.playing
+        playing: !this.state.playing
       },
       () => {
-        if (this.state.playing)
-        {
+        if (this.state.playing) {
           this.playProtocol()
         }
       }
@@ -196,9 +207,9 @@ class Body extends React.Component {
     }
     this.setState(
       {
-        playing : false
+        playing: false
       }
-      )
+    )
     //let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]])
     //await writer.write(data);
     //writer.releaseLock();
@@ -214,6 +225,7 @@ class Body extends React.Component {
       loggedIn: true,
       username: username,
       accessToken: token,
+      authHeader: GenerateAuthHeader(username, token)
     })
   }
 
@@ -228,7 +240,7 @@ class Body extends React.Component {
     })
   }
 
-  handleloadProtocolErrors(response) {
+  handleHTTPErrors(response) {
     console.log("HANDLE LOAD PROTOCOL ERROR TRIGGER")
     console.log(response)
     if (response.ok) {
@@ -263,7 +275,7 @@ class Body extends React.Component {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + GenerateAuthHeader(this.state.username, this.state.accessToken)
+          'Authorization': 'Bearer ' + this.state.authHeader
         },
       })
     }
@@ -278,60 +290,100 @@ class Body extends React.Component {
       return
     }
     //No network error, handle regular errors
-    if (!this.handleloadProtocolErrors(requestResp)) {
+    if (!this.handleHTTPErrors(requestResp)) {
       //TODO : empty body error case
       //console.log(requestResp.json())
       return requestResp.json()
     }
   }
 
-  loadBackendProtocolToState(backendProtocol) {
-//Parse new amount, default to 0 if NaN
-var newAmount = (parseInt(backendProtocol.frame_count) || 0)
+  async saveNewProtocol(protocol) {
 
-if (newAmount === 0) {
-  this.setState({
-    currently_edited_frame: [0],
-    framesAmount: newAmount,
-  });
-  return
-}
+    let requestResp
+    const route = "/protocol/add"
+    const api_url = process.env.REACT_APP_API_URL
 
-const frame = {
-  duration: 0,
-  electrodes: []
-};
-
-var newFrames = Array()
-
-
-console.log("NEWAMOUNT:")
-console.log(newAmount)
-
-  //pushing new frames
-  for (var i = 0; i < newAmount; i++) {
-    var new_frame = Object.create(frame);
-    new_frame.duration = backendProtocol.frames[i].duration;
-    new_frame.electrodes = Array(16);
-    for (var k = 0; k < 16; k++){
-      new_frame.electrodes[k] = Array(8).fill(null)
+    try {
+      requestResp = await fetch(api_url + route, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.state.authHeader
+        },
+        body: JSON.stringify(protocol)
+      })
     }
-    //populating with electrodes
-    for (var j = 0; j < backendProtocol.frame_count; j++){
-      var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
-      var y = Math.floor(electrode_id / 8);
-      var x = electrode_id % 8;
-      new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value 
+    catch (error) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
     }
-    newFrames.push(new_frame)
+    //No network error, handle regular errors
+    if (!this.handleHTTPErrors(requestResp)) {
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp.json()
+    }
   }
+
+
+
+  loadBackendProtocolToState(backendProtocol) {
+    //Parse new amount, default to 0 if NaN
+    var newAmount = (parseInt(backendProtocol.frame_count) || 0)
+
+    if (newAmount === 0) {
+      this.setState({
+        currently_edited_frame: [0],
+        framesAmount: newAmount,
+      });
+      return
+    }
+
+    const frame = {
+      duration: 0,
+      electrodes: []
+    };
+
+    var newFrames = Array()
+
+
+    console.log("NEWAMOUNT:")
+    console.log(newAmount)
+
+    //TODO:
+    //use clean alloc
+    //pushing new frames
+    for (var i = 0; i < newAmount; i++) {
+      var new_frame = Object.create(frame);
+      new_frame.duration = backendProtocol.frames[i].duration;
+      new_frame.electrodes = Array(16);
+      for (var k = 0; k < 16; k++) {
+        new_frame.electrodes[k] = Array(8).fill(null)
+      }
+      //populating with electrodes
+      if (backendProtocol.frames[i].electrodes != null) { 
+      for (var j = 0; j < backendProtocol.frames[i].electrodes.length; j++) {
+        var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
+        var y = Math.floor(electrode_id / 8);
+        var x = electrode_id % 8;
+        new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value
+      }
+    }
+      newFrames.push(new_frame)
+    }
     this.setState(
       {
-         currently_edited_frame : [0],
-         frames : newFrames,
-         framesAmount : backendProtocol.frame_count,
-         protocolName : backendProtocol.name,
-         protocolDescription : backendProtocol.description,
+        currently_edited_frame: [0],
+        frames: newFrames,
+        framesAmount: backendProtocol.frame_count,
+        protocolName: backendProtocol.name,
+        protocolDescription: backendProtocol.description,
       }
     )
 
@@ -342,16 +394,127 @@ console.log(newAmount)
     console.log(protocol_id)
     let BackendProtocol = await this.retreiveProtocol(protocol_id)
     console.log(BackendProtocol)
-
     this.loadBackendProtocolToState(BackendProtocol)
-    /*
+  }
+
+
+
+  SerializeStateProtocol() {
+
+    const electrode = {
+      "value": 0,
+      "electrode_id": "placeholder electrode id"
+    }
+
+    const frame = {
+      rank: 0,
+      duration: 0,
+      electrodes: []
+    };
+
+    const rankedAuthor = {
+      "rank": 1,
+      "author": "placeholder author"
+    }
+
+    const protocol = {
+      "name": "Test Protocol",
+      "frames": [],
+      "device_id": 0,
+      "description": "placeholder desc",
+      "author_list": [],
+    }
+
+
+    var returnedProtocol = Object.create(protocol)
+    returnedProtocol.name = this.state.protocolName
+    returnedProtocol.description = this.state.protocolDescription
+    //TODO: this must not be harcoded, this is a stub
+    returnedProtocol.device_id = 2
+    returnedProtocol.frames = []
+    returnedProtocol.author_list = []
+
+
+    var authorToAdd = Object.create(rankedAuthor)
+    authorToAdd.rank = 1
+    authorToAdd.author = this.state.username
+    returnedProtocol.author_list.push(authorToAdd)
+
+
+    for (var i = 0; i < this.state.framesAmount; i++) {
+      console.log("ADDING FRAME")
+      var frameToAdd = Object.create(frame)
+      frameToAdd.duration = this.state.frames[i].duration
+      frameToAdd.rank = i
+      frameToAdd.electrodes = []
+
+      //Generate electrodes
+      for (var x = 0; x < 8; x++) {
+        for (var y = 0; y < 16; y++) {
+          if (this.state.frames[i].electrodes[x][y] != null) {
+            console.log("DETECTED ELECTRODE")
+            //rebuilding electrode
+            var electrodeToAdd = Object.create(electrode)
+            electrodeToAdd.electrode_id = ((y * 8) + x).toString()
+            electrodeToAdd.value = parseInt(this.state.frames[i].electrodes[x][y]) 
+            console.log(electrodeToAdd)
+            frameToAdd.electrodes.push(electrodeToAdd)
+          }
+        }
+      }
+      returnedProtocol.frames.push(frameToAdd)
+    }
+
+    console.log(returnedProtocol)
+    return returnedProtocol
+  }
+
+  async saveClick() {
+    console.log("SAVE CLICK TRIGGER")
+    //TODO : here add popup, choices etc
+    var currentProtocol = this.SerializeStateProtocol()
+    await this.saveNewProtocol(currentProtocol)
+    let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocol
+        protocols : BackendProtocolsResponse.protocols
       }
     )
-    */
   }
+
+
+  async retreiveUserProtocols() {
+
+    let requestResp
+    const route = "/protocol/me"
+    const api_url = process.env.REACT_APP_API_URL
+
+    try {
+      requestResp = await fetch(api_url + route, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.state.authHeader 
+      },
+    })
+    }
+    catch (error) {
+      this.setState(
+        {
+          error : true,
+          errorMessage : "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleHTTPErrors(requestResp)) {
+    //TODO : empty body error case
+    //console.log(requestResp.json())
+    return requestResp.json()
+    }
+ }
 
   bit_set(num, bit) {
     return num | (1 << bit);
@@ -425,20 +588,20 @@ console.log(newAmount)
     });
   }
 
-handleNameChange(event) {
-  this.setState(
-    {
-      protocolName : event.target.value
-    }
-  )
+  handleNameChange(event) {
+    this.setState(
+      {
+        protocolName: event.target.value
+      }
+    )
   }
 
-handleDescriptionChange(event) {
-  this.setState(
-    {
-      protocolDescription : event.target.value
-    }
-  )
+  handleDescriptionChange(event) {
+    this.setState(
+      {
+        protocolDescription: event.target.value
+      }
+    )
   }
 
 
@@ -502,11 +665,11 @@ handleDescriptionChange(event) {
         <label for="frame_duration">
           Current Frame Duration
         </label>
-          <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+        <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
         <label for="frame_amount">
           Total amount of frames
         </label>
-          <input className="control_input" name="frame_amount" type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
+        <input className="control_input" name="frame_amount" type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
       </form>
     )
   }
@@ -517,11 +680,11 @@ handleDescriptionChange(event) {
         <label for="protocol_name" >
           Protocol name
         </label>
-          <input className="control_input" name="protocol_name" type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
+        <input className="control_input" name="protocol_name" type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
         <label for="protocol_description">
           Protocol description
         </label>
-          <input  className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
+        <input className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
       </form>
     )
   }
@@ -532,9 +695,10 @@ handleDescriptionChange(event) {
     { i: "Protocols", x: 1, y: 1, w: 3, h: 4 },
   ];
   renderMain() {
+    console.log("RENDER MAIN")
     return (
       <React.Fragment>
-        <HeaderTop state={this.state} />
+        <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
         <ResponsiveGridLayout
           layouts={{ lg: this.layout }}
           breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
@@ -549,39 +713,18 @@ handleDescriptionChange(event) {
             <AdaptorComponent state={this.state} />
             <EditorButtons state={this.state} />
             <div className="fields_container">
-            {this.renderDurationInput()}
-            {this.renderMetadataInput()}
+              {this.renderDurationInput()}
+              {this.renderMetadataInput()}
             </div>
           </div>
           <div key="SideControls" className="not_draggable" >
-            <SideButtons state={this.state} />
+            <SideButtons />
           </div>
           <div key="Protocols" className="not_draggable" >
-            <ProtocolsLister state={this.state} />
+            <ProtocolsLister loggedIn={this.state.loggedIn} protocolClick={this.state.loadProtocol} protocols={this.state.protocols}/>
           </div>
-
-
         </ResponsiveGridLayout>
       </React.Fragment>
-
-      // <React.Fragment>
-      //   <HeaderTop state={this.state} />
-      //   {/* <div class ="mn" > */}
-      //   <GridLayout className="layout" cols={16} rowHeight={30} width={1200} draggableCancel=".not_draggable" compactType="horizontal">
-      //     <div key="Adaptor" data-grid={{ x: 0, y: 0, w: 9, h: 20, minW: 2, maxW: 10, minH: 4 }} className="not_draggable">
-      //       <AdaptorComponent state={this.state} />
-      //       <EditorButtons state={this.state} />
-      //       {this.renderDurationInput()}
-      //     </div>
-
-      //     <div key="SideControls" data-grid={{ x: 4, y: 0, w: 6, h: 4, minW: 6, maxW: 10, minH: 4 }}>
-      //       <SideButtons state={this.state} />
-      //     </div>
-      //     <div key="Protocols" data-grid={{ x: 4, y: 5, w: 6, h: 6, minW: 6, maxW: 10, minH: 4 }}>
-      //       <ProtocolsLister state={this.state} />
-      //     </div>
-      //   </GridLayout>
-      // </React.Fragment>
     )
   }
 

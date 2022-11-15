@@ -9,7 +9,7 @@ import {LoggedPicto} from "./graphics";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocation, faSignOut } from '@fortawesome/free-solid-svg-icons'
 
-class HeaderTop extends React.Component {
+class HeaderTop extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -18,15 +18,16 @@ class HeaderTop extends React.Component {
         }
     }
 
-  renderNavLogin(state) {
-    if (state.loggedIn) {
+  renderNavLogin(loggedIn,username,logOutHandler) {
+    console.log("RENDER NAV LOGIN")
+    if (loggedIn) {
         return (
           <Nav>
               <div className="username_container">
-                <span> {state.username} </span>
+                <span> {username} </span>
                  {LoggedPicto()}
               </div>
-              <button title="Log out" className="header_btn" onClick={this.props.state.logOut}>
+              <button title="Log out" className="header_btn" onClick={logOutHandler}>
                 <FontAwesomeIcon icon={faSignOut}/>
               </button>
           </Nav> 
@@ -42,6 +43,8 @@ class HeaderTop extends React.Component {
   }
 
   render() {
+    console.log("RENDER NAV")
+    console.log(this.props)
     return (
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
@@ -57,7 +60,7 @@ class HeaderTop extends React.Component {
             <Nav className="me-auto">
               <Nav className="logo-title">Platform for Digital Biology</Nav>
             </Nav>
-            {this.renderNavLogin(this.props.state)}
+            {this.renderNavLogin(this.props.loggedIn, this.props.username, this.props.logOutHandler)}
           </Navbar.Collapse>
         </Container>
       </Navbar>
