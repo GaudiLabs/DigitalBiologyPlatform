@@ -1,7 +1,10 @@
+  .lister_container {
+    height: inherit;
+    overflow-y: scroll;
+  }
   ul {
     list-style-type: none;
     padding: 5px;
-    overflow: scroll;
   }
 
   li:active:hover { 

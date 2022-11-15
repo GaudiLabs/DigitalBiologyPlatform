@@ -95,8 +95,10 @@ componentWillUnmount() {
 
     return (
       <React.Fragment>
-        Sequence Library
-        {this.renderProtocolsList()}
+        <div class="lister_container">
+          Sequence Library
+          {this.renderProtocolsList()}
+        </div>
       </React.Fragment>
     )
   }
