@@ -60,3 +60,12 @@
   text-align: center;
   margin-bottom: 10px;
 }
+
+.active_live_btn{
+  background-color: rgb(185, 127, 127);
+  color: red;
+}
+
+.active_live_btn:hover{
+  background-color: rgb(182, 97, 97) !important ;
+}

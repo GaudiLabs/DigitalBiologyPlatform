@@ -27,7 +27,7 @@ class CartridgeComponent extends React.Component {
             //console.log(current_electrode_id)
             
             //console.log(this.props.state);
-            current_electrode.addEventListener('click', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
+            current_electrode.addEventListener('mousedown', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             //current_electrode.setAttribute('fill', 'this.renderElectrodeFill(current_electrode_id);' )
             

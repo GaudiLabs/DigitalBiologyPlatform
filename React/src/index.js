@@ -54,7 +54,9 @@ class Body extends React.Component {
       goToNextFrame: this.goToNextFrame.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
       saveClick: this.saveClick.bind(this),
+      liveModeTrigger: this.liveModeTrigger.bind(this),
       framesAmount: 2,
+      liveMode: false,
       username: "oh",
       loggedIn: false,
       accessToken: null,
@@ -117,7 +119,7 @@ class Body extends React.Component {
     if (this.state.currently_edited_frame[0] !== 0) {
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] - 1],
-      })
+      }, this.handleLiveDeviceSend)
     }
   }
 
@@ -125,7 +127,7 @@ class Body extends React.Component {
     if (this.state.currently_edited_frame[0] !== this.state.framesAmount) {
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
-      })
+      }, this.handleLiveDeviceSend)
     }
   }
 
@@ -165,6 +167,13 @@ class Body extends React.Component {
         }
       }
     )
+  }
+
+  async handleLiveDeviceSend() {
+    if (this.state.liveMode) {
+    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
+    this.SendSerialData(data)
+    }
   }
 
   async playProtocol() {
@@ -482,6 +491,17 @@ class Body extends React.Component {
     )
   }
 
+  liveModeTrigger() {
+    console.log("LIVE MODE CLICK TRIGGER")
+    this.setState(
+      {
+        liveMode : !this.state.liveMode
+      },
+      this.handleLiveDeviceSend
+    )
+
+  }
+
 
   async retreiveUserProtocols() {
 
@@ -570,7 +590,7 @@ class Body extends React.Component {
 
       this.setState({
         frames: newFrames,
-      });
+      }, this.handleLiveDeviceSend);
     }
     ////console.log(this.state.squares)
   }
@@ -713,8 +733,12 @@ class Body extends React.Component {
             <AdaptorComponent state={this.state} />
             <EditorButtons state={this.state} />
             <div className="fields_container">
+              <div className="left_fields">
               {this.renderDurationInput()}
+              </div>
+              <div className="right_fields">
               {this.renderMetadataInput()}
+              </div>
             </div>
           </div>
           <div key="SideControls" className="not_draggable" >

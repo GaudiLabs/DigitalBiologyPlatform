@@ -134,6 +134,16 @@ body {
     transition: 0.3s ease;
 }
 
-.fields_containers {
-  text-align: 100%;
+.fields_container {
+  width: 100%;
+  overflow: auto;
 }
+
+.right_fields {
+  float: right;
+}
+
+.left_fields {
+  float: left;
+}
+

@@ -1,19 +1,19 @@
 import * as React from "react"
 import './editor_buttons.scss';
 import { Range, getTrackBackground } from "react-range";
-import {ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
+import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight, faCircleArrowLeft, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowRight, faCircle, faCircleArrowLeft, faCircleDot, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
 
 
 function SelectSerial(props) {
-  if (props.state.serialPort === null ) {
-  return (
-    <button title="Connect to device" className="editor_btn" onClick={props.onClick}>
-      {ConnectPictoVoid()}
-      {/* {ConnectPictoConnected()} */}
-    </button>
-  );
+  if (props.state.serialPort === null) {
+    return (
+      <button title="Connect to device" className="editor_btn" onClick={props.onClick}>
+        {ConnectPictoVoid()}
+        {/* {ConnectPictoConnected()} */}
+      </button>
+    );
   }
 
   return (
@@ -26,16 +26,24 @@ function SelectSerial(props) {
 
 function Send(props) {
 
+  if (props.state.liveMode === true) {
+    return (
+      <button disabled title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+        <FontAwesomeIcon icon={faPlay} />
+      </button>
+    ) 
+  }
+
   if (props.state.playing) {
-  return (
-    <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faPause}/>
-    </button>
-  );
+    return (
+      <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+        <FontAwesomeIcon icon={faPause} />
+      </button>
+    );
   }
   return (
     <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faPlay}/>
+      <FontAwesomeIcon icon={faPlay} />
     </button>
   );
 }
@@ -43,7 +51,7 @@ function Send(props) {
 function PreviousFrame(props) {
   return (
     <button title="Previous frame" className="editor_btn start_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faArrowLeft}/>
+      <FontAwesomeIcon icon={faArrowLeft} />
     </button>
   );
 }
@@ -51,7 +59,7 @@ function PreviousFrame(props) {
 function NextFrame(props) {
   return (
     <button title="Next frame" className="editor_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faArrowRight}/>
+      <FontAwesomeIcon icon={faArrowRight} />
     </button>
   );
 }
@@ -59,7 +67,7 @@ function NextFrame(props) {
 function Settings(props) {
   return (
     <button title="Settings" className="editor_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faCog}/>
+      <FontAwesomeIcon icon={faCog} />
     </button>
   );
 }
@@ -67,16 +75,42 @@ function Settings(props) {
 function Enlarge(props) {
   return (
     <button title="Enlarge Adaptor" className="editor_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faExpand}/>
+      <FontAwesomeIcon icon={faExpand} />
     </button>
   );
 }
 function Save(props) {
+  if (props.state.liveMode === true) {
+    return (
+      <button disabled title="Save" className="editor_btn end_btn" onClick={props.onClick}>
+        <FontAwesomeIcon icon={faFloppyDisk} />
+      </button>
+    ); 
+  } else {
   return (
     <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faFloppyDisk}/>
+      <FontAwesomeIcon icon={faFloppyDisk} />
     </button>
   );
+  }
+}
+
+function Live(props) {
+
+  if (props.state.liveMode === true) {
+    return (
+      <button title="Live Mode" className="editor_btn active_live_btn" onClick={props.onClick}>
+        <FontAwesomeIcon icon={faCircle} />
+      </button>
+    )
+  } else {
+    return (
+      <button disabled={props.state.serialPort === null} title="Live Mode" className="editor_btn" onClick={props.onClick}>
+        <FontAwesomeIcon icon={faCircle} />
+      </button>
+    )
+  }
+
 }
 
 
@@ -114,12 +148,12 @@ class EditorButtons extends React.Component {
     //console.log("serial connected successfully.")
   }
 
-  render(){
+  render() {
 
     return (
-        <React.Fragment>
-          <div className="range_container">
-              <Range
+      <React.Fragment>
+        <div className="range_container">
+          <Range
             values={this.props.state.currently_edited_frame}
             step={1}
             min={0}
@@ -128,7 +162,7 @@ class EditorButtons extends React.Component {
               //console.log("ici")
               //console.log(value)
               this.props.state.setEditedFrame(value)
-          }}
+            }}
             renderTrack={({ props, children }) => (
               <div
                 onMouseDown={props.onMouseDown}
@@ -175,22 +209,23 @@ class EditorButtons extends React.Component {
                 }}
               >
                 {this.props.state.currently_edited_frame[0]}
-              </div> 
-  
+              </div>
+
             )}
           />
-              </div> 
-          <div class="buttons_container">
-          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame() } />
+        </div>
+        <div class="buttons_container">
+          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame()} />
           <Send state={this.props.state} onClick={() => this.props.state.serialSendClick()} />
           <NextFrame onClick={() => this.props.state.goToNextFrame()} />
           <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
           <Settings onClick={() => this.SelectSerialClick()} />
           <Enlarge onClick={() => this.SelectSerialClick()} />
-          <Save onClick={() => this.props.state.saveClick()} />
-          </div>
-        </React.Fragment>
-  )
+          <Live state={this.props.state} onClick={() => this.props.state.liveModeTrigger()} />
+          <Save state={this.props.state} onClick={() => this.props.state.saveClick()} />
+        </div>
+      </React.Fragment>
+    )
   }
 }
 export default EditorButtons
