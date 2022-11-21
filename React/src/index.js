@@ -61,7 +61,8 @@ class Body extends React.Component {
       loggedIn: false,
       accessToken: null,
       playing: false,
-      authHeader: ""
+      authHeader: "",
+      protocols: []
     };
 
     //retreive logged in infos
@@ -135,7 +136,7 @@ class Body extends React.Component {
     console.log("SET EDITED FRAME CALL")
     this.setState({
       currently_edited_frame: frame_id,
-    })
+    }, this.handleLiveDeviceSend)
   }
 
   setSerialPort(port_id) {
@@ -224,6 +225,16 @@ class Body extends React.Component {
     //writer.releaseLock();
   }
 
+  async refreshUserProtocols(){
+    console.log("REFRESH PROTOCOLS TRIGGER")
+    let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    this.setState(
+      {
+        protocols : BackendProtocolsResponse.protocols
+      }
+    )
+  }
+
   loggedInCallback(username, token) {
     console.log("LOGGED IN CALLBACK")
     console.log(username)
@@ -235,7 +246,7 @@ class Body extends React.Component {
       username: username,
       accessToken: token,
       authHeader: GenerateAuthHeader(username, token)
-    })
+    }, this.refreshUserProtocols)
   }
 
   logOut() {

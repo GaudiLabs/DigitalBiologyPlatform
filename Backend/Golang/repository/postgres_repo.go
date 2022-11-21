@@ -7,10 +7,10 @@ import (
 	"log"
 	"time"
 
+	"github.com/DigitalBiologyPlatform/Backend/config"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/davecgh/go-spew/spew"
 	_ "github.com/lib/pq"
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,9 +23,11 @@ type PostgresRepo struct {
 	dbConn   *sql.DB
 }
 
-// Ensure auth interface is implemented
+// Ensure repo interface is implemented
 var _ RepositoryInterface = (*PostgresRepo)(nil)
 
+// Embedding the sql files in ./POSTGRESQL
+//
 //go:embed POSTGRESQL/*.sql
 var embeddedSQL embed.FS
 
@@ -51,11 +53,11 @@ func openConnection(repo PostgresRepo) (*sql.DB, error) {
 func NewPostgresRepo() (*PostgresRepo, error) {
 	var err error
 	outputRepo := PostgresRepo{
-		host:     viper.GetString("POSTGRES_DATABASE_HOST"),
-		port:     viper.GetString("POSTGRES_DATABASE_PORT"),
-		user:     viper.GetString("POSTGRES_DATABASE_USER"),
-		password: viper.GetString("POSTGRES_DATABASE_PASSWORD"),
-		dbName:   viper.GetString("POSTGRES_DATABASE_NAME"),
+		host:     config.GetConfig().GetPostgresHost(),
+		user:     config.GetConfig().GetPostgresUser(),
+		port:     config.GetConfig().GetPostgresPort(),
+		password: config.GetConfig().GetPostgresPassword(),
+		dbName:   config.GetConfig().GetPostgresDatabaseName(),
 	}
 
 	outputRepo.dbConn, err = openConnection(outputRepo)

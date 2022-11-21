@@ -10,5 +10,5 @@ type RepositoryInterface interface {
 	GetProtocol(protocolID int) (defines.FullProtocol, error)
 	CreateProtocol(protocol defines.FullProtocol, username string) (protocolID int, err error)
 	//GetDeviceElectrodes(deviceID int) (electrodes []defines.Electrode, err error)
-	getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error)
+	//getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error)
 }

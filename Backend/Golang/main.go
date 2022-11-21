@@ -5,11 +5,11 @@ import (
 	"log"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
+	"github.com/DigitalBiologyPlatform/Backend/config"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
 	server "github.com/DigitalBiologyPlatform/Backend/server"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/spf13/viper"
 )
 
 // Embedding swaggerUI files
@@ -18,10 +18,8 @@ import (
 var embeddedSwaggerUI embed.FS
 
 func main() {
-	//Setting config (viper)
-	viper.AutomaticEnv()
-	viper.SetConfigFile(".env")
-	viper.ReadInConfig()
+	//Setting config
+	config.LoadConfig()
 
 	//Creating new postgres repository
 	repo, err := repository.NewPostgresRepo()
@@ -51,5 +49,5 @@ func main() {
 	e.StaticFS("/swaggerui", fs)
 
 	//Starting the server
-	e.Logger.Fatal(e.Start(viper.GetString("SERVER_HOST") + ":" + viper.GetString("SERVER_PORT")))
+	e.Logger.Fatal(e.Start(config.GetConfig().GetServerHost() + ":" + config.GetConfig().GetServerPort()))
 }
