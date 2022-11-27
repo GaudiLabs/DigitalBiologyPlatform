@@ -163,7 +163,19 @@ func (w *Handlers) LoginUser(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	generatedToken, err := w.auth.NewAccessToken(*loginParams.Username, *loginParams.Password)
+	//DEBUG
+	spew.Dump(loginParams)
+
+	//Verifying Captcha
+	err = w.auth.VerifyHCaptcha(loginParams.CaptchaToken)
+	if err != nil {
+		spew.Dump(err)
+		ctx.NoContent(http.StatusUnprocessableEntity)
+		return err
+	}
+
+	//Generating token
+	generatedToken, err := w.auth.NewAccessToken(loginParams.Username, loginParams.Password)
 	if err != nil {
 		spew.Dump(err)
 		ctx.NoContent(http.StatusUnauthorized)

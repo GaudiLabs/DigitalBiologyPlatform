@@ -81,6 +81,7 @@ class Body extends React.Component {
     }
   }
 
+
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT : Main")
     this.allocCleanFrames(20)

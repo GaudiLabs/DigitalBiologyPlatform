@@ -3,6 +3,7 @@ import './Login.scss';
 import OpenDropLogo from './logo';
 import { Navigate } from "react-router-dom";
 import  HeaderTop  from './header';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 class LoginForm extends React.Component {
 
@@ -12,10 +13,20 @@ class LoginForm extends React.Component {
     this.state = {
       username: "",
       password: "",
+      captchaToken: "",
       error: false,
       errorMessage: "",
       redirectToHome: false,
     }
+  }
+
+  onVerifyCaptcha(token) {
+    console.log("CAPTCHA Verified: " + token)
+    this.setState(
+      {
+        captchaToken : token
+      }, () => {console.log("CAPTCHA SET IN STATE")}
+      )
   }
 
   componentDidMount() {
@@ -37,6 +48,12 @@ class LoginForm extends React.Component {
         {
           error : true,
           errorMessage : "Invalid Username/Password",
+        })
+    } else if (response.status === 422) {
+      this.setState(
+        {
+          error : true,
+          errorMessage : "Captcha authentication failed",
         })
     } else {
       this.setState(
@@ -91,17 +108,24 @@ class LoginForm extends React.Component {
  
     console.log("HANDLE SUBMIT TRIGGER");
 
-    let username = this.state.username;
-    let password = this.state.password;
-    const token = await this.loginUser({
-      username,
-      password
-    });
+    const loginParams = {
+      "username": "",
+      "password": "",
+      "captcha_token" : ""
+    }
+
+    var loginParamsToSend = Object.create(loginParams)
+
+    loginParamsToSend.username = this.state.username
+    loginParamsToSend.password = this.state.password
+    loginParamsToSend.captcha_token = this.state.captchaToken
+
+    const token = await this.loginUser(loginParamsToSend);
     console.log(token)
     if (token) {
     //TODO : local store the token
     //localStorage.setItem('token', JSON.stringify(token));
-    this.props.state.loggedInCallback(username,token)
+    this.props.state.loggedInCallback(loginParamsToSend.username,token)
     //setToken(token);
     this.setState({
       redirectToHome : true
@@ -153,6 +177,8 @@ class LoginForm extends React.Component {
                 <div className="title"> PASSWORD</div>
                 <input className="text" type="password" placeholder="" value={this.state.password} onChange={this.setPassword.bind(this)} />
               </div>
+              <br/>
+              <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)}/>
               <div className="input">
                 <input type="submit" value="LOG IN" />
               </div>

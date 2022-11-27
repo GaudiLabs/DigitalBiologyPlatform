@@ -19,6 +19,8 @@ type ViperConfig struct {
 	postgresDatabaseName string
 	postgresHost         string
 	postgresPort         string
+	hCaptchaSecret       string
+	hCaptchaVerifyURL    string
 }
 
 func newViperConfig() (ViperConfig, error) {
@@ -76,6 +78,18 @@ func newViperConfig() (ViperConfig, error) {
 	}
 	returnedConfig.postgresDatabaseName = viper.GetString(envConfigName)
 
+	envConfigName = "HCAPTCHA_SECRET"
+	if !viper.IsSet(envConfigName) {
+		return returnedConfig, fmt.Errorf(errorFormat, envConfigName)
+	}
+	returnedConfig.hCaptchaSecret = viper.GetString(envConfigName)
+
+	envConfigName = "HCAPTCHA_VERIFY_URL"
+	if !viper.IsSet(envConfigName) {
+		return returnedConfig, fmt.Errorf(errorFormat, envConfigName)
+	}
+	returnedConfig.hCaptchaVerifyURL = viper.GetString(envConfigName)
+
 	return returnedConfig, nil
 }
 
@@ -99,4 +113,10 @@ func (config *ViperConfig) GetPostgresDatabaseName() string {
 }
 func (config *ViperConfig) GetPostgresUser() string {
 	return config.postgresUser
+}
+func (config *ViperConfig) GethCaptchaSecret() string {
+	return config.hCaptchaSecret
+}
+func (config *ViperConfig) GethCaptchaVerifyURL() string {
+	return config.hCaptchaVerifyURL
 }

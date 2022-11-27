@@ -12,6 +12,8 @@ type ConfigInterface interface {
 	GetPostgresPassword() string
 	GetPostgresDatabaseName() string
 	GetPostgresUser() string
+	GethCaptchaSecret() string
+	GethCaptchaVerifyURL() string
 }
 
 func LoadConfig() {

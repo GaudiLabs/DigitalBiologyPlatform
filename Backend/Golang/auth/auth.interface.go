@@ -8,4 +8,5 @@ import (
 type AuthInterface interface {
 	GetAuthenticator() openapi3filter.AuthenticationFunc
 	NewAccessToken(username string, password string) (*defines.LoginToken, error)
+	VerifyHCaptcha(captchaToken string) error
 }

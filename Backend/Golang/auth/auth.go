@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
+	"github.com/DigitalBiologyPlatform/Backend/config"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
 	"github.com/DigitalBiologyPlatform/Backend/utils"
@@ -82,6 +84,39 @@ func GetTokenObjectFromRequest(req *http.Request) (defines.AuthToken, error) {
 	return returnedToken, nil
 }
 
+func (a *Authentifier) VerifyHCaptcha(captchaToken string) error {
+
+	secretKey := config.GetConfig().GethCaptchaSecret()
+	hCaptchaVerifyURL := config.GetConfig().GethCaptchaVerifyURL()
+
+	data := url.Values{}
+	data.Set("secret", secretKey)
+	data.Set("response", captchaToken)
+
+	client := &http.Client{}
+	r, _ := http.NewRequest(http.MethodPost, hCaptchaVerifyURL, strings.NewReader(data.Encode())) // URL-encoded payload
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(r)
+	if err != nil {
+		return err
+	}
+
+	var res map[string]interface{}
+
+	spew.Dump(resp.StatusCode)
+	json.NewDecoder(resp.Body).Decode(&res)
+
+	spew.Dump(res)
+	_, successSetInRes := res["success"]
+
+	if successSetInRes && res["success"] == true {
+		return nil
+	} else {
+		return fmt.Errorf("Captcha Failure")
+	}
+}
+
 // Authenticate uses the specified validator to ensure a JWT is valid, then makes
 // sure that the claims provided by the JWT match the scopes as required in the API.
 func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
@@ -115,6 +150,7 @@ func (a *Authentifier) authenticate(ctx context.Context, input *openapi3filter.A
 // Authenticate uses the specified validator to ensure a JWT is valid, then makes
 // sure that the claims provided by the JWT match the scopes as required in the API.
 func (a *Authentifier) NewAccessToken(username string, password string) (*defines.LoginToken, error) {
+
 	// Our security scheme is named BearerAuth, ensure this is the case
 	var returnedToken defines.LoginToken
 
