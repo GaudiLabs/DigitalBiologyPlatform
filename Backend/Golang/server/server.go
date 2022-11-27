@@ -59,6 +59,17 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 		return err
 	}
 
+	//DEBUG
+	spew.Dump(receivedUser)
+
+	//Verifying Captcha
+	err = w.auth.VerifyHCaptcha(receivedUser.CaptchaToken)
+	if err != nil {
+		spew.Dump(err)
+		ctx.NoContent(http.StatusUnprocessableEntity)
+		return err
+	}
+
 	//Handle user already exists case
 	_, err = w.repository.GetUser(receivedUser.Username)
 	if err == nil {
@@ -82,6 +93,7 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 	_, err = mail.ParseAddress(receivedUser.Email)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, defines.SimpleReturnMessage{Message: "Provided email is invalid"})
+		return nil
 	}
 
 	//Mappping received object to application object

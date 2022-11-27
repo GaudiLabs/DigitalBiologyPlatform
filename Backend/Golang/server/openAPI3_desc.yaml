@@ -360,6 +360,7 @@ components:
         - "username"
         - "password"
         - "email"
+        - "captcha_token"
       properties:
         username:
           type: string
@@ -370,6 +371,8 @@ components:
         email:
           type: string
           example: "a.b@c.d"
+        captcha_token:
+          type: string
       xml:
         name: user
  
