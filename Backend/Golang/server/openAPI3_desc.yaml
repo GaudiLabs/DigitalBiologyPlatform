@@ -134,6 +134,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullProtocol'
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - protocol
+      summary: update a particular entire protocol by its ID
+      description: return a protocol
+      requestBody:
+        description: Protocol description in json
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadProtocolParams'
+      parameters:
+        - in: path
+          name: protocolID
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the protocol to overwrite
+      operationId: overwriteProtocol
+      responses:
+        default:
+          description: successful operation
   /protocol/add:
     post:
       security:

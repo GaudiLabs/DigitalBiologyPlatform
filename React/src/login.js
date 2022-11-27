@@ -216,7 +216,6 @@ class LoginForm extends React.Component {
     console.log("meh")
     const signupSuccess = await this.signUpUser(loginParamsToSend);
     console.log(signupSuccess)
-
     if (signupSuccess) {
       this.setState({
         success : true,
@@ -280,7 +279,7 @@ class LoginForm extends React.Component {
                   <input className="text" type="password" placeholder="" value={this.state.password} onChange={this.setPassword.bind(this)} />
                 </div>
                 <br />
-                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)} />
+                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)}/>
                 <div className="input">
                   <input type="submit" value="LOG IN" />
                 </div>
@@ -301,7 +300,7 @@ class LoginForm extends React.Component {
                   <input className="text" type="text" placeholder="" value={this.state.email} onChange={this.setEmail.bind(this)} />
                 </div>
                 <br />
-                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)} />
+                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)}/>
                 <div className="input">
                   <input type="submit" value="REGISTER" />
                 </div>

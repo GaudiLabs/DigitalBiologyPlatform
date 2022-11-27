@@ -69,6 +69,206 @@ func NewPostgresRepo() (*PostgresRepo, error) {
 	return &outputRepo, nil
 }
 
+func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.FullProtocol, username string) error {
+
+	var filename string
+
+	filename = "POSTGRESQL/CreateFrameElectrode.sql"
+	createFrameElectrodeQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/CreateFrame.sql"
+	createFrameQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/CreateAuthor.sql"
+	createAuthorQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/UpdateProtocolByID.sql"
+	updateProtocolQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteElectrodesOfProtocol.sql"
+	deleteElectrodesQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteFramesOfProtocol.sql"
+	deleteFramesQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteMaskFrameElectrodesOfProtocol.sql"
+	deleteMaskFrameElectrodesQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteFrame.sql"
+	deleteFrameQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/GetMaskFrameIDOfProtocol.sql"
+	maskFrameQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteAuthorsOfProtocol.sql"
+	deleteAuthorsQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	dbTransaction, err := repo.dbConn.Begin()
+	if err != nil {
+		return err
+	}
+	defer dbTransaction.Rollback()
+
+	//Retreive old mask frame ID
+	var oldMaskFrameID int64
+	row := dbTransaction.QueryRow(string(maskFrameQuery), protocolID)
+	//TODO: check SQL error ?
+	err = row.Scan(&oldMaskFrameID)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old electrodes
+	_, err = dbTransaction.Exec(string(deleteElectrodesQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old frames
+	_, err = dbTransaction.Exec(string(deleteFramesQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old mask frame electrodes
+	_, err = dbTransaction.Exec(string(deleteMaskFrameElectrodesQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Creating mask frame
+	var maskFrameID int64
+	row = dbTransaction.QueryRow(string(createFrameQuery), nil, protocol.MaskFrame.Duration, -1)
+	//TODO: check SQL error ?
+	err = row.Scan(&maskFrameID)
+	if err != nil {
+		return err
+	}
+
+	//Populating mask frame
+	for _, maskFrameElectrode := range protocol.MaskFrame.Electrodes {
+		_, err := dbTransaction.Exec(string(createFrameElectrodeQuery),
+			maskFrameID,
+			maskFrameElectrode.Value,
+			maskFrameElectrode.ElectrodeId,
+			protocol.DeviceID,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	//Overwriting protocol
+	_, err = dbTransaction.Exec(string(updateProtocolQuery),
+		protocolID,
+		protocol.Name,
+		protocol.Description,
+		protocol.FrameCount,
+		protocol.TotalDuration,
+		maskFrameID,
+		time.Now(),
+		1,   //Version
+		nil, //Fork of
+		protocol.DeviceID,
+		false, //Public bool
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old mask frame
+	_, err = dbTransaction.Exec(string(deleteFrameQuery),
+		oldMaskFrameID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old authors
+	_, err = dbTransaction.Exec(string(deleteAuthorsQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Create frames & populate these
+	for _, frame := range protocol.Frames {
+		//Creating frame
+		var frameID int64
+		row := dbTransaction.QueryRow(string(createFrameQuery), protocolID, frame.Duration, frame.Rank)
+		err = row.Scan(&frameID)
+		if err != nil {
+			return err
+		}
+		//Populating create frame
+		for _, electrode := range frame.Electrodes {
+			_, err := dbTransaction.Exec(string(createFrameElectrodeQuery),
+				frameID,
+				electrode.Value,
+				electrode.ElectrodeId,
+				protocol.DeviceID,
+			)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	//Creating the authors
+	_, err = dbTransaction.Exec(string(createAuthorQuery),
+		protocolID,
+		username,
+		1, //Rank //TODO
+	)
+	if err != nil {
+		return err
+	}
+
+	// Commit the transaction.
+	if err = dbTransaction.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo *PostgresRepo) getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error) {
 	var returnedMap = make(map[string]int, len(svgDenominations))
 

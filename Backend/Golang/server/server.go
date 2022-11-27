@@ -254,6 +254,56 @@ func (w *Handlers) UploadProtocol(ctx echo.Context) error {
 	return nil
 }
 
+func (w *Handlers) OverwriteProtocol(ctx echo.Context, protocolID int) error {
+
+	tokenBearer, err := auth.GetTokenObjectFromRequest(ctx.Request())
+	if err != nil {
+		return err
+	}
+
+	var uploadProtocolParams UploadProtocolParams
+	err = ctx.Bind(&uploadProtocolParams)
+	if err != nil {
+		return err
+	}
+
+	//TODO:
+	//validate device_id
+	//validate device_id is compatibles with all the described electrodes
+	//verifiy author is who he says he is
+	//multiple authors (acknowledgement of other authors nedded ?)
+
+	//DONE:
+	//generate mask frame
+	//enrich received protocol with calculated total_duration
+	//enrich received protocol with calculated frames_count
+
+	var protocolToStore defines.FullProtocol
+	//Auto mapping
+	bytes, _ := json.Marshal(uploadProtocolParams)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &protocolToStore)
+
+	spew.Dump("AFTER AUTOMAPPING:")
+	spew.Dump(protocolToStore)
+
+	//Metadate generation
+	protocolToStore.MaskFrame, protocolToStore.TotalDuration, protocolToStore.FrameCount = uploadProtocolParams.GenerateMeta()
+
+	spew.Dump("AFTER META:")
+	spew.Dump(protocolToStore)
+	err = w.repository.OverwriteProtocol(protocolID, protocolToStore, tokenBearer.Username)
+	if err != nil {
+		return err
+	}
+	//spew.Dump(protocolID)
+
+	_ = tokenBearer
+	ctx.JSON(http.StatusNoContent, "")
+	return nil
+	return nil
+}
+
 // LogoutUser converts echo context to params.
 func (w *Handlers) LogoutUser(ctx echo.Context) error {
 	ctx.String(http.StatusOK, "Hello, World!")
