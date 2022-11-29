@@ -249,8 +249,23 @@ func (w *Handlers) UploadProtocol(ctx echo.Context) error {
 	}
 	spew.Dump(protocolID)
 
+	protocol, err := w.repository.GetProtocol(protocolID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})
+		}
+		return err
+	}
+	spew.Dump(protocol)
+
+	//Mapping returned Object
+	var returnedProtocol FullProtocol
+	bytes, _ = json.Marshal(protocol)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocol)
+
 	_ = tokenBearer
-	ctx.JSON(http.StatusCreated, "")
+	ctx.JSON(http.StatusCreated, returnedProtocol)
 	return nil
 }
 

@@ -137,7 +137,7 @@ class Body extends React.Component {
   }
 
   goToNextFrame() {
-    if (this.state.currently_edited_frame[0] !== this.state.framesAmount) {
+    if (this.state.currently_edited_frame[0] !== (this.state.framesAmount - 1)) {
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
       }, this.handleLiveDeviceSend)
@@ -542,9 +542,13 @@ class Body extends React.Component {
   async saveClick() {
     console.log("SAVE CLICK TRIGGER")
     //TODO : here add popup, choices etc
+    if (this.state.loadedProtocolID != null) {
     this.setState({
       saveDialogOpen : true
     })
+    } else {
+      await this.handleCreateNewProtocol()
+    }
 
     // var currentProtocol = this.SerializeStateProtocol()
 
@@ -566,11 +570,13 @@ class Body extends React.Component {
 
      var currentProtocol = this.SerializeStateProtocol()
 
-    await this.saveNewProtocol(currentProtocol)
+    let resp = await this.saveNewProtocol(currentProtocol)
+    console.log(resp)
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols
+        protocols : BackendProtocolsResponse.protocols,
+        loadedProtocolID : resp.id
       }
     )
   }
