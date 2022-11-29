@@ -139,6 +139,11 @@ class LoginForm extends React.Component {
     loginParamsToSend.captcha_token = this.state.captchaToken
 
     const token = await this.loginUser(loginParamsToSend);
+    this.setState(
+      {
+          resetCaptcha: !this.state.resetCaptcha,
+      }
+    )
     console.log(token)
     if (token) {
       //TODO : local store the token

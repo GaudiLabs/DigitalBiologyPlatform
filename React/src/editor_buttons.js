@@ -4,6 +4,7 @@ import { Range, getTrackBackground } from "react-range";
 import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faCircle, faCircleArrowLeft, faCircleDot, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
+import SaveDialog from "./save_dialog";
 
 
 function SelectSerial(props) {
@@ -88,9 +89,11 @@ function Save(props) {
     ); 
   } else {
   return (
+    <React.Fragment>
     <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
       <FontAwesomeIcon icon={faFloppyDisk} />
     </button>
+  </React.Fragment>
   );
   }
 }

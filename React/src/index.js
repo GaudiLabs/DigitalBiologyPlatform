@@ -1,4 +1,5 @@
 import React from 'react';
+import Fragment from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.scss';
@@ -17,6 +18,14 @@ import EditorButtons from './editor_buttons';
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { GenerateAuthHeader } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
+
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import SaveDialog from './save_dialog';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
@@ -62,7 +71,9 @@ class Body extends React.Component {
       accessToken: null,
       playing: false,
       authHeader: "",
-      protocols: []
+      saveDialogOpen : false,
+      protocols: [],
+      loadedProtocolID : null
     };
 
     //retreive logged in infos
@@ -352,7 +363,39 @@ class Body extends React.Component {
     }
   }
 
+  async overwriteProtocol(protocolID, protocol) {
 
+    let requestResp
+    const route = "/protocol/"+protocolID
+    const api_url = process.env.REACT_APP_API_URL
+
+    try {
+      requestResp = await fetch(api_url + route, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.state.authHeader
+        },
+        body: JSON.stringify(protocol)
+      })
+    }
+    catch (error) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleHTTPErrors(requestResp)) {
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp
+    }
+  }
 
   loadBackendProtocolToState(backendProtocol) {
     //Parse new amount, default to 0 if NaN
@@ -416,6 +459,12 @@ class Body extends React.Component {
     let BackendProtocol = await this.retreiveProtocol(protocol_id)
     console.log(BackendProtocol)
     this.loadBackendProtocolToState(BackendProtocol)
+    //TODO : error handling
+    this.setState(
+      {
+        loadedProtocolID : protocol_id
+      }
+    )
   }
 
 
@@ -493,7 +542,30 @@ class Body extends React.Component {
   async saveClick() {
     console.log("SAVE CLICK TRIGGER")
     //TODO : here add popup, choices etc
-    var currentProtocol = this.SerializeStateProtocol()
+    this.setState({
+      saveDialogOpen : true
+    })
+
+    // var currentProtocol = this.SerializeStateProtocol()
+
+    // await this.saveNewProtocol(currentProtocol)
+    // let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    // this.setState(
+    //   {
+    //     protocols : BackendProtocolsResponse.protocols
+    //   }
+    // )
+  }
+
+
+  async handleCreateNewProtocol() {
+    console.log("NEW PROTOCOL CLICK TRIGGER")
+    this.setState({
+      saveDialogOpen : false
+    })
+
+     var currentProtocol = this.SerializeStateProtocol()
+
     await this.saveNewProtocol(currentProtocol)
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
@@ -502,6 +574,25 @@ class Body extends React.Component {
       }
     )
   }
+
+  async handleOverwriteProtocol() {
+    console.log("OVERWRITE PROTOCOL CLICK TRIGGER")
+    this.setState({
+      saveDialogOpen : false
+    })
+
+     var currentProtocol = this.SerializeStateProtocol()
+
+    await this.overwriteProtocol(this.state.loadedProtocolID, currentProtocol)
+    let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    this.setState(
+      {
+        protocols : BackendProtocolsResponse.protocols
+      }
+    )
+  }
+
+
 
   liveModeTrigger() {
     console.log("LIVE MODE CLICK TRIGGER")
@@ -721,6 +812,14 @@ class Body extends React.Component {
     )
   }
 
+  handleSaveDialogClose = () => {
+    this.setState(
+      {
+        saveDialogOpen : false
+      }
+    )
+  };
+
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
     { i: "SideControls", x: 1, y: 0, w: 2, h: 1 },
@@ -731,6 +830,12 @@ class Body extends React.Component {
     return (
       <React.Fragment>
         <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
+        <SaveDialog 
+        open={this.state.saveDialogOpen} 
+        handleClose={this.handleSaveDialogClose.bind(this)}
+        handleCreateNew={this.handleCreateNewProtocol.bind(this)}
+        handleOverwrite={this.handleOverwriteProtocol.bind(this)}
+        />
         <ResponsiveGridLayout
           layouts={{ lg: this.layout }}
           breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
