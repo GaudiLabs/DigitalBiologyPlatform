@@ -74,6 +74,15 @@ type FullProtocol struct {
 	MaskFrame     Frame          `json:"mask_frame"`
 }
 
+func (fp *FullProtocol) AuthoredBy(username string) bool {
+	for _, author := range fp.AuthorList {
+		if author.Author == username {
+			return true
+		}
+	}
+	return false
+}
+
 // bytesUnmarshall is used to make objets implement the Scan interface to decode json from database into proper objects.
 func bytesUnmarshall(destination interface{}, value interface{}) error {
 	b, ok := value.([]byte)

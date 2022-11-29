@@ -267,11 +267,20 @@ func (w *Handlers) OverwriteProtocol(ctx echo.Context, protocolID int) error {
 		return err
 	}
 
-	//TODO:
-	//validate device_id
-	//validate device_id is compatibles with all the described electrodes
-	//verifiy author is who he says he is
-	//multiple authors (acknowledgement of other authors nedded ?)
+	//verify protocol exists
+	protocol, err := w.repository.GetProtocol(protocolID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})
+		}
+		return nil
+	}
+
+	//verify token bearer is in author list
+	if !protocol.AuthoredBy(tokenBearer.Username) {
+		ctx.JSON(http.StatusForbidden, defines.SimpleReturnMessage{Message: fmt.Sprintf("You don't have rights to edit rotocol #%d", protocolID)})
+		return nil
+	}
 
 	//DONE:
 	//generate mask frame
