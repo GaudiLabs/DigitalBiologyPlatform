@@ -9,6 +9,8 @@ class LoginForm extends React.Component {
 
   constructor(props) {
     super(props);
+    this.captchaObjLogin = React.createRef()
+    this.captchaObjSignup = React.createRef()
 
     this.state = {
       username: "",
@@ -117,6 +119,7 @@ class LoginForm extends React.Component {
   }
 
   async handleLoginSubmit(e) {
+    this.captchaObjLogin.current.resetCaptcha()
     e.preventDefault();
     this.setState(
       {
@@ -139,11 +142,6 @@ class LoginForm extends React.Component {
     loginParamsToSend.captcha_token = this.state.captchaToken
 
     const token = await this.loginUser(loginParamsToSend);
-    this.setState(
-      {
-          resetCaptcha: !this.state.resetCaptcha,
-      }
-    )
     console.log(token)
     if (token) {
       //TODO : local store the token
@@ -191,9 +189,8 @@ class LoginForm extends React.Component {
     return false
   }
 
-
-
   async handleSignupSubmit(e) {
+    this.captchaObjSignup.current.resetCaptcha()
     e.preventDefault();
     this.setState(
       {
@@ -284,7 +281,11 @@ class LoginForm extends React.Component {
                   <input className="text" type="password" placeholder="" value={this.state.password} onChange={this.setPassword.bind(this)} />
                 </div>
                 <br />
-                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)}/>
+                <HCaptcha 
+                  sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} 
+                  onVerify={this.onVerifyCaptcha.bind(this)}
+                  ref={this.captchaObjLogin}  
+                />
                 <div className="input">
                   <input type="submit" value="LOG IN" />
                 </div>
@@ -305,7 +306,11 @@ class LoginForm extends React.Component {
                   <input className="text" type="text" placeholder="" value={this.state.email} onChange={this.setEmail.bind(this)} />
                 </div>
                 <br />
-                <HCaptcha sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} onVerify={this.onVerifyCaptcha.bind(this)}/>
+                <HCaptcha 
+                  sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} 
+                  onVerify={this.onVerifyCaptcha.bind(this)}
+                  ref={this.captchaObjSignup}  
+                  />
                 <div className="input">
                   <input type="submit" value="REGISTER" />
                 </div>
