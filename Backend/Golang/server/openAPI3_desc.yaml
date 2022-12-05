@@ -367,7 +367,6 @@ components:
       required:
         - "username"
         - "password"
-        - "captcha_token"
       properties:
         username:
           type: string
@@ -375,8 +374,6 @@ components:
         password:
           type: string
           example: "Userpass"
-        captcha_token:
-          type: string
       xml:
         name: user
     CreateUserParams:

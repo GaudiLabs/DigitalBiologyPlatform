@@ -11,7 +11,6 @@ class LoginForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.captchaObjLogin = React.createRef()
     this.captchaObjSignup = React.createRef()
 
     this.state = {
@@ -148,7 +147,6 @@ class LoginForm extends React.Component {
   }
 
   async handleLoginSubmit(e) {
-    this.captchaObjLogin.current.resetCaptcha()
     e.preventDefault();
 
     //remove all notifications
@@ -317,11 +315,6 @@ class LoginForm extends React.Component {
                   <input className="text" type="password" placeholder="" value={this.state.password} onChange={this.setPassword.bind(this)} />
                 </div>
                 <br />
-                <HCaptcha 
-                  sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY} 
-                  onVerify={this.onVerifyCaptcha.bind(this)}
-                  ref={this.captchaObjLogin}  
-                />
                 <div className="input">
                   <input type="submit" value="LOG IN" />
                 </div>
