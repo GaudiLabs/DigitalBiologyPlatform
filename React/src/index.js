@@ -165,11 +165,77 @@ class Body extends React.Component {
     })
   }
 
+  async readSerialBytes(numberOfBytes) {
+    let bytes = new Uint8Array(numberOfBytes);
+    let readBytes = 0;
+    let finished = false;
+
+
+    let reader = this.state.serialPort.readable.getReader();
+
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (value) {
+          let chunk = value;
+
+          /*
+          if (readBytes === 0 && chunk[0] === SerialService.FAIL) {
+            return bytes;
+          }
+          */
+
+          for (let i = 0; i < chunk.length; i++) {
+            bytes[i] = chunk[i];
+            readBytes++;
+
+            if (readBytes >= numberOfBytes) {
+              finished = true;
+            }
+          }
+        }
+        if (done || finished) {
+          break;
+        }
+      }
+    } catch (error) {
+      console.error("Serial port reading error: " + error);
+    } finally {
+      reader.releaseLock();
+    }
+
+    return bytes;
+  }
+
   async SendSerialData(data) {
 
     const writer = this.state.serialPort.writable.getWriter();
     await writer.write(data);
     writer.releaseLock();
+
+    let readBytes = await this.readSerialBytes(24)
+    console.log(readBytes)
+    //Feedback playground [WIP]
+    // while (this.state.serialPort.readable) {
+    //   const reader = this.state.serialPort.readable.getReader();
+    //   try {
+    //     while (true) {
+    //       const { value, done } = await reader.read();
+    //       if (done) {
+    //         // |reader| has been canceled.
+    //         break;
+    //       }
+    //       console.log("SERIAL READ")
+    //       console.log(value)
+    //       // Do something with |value|...
+    //     }
+    //   } catch (error) {
+    //     // Handle |error|...
+    //   } finally {
+    //     reader.releaseLock();
+    //   }
+    // }
+    
   }
 
   sleep(ms) {
@@ -667,7 +733,7 @@ class Body extends React.Component {
     for (let i = 0; i < 16; i++) {
       let byte = 0
       for (let j = 0; j < 8; j++) {
-        if (squares[j][i] != null) {
+        if (squares[i][j] != null) {
           byte = this.bit_set(byte, j)
         }
         output[i] = byte
