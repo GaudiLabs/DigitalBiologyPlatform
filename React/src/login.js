@@ -4,6 +4,8 @@ import OpenDropLogo from './logo';
 import { Navigate } from "react-router-dom";
 import HeaderTop from './header';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class LoginForm extends React.Component {
 
@@ -16,10 +18,6 @@ class LoginForm extends React.Component {
       username: "",
       password: "",
       captchaToken: "",
-      error: false,
-      errorMessage: "",
-      success: false,
-      successMessage: "",
       email : "",
       redirectToHome: false,
     }
@@ -49,38 +47,65 @@ class LoginForm extends React.Component {
     }
     //401 Unauthorized
     if (response.status === 401) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Invalid Username/Password.",
-        })
+      toast.error('Invalid Username/Password.', {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       //422 Unprocessable entity
     } else if (response.status === 422) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Captcha authentication failed.",
-        })
+      toast.error("Captcha authentication failed.", {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       //409 Conflict
       }  else if (response.status === 409) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "This username already exists.",
-        })
+      toast.error("This username already exists.", {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       //400 Bad format
       }  else if (response.status === 400) {
-        this.setState(
-          {
-            error: true,
-            errorMessage: "Bad format : check email & other fields.",
-          })
+      toast.error("Bad format : check email & other fields.", {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+ 
     } else {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Unexpected error happened.",
-        })
+      toast.error("Unexpected error happened.", {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+ 
     }
     return true
   }
@@ -101,12 +126,16 @@ class LoginForm extends React.Component {
       })
     }
     catch (error) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Unable to reach server."
-        }
-      )
+      toast.error('Unable to reach server.', {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       console.log(error)
       return
     }
@@ -121,11 +150,9 @@ class LoginForm extends React.Component {
   async handleLoginSubmit(e) {
     this.captchaObjLogin.current.resetCaptcha()
     e.preventDefault();
-    this.setState(
-      {
-        error: false,
-      }
-    )
+
+    //remove all notifications
+    toast.dismiss()
 
     console.log("HANDLE SUBMIT TRIGGER");
 
@@ -149,6 +176,7 @@ class LoginForm extends React.Component {
       this.props.state.loggedInCallback(loginParamsToSend.username, token)
       //setToken(token);
       this.setState({
+        captchaToken : "",
         redirectToHome: true
       })
     }
@@ -171,12 +199,16 @@ class LoginForm extends React.Component {
       })
     }
     catch (error) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Unable to reach server."
-        }
-      )
+      toast.error('Unable to reach server.', {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       console.log(error)
       return false
     }
@@ -191,13 +223,10 @@ class LoginForm extends React.Component {
 
   async handleSignupSubmit(e) {
     this.captchaObjSignup.current.resetCaptcha()
+
     e.preventDefault();
-    this.setState(
-      {
-        success : false,
-        error: false,
-      }
-    )
+    //remove all notifications
+    toast.dismiss()
 
     console.log("HANDLE SINGNUP TRIGGER");
 
@@ -219,12 +248,24 @@ class LoginForm extends React.Component {
     const signupSuccess = await this.signUpUser(loginParamsToSend);
     console.log(signupSuccess)
     if (signupSuccess) {
-      this.setState({
-        success : true,
-        successMessage : "Sign up successfull, You may now log in."
-        //redirectToHome: true
-      })
+
+      toast.success('Sign up successfull, You may now log in.', {
+        position: "top-right",
+        autoClose: true,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+
     }
+        this.setState(
+      {
+        captchaToken: ""
+      }
+    )
   }
 
 
@@ -252,6 +293,7 @@ class LoginForm extends React.Component {
     }
     return (
       <React.Fragment>
+        <ToastContainer />
         <HeaderTop state={this.props.state} />
 
         <div className="login_container">
@@ -259,12 +301,6 @@ class LoginForm extends React.Component {
             {OpenDropLogo()}
             <br></br>
             OpenDrop
-          </div>
-          <div className="error_notification_panel" style={{ display: this.state.error ? 'table-cell' : 'none' }}>
-            {this.state.errorMessage}
-          </div>
-          <div className="success_notification_panel" style={{ display: this.state.success ? 'table-cell' : 'none' }}>
-            {this.state.successMessage}
           </div>
 
           <input id="signin" type="radio" name="tab" />
