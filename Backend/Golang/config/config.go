@@ -6,6 +6,7 @@ var Config ConfigInterface
 
 type ConfigInterface interface {
 	GetServerPort() string
+	GetTokenTTL() int
 	GetServerHost() string
 	GetPostgresHost() string
 	GetPostgresPort() string

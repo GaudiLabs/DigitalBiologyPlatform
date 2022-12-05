@@ -19,13 +19,8 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import { GenerateAuthHeader } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import SaveDialog from './save_dialog';
+import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 
@@ -82,13 +77,22 @@ class Body extends React.Component {
     console.log("TOKEN SET:")
     console.log(atoken)
     console.log(ausername)
-    var tokenObj = JSON.parse(atoken)
-    //TODO : here check if token is expired 
+
+  
     if (atoken != null && ausername != null) {
+    var tokenObj = JSON.parse(atoken)
+
+    var token_expiration_date = DateTime.fromISO(tokenObj.expiration_date)
+    var now = DateTime.now()
+
+    var expired_token = (token_expiration_date < now)
+    
+    if (!expired_token) {
       this.state.loggedIn = true
       this.state.username = ausername
       this.state.accessToken = tokenObj
       this.state.authHeader = GenerateAuthHeader(ausername, tokenObj)
+      }
     }
   }
 

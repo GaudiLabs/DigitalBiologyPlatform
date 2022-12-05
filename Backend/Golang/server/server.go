@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
@@ -197,7 +198,7 @@ func (w *Handlers) LoginUser(ctx echo.Context) error {
 	//Mapping returned object
 	var returnedToken LoginToken
 	returnedToken.Token = &generatedToken.Token
-	returnedDateStr := (&generatedToken.ExpirationDate).String()
+	returnedDateStr := time.Time((generatedToken.ExpirationDate)).Format(time.RFC3339)
 	returnedToken.ExpirationDate = &returnedDateStr
 
 	ctx.JSON(http.StatusCreated, returnedToken)

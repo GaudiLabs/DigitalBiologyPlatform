@@ -21,6 +21,7 @@ type ViperConfig struct {
 	postgresPort         string
 	hCaptchaSecret       string
 	hCaptchaVerifyURL    string
+	tokenTTL             int
 }
 
 func newViperConfig() (ViperConfig, error) {
@@ -90,6 +91,12 @@ func newViperConfig() (ViperConfig, error) {
 	}
 	returnedConfig.hCaptchaVerifyURL = viper.GetString(envConfigName)
 
+	envConfigName = "TOKEN_SECONDS_TTL"
+	if !viper.IsSet(envConfigName) {
+		return returnedConfig, fmt.Errorf(errorFormat, envConfigName)
+	}
+	returnedConfig.tokenTTL = viper.GetInt(envConfigName)
+
 	return returnedConfig, nil
 }
 
@@ -119,4 +126,7 @@ func (config *ViperConfig) GethCaptchaSecret() string {
 }
 func (config *ViperConfig) GethCaptchaVerifyURL() string {
 	return config.hCaptchaVerifyURL
+}
+func (config *ViperConfig) GetTokenTTL() int {
+	return config.tokenTTL
 }
