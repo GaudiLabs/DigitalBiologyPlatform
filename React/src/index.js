@@ -121,11 +121,15 @@ class Body extends React.Component {
 
       var new_frame = Object.create(frame);
       new_frame.duration = 1000;
-      new_frame.electrodes = Array(16).fill(Array(8).fill(null));
+      new_frame.electrodes = Array(16);
+      for (var j = 0; j < new_frame.electrodes.length; j++) {
+        new_frame.electrodes[j] = Array(8).fill(null)
+      } 
+    //console.log(new_frame)
       new_frames.push(new_frame)
     }
 
-    console.log("HERE")
+    console.log("FRAMES ALLOC")
     this.setState({
       frames: new_frames,
       framesAmount: framesAmount
@@ -421,8 +425,8 @@ class Body extends React.Component {
     var newFrames = Array()
 
 
-    console.log("NEWAMOUNT:")
-    console.log(newAmount)
+    //console.log("NEWAMOUNT:")
+    //console.log(newAmount)
 
     //TODO:
     //use clean alloc
@@ -438,8 +442,8 @@ class Body extends React.Component {
       if (backendProtocol.frames[i].electrodes != null) { 
       for (var j = 0; j < backendProtocol.frames[i].electrodes.length; j++) {
         var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
-        var y = Math.floor(electrode_id / 8);
-        var x = electrode_id % 8;
+        var x = Math.floor(electrode_id / 8);
+        var y = electrode_id % 8;
         new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value
       }
     }
@@ -523,13 +527,13 @@ class Body extends React.Component {
       frameToAdd.electrodes = []
 
       //Generate electrodes
-      for (var x = 0; x < 8; x++) {
-        for (var y = 0; y < 16; y++) {
+      for (var x = 0; x < 16; x++) {
+        for (var y = 0; y < 8; y++) {
           if (this.state.frames[i].electrodes[x][y] != null) {
             console.log("DETECTED ELECTRODE")
             //rebuilding electrode
             var electrodeToAdd = Object.create(electrode)
-            electrodeToAdd.electrode_id = ((y * 8) + x).toString()
+            electrodeToAdd.electrode_id = ((x * 8) + y).toString()
             electrodeToAdd.value = parseInt(this.state.frames[i].electrodes[x][y]) 
             console.log(electrodeToAdd)
             frameToAdd.electrodes.push(electrodeToAdd)
@@ -685,8 +689,8 @@ class Body extends React.Component {
       });
 
       //convert electrode id to i/j coordinates:
-      var j = Math.floor(electrode_id / 8);
-      var i = electrode_id % 8;
+      var i = Math.floor(electrode_id / 8);
+      var j = electrode_id % 8;
 
       if (newArray[i][j] != null) {
         newArray[i][j] = null;

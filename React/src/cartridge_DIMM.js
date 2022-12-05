@@ -1477,11 +1477,20 @@ class CartridgeComponent extends React.Component {
         ////console.log(this.props.state.currently_edited_frame[0])
         ////console.log(this.state.frames)
         ////console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+             //console.log("i=" + i + "j=" + j)
+            //console.log(this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[j][i])
         //console.log(this.props.state)
-        if (this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[i][j] == null) {
-            return ("#efd94c")
+        if (this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[j][i] !== null) {
+           return ("#275599")
+        } else if (this.props.state.currently_edited_frame[0] != 0) {
+            //Previous frame have this electrode activated
+            if (this.props.state.frames[this.props.state.currently_edited_frame[0] - 1].electrodes[j][i] !== null) 
+            {
+                return ("rgb(186, 183, 102)")
+            }
         } else {
-            return ("#275599")
+ 
+            return ("#efd94c")
         }
     }
 
