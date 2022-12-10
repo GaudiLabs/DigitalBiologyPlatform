@@ -454,7 +454,7 @@ class Body extends React.Component {
   async saveNewProtocol(protocol) {
 
     let requestResp
-    const route = "/protocol/add"
+    const route = "/protocol"
     const api_url = process.env.REACT_APP_API_URL
 
     try {

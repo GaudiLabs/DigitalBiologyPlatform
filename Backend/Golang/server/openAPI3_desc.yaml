@@ -140,7 +140,7 @@ paths:
       tags:
         - protocol
       summary: update a particular entire protocol by its ID
-      description: return a protocol
+      description: overwrite a protocol
       requestBody:
         description: Protocol description in json
         required: true
@@ -159,7 +159,25 @@ paths:
       responses:
         default:
           description: successful operation
-  /protocol/add:
+    delete:
+      security:
+        - BearerAuth: []
+      tags:
+        - protocol
+      summary: delete a particular entire protocol by its ID
+      description: delete a protocol
+      parameters:
+        - in: path
+          name: protocolID
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the protocol to delete
+      operationId: deleteProtocol
+      responses:
+        default:
+          description: successful operation
+  /protocol:
     post:
       security:
         - BearerAuth: []

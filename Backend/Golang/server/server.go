@@ -321,6 +321,39 @@ func (w *Handlers) OverwriteProtocol(ctx echo.Context, protocolID int) error {
 	return nil
 }
 
+func (w *Handlers) DeleteProtocol(ctx echo.Context, protocolID int) error {
+
+	tokenBearer, err := auth.GetTokenObjectFromRequest(ctx.Request())
+	if err != nil {
+		return err
+	}
+
+	//verify protocol exists
+	protocol, err := w.repository.GetProtocol(protocolID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})
+		}
+		return nil
+	}
+
+	//verify token bearer is in author list
+	if !protocol.AuthoredBy(tokenBearer.Username) {
+		ctx.JSON(http.StatusForbidden, defines.SimpleReturnMessage{Message: fmt.Sprintf("You don't have rights to edit rotocol #%d", protocolID)})
+		return nil
+	}
+
+	err = w.repository.DeleteProtocol(protocolID)
+	if err != nil {
+		return err
+	}
+
+	_ = tokenBearer
+	ctx.JSON(http.StatusNoContent, "")
+	return nil
+	return nil
+}
+
 // LogoutUser converts echo context to params.
 func (w *Handlers) LogoutUser(ctx echo.Context) error {
 	ctx.String(http.StatusOK, "Hello, World!")
