@@ -4,7 +4,8 @@ import { Range, getTrackBackground } from "react-range";
 import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faCircle, faCircleArrowLeft, faCircleDot, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
-import SaveDialog from "./save_dialog";
+import Switch from '@mui/material/Switch';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 
 function SelectSerial(props) {
@@ -32,7 +33,7 @@ function Send(props) {
       <button disabled title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
         <FontAwesomeIcon icon={faPlay} />
       </button>
-    ) 
+    )
   }
 
   if (props.state.playing) {
@@ -86,15 +87,15 @@ function Save(props) {
       <button disabled title="Save" className="editor_btn end_btn" onClick={props.onClick}>
         <FontAwesomeIcon icon={faFloppyDisk} />
       </button>
-    ); 
+    );
   } else {
-  return (
-    <React.Fragment>
-    <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
-      <FontAwesomeIcon icon={faFloppyDisk} />
-    </button>
-  </React.Fragment>
-  );
+    return (
+      <React.Fragment>
+        <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
+          <FontAwesomeIcon icon={faFloppyDisk} />
+        </button>
+      </React.Fragment>
+    );
   }
 }
 
@@ -123,7 +124,7 @@ class EditorButtons extends React.Component {
     super(props);
     //console.log(this.props)
     this.state = {
-      a: "b"
+      settingsOpen: false
     }
   }
 
@@ -150,6 +151,41 @@ class EditorButtons extends React.Component {
     await port.open({ baudRate: 115200 });
     //console.log("serial connected successfully.")
   }
+
+  ToggleSettingsClick() {
+    this.setState({
+      settingsOpen : !this.state.settingsOpen
+    })
+  }
+
+  SwitchTheme = createTheme({
+    components: {
+      MuiSwitch: {
+        styleOverrides: {
+          switchBase: {
+            // Controls default (unchecked) color for the thumb
+            color: "#888"
+          },
+          colorPrimary: {
+            "&.Mui-checked": {
+              // Controls checked color for the thumb
+              color: "red"
+            }
+          },
+          track: {
+            // Controls default (unchecked) color for the track
+            opacity: 0.6,
+            backgroundColor: "#aaa",
+            ".Mui-checked.Mui-checked + &": {
+              // Controls checked color for the track
+              opacity: 0.4,
+              backgroundColor: "red"
+            }
+          }
+        }
+      }
+    }
+  });
 
   render() {
 
@@ -217,15 +253,32 @@ class EditorButtons extends React.Component {
             )}
           />
         </div>
-        <div class="buttons_container">
+        <div className="buttons_container">
           <PreviousFrame onClick={() => this.props.state.goToPreviousFrame()} />
           <Send state={this.props.state} onClick={() => this.props.state.serialSendClick()} />
           <NextFrame onClick={() => this.props.state.goToNextFrame()} />
           <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
-          <Settings onClick={() => this.SelectSerialClick()} />
+          <Settings onClick={() => this.ToggleSettingsClick()} />
           <Enlarge onClick={() => this.SelectSerialClick()} />
           <Live state={this.props.state} onClick={() => this.props.state.liveModeTrigger()} />
           <Save state={this.props.state} onClick={() => this.props.state.saveClick()} />
+        </div>
+        <div className="settings_container" style={{display: this.state.settingsOpen ? 'block' : 'none' }}>
+          Settings
+          <br/>
+          <br/>
+          <ThemeProvider theme={this.SwitchTheme}>
+            <Switch 
+            //defaultChecked 
+              size="small" 
+            checked={this.props.state.loopMode}
+              onChange={this.props.state.toggleLoopMode}
+            /> Loop Mode
+          </ThemeProvider>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
         </div>
       </React.Fragment>
     )

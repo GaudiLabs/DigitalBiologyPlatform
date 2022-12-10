@@ -56,6 +56,7 @@ class Body extends React.Component {
       setSerialPort: this.setSerialPort.bind(this),
       serialSendClick: this.serialSendClick.bind(this),
       goToNextFrame: this.goToNextFrame.bind(this),
+      toggleLoopMode: this.toggleLoopMode.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
       saveClick: this.saveClick.bind(this),
       liveModeTrigger: this.liveModeTrigger.bind(this),
@@ -68,7 +69,8 @@ class Body extends React.Component {
       authHeader: "",
       saveDialogOpen : false,
       protocols: [],
-      loadedProtocolID : null
+      loadedProtocolID : null, 
+      loopMode : false
     };
 
     //retreive logged in infos
@@ -142,6 +144,12 @@ class Body extends React.Component {
         currently_edited_frame: [this.state.currently_edited_frame[0] - 1],
       }, this.handleLiveDeviceSend)
     }
+  }
+
+  toggleLoopMode() {
+      this.setState({
+        loopMode: !this.state.loopMode,
+      })
   }
 
   goToNextFrame() {
@@ -273,18 +281,23 @@ class Body extends React.Component {
     await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
 
     //loop through frames
-    console.log(this.state.currently_edited_frame[0])
-    for (let i = this.state.currently_edited_frame[0]; i < n - 1; i++) {
+    //console.log(this.state.currently_edited_frame[0])
+    //for (let i = this.state.currently_edited_frame[0]; i < n - 1; i++) {
+    while (true) {
       if (!this.state.playing) {
         return
       }
 
       //var oldNb = this.state.currently_edited_frame[0]
       var newNb = this.state.currently_edited_frame[0] + 1
-      if (i === this.state.framesAmount) {
-        //remove this break for infinite loop
-        break;
-      }
+
+      // if (i === this.state.framesAmount) {
+      //   //remove this break for infinite loop
+      //   if (!this.state.loopMode) {
+      //     break;
+      //   }
+      // }
+      if (newNb != this.state.framesAmount) {
       let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
       this.setState(
         {
@@ -293,12 +306,23 @@ class Body extends React.Component {
           this.SendSerialData(data);
         }
       )
-
-      if (newNb != this.state.framesAmount - 1) {
         await this.sleep(this.state.frames[newNb].duration);
       } else {
         //End of frames reached
-        break;
+        if (!this.state.loopMode) {
+          break;
+        } else {
+          let newNb = 0
+          let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
+          this.setState(
+            {
+              currently_edited_frame: [newNb]
+            }, () => {
+              this.SendSerialData(data);
+            })
+        await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
+        }
+
       }
     }
     this.setState(
