@@ -367,6 +367,30 @@ class Body extends React.Component {
       loggedIn: false,
       username: "",
       accessToken: null,
+      currently_edited_frame: [0],
+      frames: [{
+        duration: 0,
+        electrodes: Array(16).fill(Array(8).fill(null))
+      }
+        ,
+      {
+        duration: 0,
+        electrodes: Array(16).fill(Array(8).fill(null))
+      }
+      ],
+      protocolName: "New Protocol",
+      protocolDescription: "Protocol description",
+      //squares: Array(16).fill(Array(8).fill("o")),
+      //electrodes: Array(128).fill(null),
+      serialPort: null,
+      framesAmount: 2,
+      liveMode: false,
+      playing: false,
+      authHeader: "",
+      saveDialogOpen : false,
+      protocols: [],
+      loadedProtocolID : null, 
+      loopMode : false
     })
   }
 
@@ -835,15 +859,18 @@ class Body extends React.Component {
   handleFrameAmountChange(event) {
 
     //Parse new amount, default to 0 if NaN
-    var newAmount = (parseInt(event.target.value) || 0)
-
-    if (newAmount === 0) {
-      this.setState({
-        currently_edited_frame: [0],
-        framesAmount: newAmount,
-      });
-      return
+    var newAmount = (parseInt(event.target.value) || 2)
+    if (newAmount < 2) {
+      newAmount = 2
     }
+
+    // if (newAmount === 0) {
+    //   this.setState({
+    //     currently_edited_frame: [0],
+    //     framesAmount: newAmount,
+    //   });
+    //   return
+    // }
 
     const frame = {
       duration: 0,
@@ -882,7 +909,7 @@ class Body extends React.Component {
     this.setState({
       currently_edited_frame: [0],
       frames: newFrames,
-      framesAmount: event.target.value,
+      framesAmount: newAmount,
     });
   }
 
