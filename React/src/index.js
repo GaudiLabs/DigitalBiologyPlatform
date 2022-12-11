@@ -16,11 +16,10 @@ import ProtocolsLister from './protocols_lister';
 import SideButtons from './side_buttons';
 import EditorButtons from './editor_buttons';
 import { Responsive, WidthProvider } from "react-grid-layout";
-import { GenerateAuthHeader } from "./utils";
+import { GenerateAuthHeader, SimpleHash } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 
-import SaveDialog from './save_dialog';
-import DeleteDialog from './delete_dialog';
+import {SaveDialog, DeleteDialog, UnsavedDialog} from './dialogs';
 import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -52,7 +51,7 @@ class Body extends React.Component {
       clickHandle: this.handleHover.bind(this),
       loggedInCallback: this.loggedInCallback.bind(this),
       logOut: this.logOut.bind(this),
-      loadProtocol: this.loadProtocol.bind(this),
+      loadProtocol: this.handleLoadProtocol.bind(this),
       setEditedFrame: this.setEditedFrame.bind(this),
       setSerialPort: this.setSerialPort.bind(this),
       serialSendClick: this.serialSendClick.bind(this),
@@ -70,8 +69,11 @@ class Body extends React.Component {
       playing: false,
       authHeader: "",
       saveDialogOpen : false,
+      deleteDialogOpen : false,
+      saveDialogOpen : false,
       protocols: [],
       loadedProtocolID : null, 
+      loadedProtocolHash : "", 
       loopMode : false
     };
 
@@ -637,18 +639,44 @@ class Body extends React.Component {
         framesAmount: backendProtocol.frame_count,
         protocolName: backendProtocol.name,
         protocolDescription: backendProtocol.description,
+      }, () => {
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("LOADED PROTOCOL HASH ="+protocolHash)
+    this.setState(
+      {
+        loadedProtocolHash : protocolHash
+      }
+    )
       }
     )
 
   }
 
-  async loadProtocol(protocol_id) {
+  async handleLoadProtocol(protocol_id) {
+    //Detecting unsaved change in loaded protocol
     console.log("LOAD PROTOCOL CALL")
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("ACTUAL PROTOCOL HASH="+protocolHash)
+    console.log("LOADED PROTOCOL HASH="+this.state.loadedProtocolHash)
+    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash) {
+      this.setState({
+        protocolToLoadID: protocol_id,
+        unsavedDialogOpen : true
+      })
+      return;
+    }
+    await this.loadProtocol(protocol_id)
+  }
+
+  async loadProtocol(protocol_id) {
     console.log(protocol_id)
     let BackendProtocol = await this.retreiveProtocol(protocol_id)
     console.log(BackendProtocol)
     this.loadBackendProtocolToState(BackendProtocol)
-    //TODO : error handling
+    
+   //TODO : error handling
     this.setState(
       {
         loadedProtocolID : protocol_id
@@ -779,6 +807,16 @@ class Body extends React.Component {
      var currentProtocol = this.SerializeStateProtocol()
 
     await this.overwriteProtocol(this.state.loadedProtocolID, currentProtocol)
+    //TODO : check save success ?
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("SAVED PROTOCOL HASH ="+protocolHash)
+    this.setState(
+      {
+        loadedProtocolHash : protocolHash
+      }
+    )
+
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
@@ -1024,6 +1062,13 @@ class Body extends React.Component {
       }
     )
   };
+  handleUnsavedDialogClose = () => {
+    this.setState(
+      {
+        unsavedDialogOpen : false
+      }
+    )
+  };
 
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
@@ -1047,6 +1092,17 @@ class Body extends React.Component {
         handleDelete={this.handleDeleteProtocol.bind(this)}
         protocolName={this.state.protocolToDeleteName}
         />
+        <UnsavedDialog 
+        open={this.state.unsavedDialogOpen} 
+        handleClose={this.handleUnsavedDialogClose.bind(this)}
+        handleDiscard={() => { this.loadProtocol(this.state.protocolToLoadID)
+        this.setState({
+          unsavedDialogOpen : false
+        })
+        }}
+        protocolName={this.state.protocolName}
+        />
+ 
         <ResponsiveGridLayout
           layouts={{ lg: this.layout }}
           breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
