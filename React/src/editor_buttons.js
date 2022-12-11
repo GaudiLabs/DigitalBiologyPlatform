@@ -28,23 +28,23 @@ function SelectSerial(props) {
 
 function Send(props) {
 
-  if (props.state.liveMode === true) {
-    return (
-      <button disabled title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
-        <FontAwesomeIcon icon={faPlay} />
-      </button>
-    )
-  }
+  // if (props.state.liveMode === true) {
+  //   return (
+  //     <button disabled title="Play Sequence" className="editor_btn" onClick={props.onClick}>
+  //       <FontAwesomeIcon icon={faPlay} />
+  //     </button>
+  //   )
+  // }
 
   if (props.state.playing) {
     return (
-      <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+      <button  title="Pause Sequence" className="editor_btn" onClick={props.onClick}>
         <FontAwesomeIcon icon={faPause} />
       </button>
     );
   }
   return (
-    <button disabled={props.state.serialPort === null} title="Play Sequence (You have to connect a device first)" className="editor_btn" onClick={props.onClick}>
+    <button title="Play Sequence" className="editor_btn" onClick={props.onClick}>
       <FontAwesomeIcon icon={faPlay} />
     </button>
   );
@@ -68,7 +68,7 @@ function NextFrame(props) {
 
 function Settings(props) {
   return (
-    <button title="Settings" className="editor_btn" onClick={props.onClick}>
+    <button title="Protocol settings" className="editor_btn" onClick={props.onClick}>
       <FontAwesomeIcon icon={faCog} />
     </button>
   );

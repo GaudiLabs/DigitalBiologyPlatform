@@ -1,7 +1,7 @@
 import * as React from "react"
 import './protocol_lister.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleXmark, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faTrashCan, faCloudArrowDown, } from '@fortawesome/free-solid-svg-icons'
 
 
 class ProtocolsLister extends React.PureComponent {
@@ -29,8 +29,6 @@ class ProtocolsLister extends React.PureComponent {
     //TO-DO
   }
 
-
-
   renderSingleProtocol(protocol, loadedProtocolID) {
     var authorsList = ""
     for (var i = 0; i < Object.keys(protocol.author_list).length; i++) {
@@ -50,7 +48,7 @@ class ProtocolsLister extends React.PureComponent {
  
             <button title="Delete protocol" className="lister_btn" onClick={() => this.props.protocolDeleteClick(protocol.id, protocol.name)} >
               {/* onClick={props.onClick}> */}
-              <FontAwesomeIcon icon={faCircleXmark} />
+              <FontAwesomeIcon icon={faTrashCan} />
             </button>
  
           </div>

@@ -220,6 +220,9 @@ class Body extends React.Component {
   }
 
   async SendSerialData(data) {
+    if (!this.state.liveMode) {
+      return
+    }
 
     const writer = this.state.serialPort.writable.getWriter();
     await writer.write(data);
