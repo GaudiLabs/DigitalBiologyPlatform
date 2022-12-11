@@ -20,6 +20,7 @@ import { GenerateAuthHeader } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 
 import SaveDialog from './save_dialog';
+import DeleteDialog from './delete_dialog';
 import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -346,16 +347,35 @@ class Body extends React.Component {
     )
   }
 
-  async deleteProtocolClick(protocolID){
-    console.log("DELETE PROTOCOL TRIGGER")
-    await this.deleteProtocol(protocolID) 
+  async deleteProtocolClick(protocolID, protocolName){
+    console.log("DELETE PROTOCOL CLICK TRIGGER")
+
+    this.setState({
+      deleteDialogOpen : true,
+      protocolToDeleteID : protocolID,
+      protocolToDeleteName : protocolName
+    })
+
+  }
+
+  async handleDeleteProtocol(){
+    await this.deleteProtocol(this.state.protocolToDeleteID) 
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols
+        protocols : BackendProtocolsResponse.protocols,
+        deleteDialogOpen : false
       }
     )
+    if (this.state.protocolToDeleteID == this.state.loadedProtocolID) {
+      this.setState(
+        {
+          loadedProtocolID : null
+        }
+      )
+      this.allocCleanFrames(20)
+    }
   }
 
   loggedInCallback(username, token) {
@@ -401,6 +421,7 @@ class Body extends React.Component {
       playing: false,
       authHeader: "",
       saveDialogOpen : false,
+      deleteDialogOpen : false,
       protocols: [],
       loadedProtocolID : null, 
       loopMode : false
@@ -996,6 +1017,13 @@ class Body extends React.Component {
       }
     )
   };
+  handleDeleteDialogClose = () => {
+    this.setState(
+      {
+        deleteDialogOpen : false
+      }
+    )
+  };
 
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
@@ -1012,6 +1040,12 @@ class Body extends React.Component {
         handleClose={this.handleSaveDialogClose.bind(this)}
         handleCreateNew={this.handleCreateNewProtocol.bind(this)}
         handleOverwrite={this.handleOverwriteProtocol.bind(this)}
+        />
+        <DeleteDialog 
+        open={this.state.deleteDialogOpen} 
+        handleClose={this.handleDeleteDialogClose.bind(this)}
+        handleDelete={this.handleDeleteProtocol.bind(this)}
+        protocolName={this.state.protocolToDeleteName}
         />
         <ResponsiveGridLayout
           layouts={{ lg: this.layout }}

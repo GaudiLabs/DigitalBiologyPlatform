@@ -48,7 +48,7 @@ class ProtocolsLister extends React.PureComponent {
               <FontAwesomeIcon icon={faCloudArrowDown} />
             </button>
  
-            <button title="Delete protocol" className="lister_btn" onClick={() => this.props.protocolDeleteClick(protocol.id)} >
+            <button title="Delete protocol" className="lister_btn" onClick={() => this.props.protocolDeleteClick(protocol.id, protocol.name)} >
               {/* onClick={props.onClick}> */}
               <FontAwesomeIcon icon={faCircleXmark} />
             </button>
