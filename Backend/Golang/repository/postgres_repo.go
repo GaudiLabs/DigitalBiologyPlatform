@@ -180,6 +180,8 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 	if err != nil {
 		return err
 	}
+	spew.Dump("MASK FRAME ID:")
+	spew.Dump(maskFrameID)
 
 	//Populating mask frame
 	for _, maskFrameElectrode := range protocol.MaskFrame.Electrodes {
@@ -208,6 +210,7 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 		protocol.DeviceID,
 		false, //Public bool
 	)
+	spew.Dump(err)
 	if err != nil {
 		return err
 	}
@@ -217,6 +220,7 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 		oldMaskFrameID,
 	)
 	if err != nil {
+		spew.Dump(err)
 		return err
 	}
 

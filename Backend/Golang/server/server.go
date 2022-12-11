@@ -148,7 +148,7 @@ func (w *Handlers) GetSelfProtocolList(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	spew.Dump(protocols)
+	//spew.Dump(protocols)
 
 	//Mapping returned Object
 	//Attempt at automatic mapping
@@ -351,7 +351,6 @@ func (w *Handlers) DeleteProtocol(ctx echo.Context, protocolID int) error {
 	_ = tokenBearer
 	ctx.JSON(http.StatusNoContent, "")
 	return nil
-	return nil
 }
 
 // LogoutUser converts echo context to params.
@@ -391,7 +390,7 @@ func (w *Handlers) GetProtocol(ctx echo.Context, protocolID int) error {
 		}
 		return err
 	}
-	spew.Dump(protocol)
+	//spew.Dump(protocol)
 
 	//Mapping returned Object
 	var returnedProtocol FullProtocol

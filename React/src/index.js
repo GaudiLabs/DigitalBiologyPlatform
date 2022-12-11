@@ -59,6 +59,7 @@ class Body extends React.Component {
       toggleLoopMode: this.toggleLoopMode.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
       saveClick: this.saveClick.bind(this),
+      deleteClick: this.deleteProtocolClick.bind(this),
       liveModeTrigger: this.liveModeTrigger.bind(this),
       framesAmount: 2,
       liveMode: false,
@@ -345,6 +346,18 @@ class Body extends React.Component {
     )
   }
 
+  async deleteProtocolClick(protocolID){
+    console.log("DELETE PROTOCOL TRIGGER")
+    await this.deleteProtocol(protocolID) 
+
+    let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    this.setState(
+      {
+        protocols : BackendProtocolsResponse.protocols
+      }
+    )
+  }
+
   loggedInCallback(username, token) {
     console.log("LOGGED IN CALLBACK")
     console.log(username)
@@ -482,6 +495,39 @@ class Body extends React.Component {
       //TODO : empty body error case
       //console.log(requestResp.json())
       return requestResp.json()
+    }
+  }
+
+  async deleteProtocol(protocolID) {
+
+    let requestResp
+    const route = "/protocol/" + protocolID
+    const api_url = process.env.REACT_APP_API_URL
+
+    try {
+      requestResp = await fetch(api_url + route, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.state.authHeader
+        },
+      })
+    }
+    catch (error) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleHTTPErrors(requestResp)) {
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp
     }
   }
 
@@ -993,7 +1039,7 @@ class Body extends React.Component {
             <SideButtons />
           </div>
           <div key="Protocols" className="not_draggable" >
-            <ProtocolsLister loggedIn={this.state.loggedIn} protocolClick={this.state.loadProtocol} protocols={this.state.protocols}/>
+            <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick}/>
           </div>
         </ResponsiveGridLayout>
       </React.Fragment>
