@@ -70,7 +70,7 @@ class Body extends React.Component {
       authHeader: "",
       saveDialogOpen : false,
       deleteDialogOpen : false,
-      saveDialogOpen : false,
+      unsavedDialogOpen : false,
       protocols: [],
       loadedProtocolID : null, 
       loadedProtocolHash : "", 
@@ -1024,11 +1024,11 @@ class Body extends React.Component {
   renderDurationInput() {
     return (
       <form >
-        <label for="frame_duration">
+        <label htmlFor="frame_duration">
           Current Frame Duration
         </label>
         <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-        <label for="frame_amount">
+        <label htmlFor="frame_amount">
           Total amount of frames
         </label>
         <input className="control_input" name="frame_amount" type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
@@ -1039,11 +1039,11 @@ class Body extends React.Component {
   renderMetadataInput() {
     return (
       <form >
-        <label for="protocol_name" >
+        <label htmlFor="protocol_name" >
           Protocol name
         </label>
         <input className="control_input" name="protocol_name" type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
-        <label for="protocol_description">
+        <label htmlFor="protocol_description">
           Protocol description
         </label>
         <input className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
@@ -1073,6 +1073,7 @@ class Body extends React.Component {
     )
   };
 
+
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
     { i: "SideControls", x: 1, y: 0, w: 2, h: 1 },
@@ -1085,6 +1086,7 @@ class Body extends React.Component {
         <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
         <SaveDialog 
         open={this.state.saveDialogOpen} 
+        //open={false} 
         handleClose={this.handleSaveDialogClose.bind(this)}
         handleCreateNew={this.handleCreateNewProtocol.bind(this)}
         handleOverwrite={this.handleOverwriteProtocol.bind(this)}
@@ -1147,7 +1149,6 @@ class Body extends React.Component {
           <Routes>
             <Route path="/" element={this.renderMain()} />
             <Route path="/login" element={<LoginForm state={this.state} />} />
-            {/* <Route path="/preferences" element={<Preferences />} /> */}
           </Routes>
         </BrowserRouter>
       </div>

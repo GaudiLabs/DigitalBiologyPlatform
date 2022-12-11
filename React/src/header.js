@@ -35,7 +35,7 @@ class HeaderTop extends React.PureComponent {
     }
     return (
             <Nav>
-              <NavLink to="/login" exact >
+              <NavLink to="/login" exact="true" >
 	            <div className="login_link">Log In </div>
               </NavLink>
             </Nav>
@@ -49,7 +49,7 @@ class HeaderTop extends React.PureComponent {
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Container>
 
-        <NavLink to="/" exact >
+        <NavLink to="/" exact="true" >
           <Navbar.Brand>
             {OpenDropLogo()}
             OpenDrop

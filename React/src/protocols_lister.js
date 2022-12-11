@@ -35,7 +35,7 @@ class ProtocolsLister extends React.PureComponent {
       authorsList += protocol.author_list[i].author + ' '
     }
     return (
-      <li className={protocol.id === loadedProtocolID ? "loaded_protocol":""}>
+      <li className={protocol.id === loadedProtocolID ? "loaded_protocol":""} key={protocol.id}>
         <div className="protocol_text">
           <div className="protocol_title">
             {protocol.name}
@@ -105,7 +105,7 @@ class ProtocolsLister extends React.PureComponent {
 
     return (
       <React.Fragment>
-        <div class="lister_container">
+        <div className="lister_container">
           Sequence Library
           {this.renderProtocolsList()}
         </div>
