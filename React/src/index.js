@@ -1073,7 +1073,7 @@ class Body extends React.Component {
             <SideButtons />
           </div>
           <div key="Protocols" className="not_draggable" >
-            <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick}/>
+            <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID}/>
           </div>
         </ResponsiveGridLayout>
       </React.Fragment>

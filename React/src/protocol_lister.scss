@@ -58,6 +58,11 @@
     float: left;
   }
 
+  .protocol_desc {
+    // border : 1px solid #333;
+     width: 70%;
+   }
+
   .protocol_buttons {
     float: right;
     margin-bottom: 5px;
@@ -97,5 +102,9 @@
   
   .lister_btn:hover:enabled {
     background-color: #333333
+  }
+
+  .loaded_protocol {
+    background-color: rgba(51, 83, 148, 0.708);
   }
   

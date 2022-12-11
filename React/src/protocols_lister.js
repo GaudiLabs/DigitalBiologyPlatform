@@ -31,13 +31,13 @@ class ProtocolsLister extends React.PureComponent {
 
 
 
-  renderSingleProtocol(protocol) {
+  renderSingleProtocol(protocol, loadedProtocolID) {
     var authorsList = ""
     for (var i = 0; i < Object.keys(protocol.author_list).length; i++) {
       authorsList += protocol.author_list[i].author + ' '
     }
     return (
-      <li >
+      <li className={protocol.id === loadedProtocolID ? "loaded_protocol":""}>
         <div className="protocol_text">
           <div className="protocol_title">
             {protocol.name}
@@ -54,7 +54,9 @@ class ProtocolsLister extends React.PureComponent {
             </button>
  
           </div>
+          <div className="protocol_desc">
           {protocol.description}
+          </div>
         </div>
         <div className="protocol_meta">
           Frames : {protocol.frame_count}<br />
@@ -82,7 +84,7 @@ class ProtocolsLister extends React.PureComponent {
     }
     for (var i = 0; i < Object.keys(this.props.protocols).length; i++) {
       var currentProtocol = this.props.protocols[i]
-      protocolsList.push(this.renderSingleProtocol(currentProtocol))
+      protocolsList.push(this.renderSingleProtocol(currentProtocol, this.props.loadedProtocolID))
     }
 
     return (
