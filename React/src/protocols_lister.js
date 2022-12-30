@@ -2,6 +2,7 @@ import * as React from "react"
 import './protocol_lister.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faCloudArrowDown, } from '@fortawesome/free-solid-svg-icons'
+import { formatDuration } from "./utils";
 
 
 class ProtocolsLister extends React.PureComponent {
@@ -58,7 +59,7 @@ class ProtocolsLister extends React.PureComponent {
         </div>
         <div className="protocol_meta">
           Frames : {protocol.frame_count}<br />
-          Duration : {protocol.total_duration} ms <br />
+          Duration : {formatDuration(protocol.total_duration)} <br />
           By : {authorsList} <br />
         </div>
       </li>

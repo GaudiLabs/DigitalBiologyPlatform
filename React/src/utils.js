@@ -25,3 +25,20 @@ export function SimpleHash(str) {
     }
     return hash;
   }
+
+export function formatDuration (milliseconds) {
+    var time = { y: 31536000000, d: 86400000, h: 3600000, m: 60000, s: 1000, ms: 1 },
+        res = [];
+  
+    if (milliseconds === 0) return '0 ms';
+    
+    for (var key in time) {
+      if (milliseconds >= time[key]) {
+        var val = Math.floor(milliseconds/time[key]);
+        res.push(val += '' + key);
+        milliseconds = milliseconds % time[key];
+      }
+    }
+   
+    return res.length > 1 ? res.join(', ').replace(/,([^,]*)$/,' and'+'$1') : res[0]
+  }

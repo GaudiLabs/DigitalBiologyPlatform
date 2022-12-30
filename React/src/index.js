@@ -737,7 +737,7 @@ class Body extends React.Component {
     for (var i = 0; i < this.state.framesAmount; i++) {
       console.log("ADDING FRAME")
       var frameToAdd = Object.create(frame)
-      frameToAdd.duration = this.state.frames[i].duration
+      frameToAdd.duration = parseInt(this.state.frames[i].duration)
       frameToAdd.rank = i
       frameToAdd.electrodes = []
 
@@ -1064,7 +1064,7 @@ class Body extends React.Component {
     return (
       <form >
         <label htmlFor="frame_duration">
-          Current Frame Duration
+          Current frame duration (ms)
         </label>
         <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
         <label htmlFor="frame_amount">
