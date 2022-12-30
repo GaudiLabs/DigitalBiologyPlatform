@@ -18,6 +18,7 @@ class SideButtons extends React.PureComponent {
     console.log("RENDER SIDE BUTTONS")
     return (
       <React.Fragment>
+        <div class="side_buttons_container">
         Commands
         <br/>
         <button className="side_btn" onClick={this.props.duplicateFrame} >
@@ -66,7 +67,7 @@ class SideButtons extends React.PureComponent {
           </button>
         <br/>
 
- 
+        </div>
       </React.Fragment>
     )
   }

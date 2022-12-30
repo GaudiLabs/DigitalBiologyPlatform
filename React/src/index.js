@@ -126,7 +126,71 @@ class Body extends React.Component {
         protocols : BackendProtocolsResponse.protocols
       }
     )
+
+    // Query the table
+const table = document.getElementById('resizeMe');
+
+// Query all headers
+const cols = table.querySelectorAll('th');
+
+// Loop over them
+for (let i =0; i< cols.length; i ++)
+{
+  let col = cols[i]
+  const resizer = document.createElement('div');
+  resizer.classList.add('resizer');
+
+  // Set the height
+  resizer.style.height = `${table.offsetHeight}px`;
+
+  // Add a resizer element to the column
+  col.appendChild(resizer);
+
+  // Will be implemented in the next section
+ this.createResizableColumn (col, resizer);
+
+}
   }
+
+
+  createResizableColumn(col, resizer) {
+    // Track the current position of mouse
+    let x = 0;
+    let w = 0;
+
+    const mouseDownHandler = function (e) {
+        // Get the current mouse position
+        x = e.clientX;
+
+        // Calculate the current width of column
+        const styles = window.getComputedStyle(col);
+        w = parseInt(styles.width, 10);
+
+        // Attach listeners for document's events
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        resizer.classList.add('resizing');
+    };
+
+    const mouseMoveHandler = function (e) {
+        // Determine how far the mouse has been moved
+        const dx = e.clientX - x;
+
+        // Update the width of column
+        col.style.width = `${w + dx}px`;
+    };
+
+    // When user releases the mouse, remove the existing event listeners
+    const mouseUpHandler = function () {
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+  resizer.classList.remove('resizing');
+    };
+
+    resizer.addEventListener('mousedown', mouseDownHandler);
+  }
+
+
 
   generateEmptyFeedbackArray() {
     var feedbackArray = Array(16);
@@ -1308,7 +1372,7 @@ class Body extends React.Component {
         protocolName={this.state.protocolName}
         />
  
-        <ResponsiveGridLayout
+        {/* <ResponsiveGridLayout
           layouts={{ lg: this.layout }}
           breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
           cols={{ lg: 10 }}//, sm: 7, xs: 5 }}
@@ -1317,8 +1381,11 @@ class Body extends React.Component {
           draggableCancel=".not_draggable"
           compactType="horizontal"
           maxRows={6}
-        >
-          <div key="Adaptor" className="not_draggable custom_resize_handle main_cont">
+        > */}
+        <div id="main_grid">
+        <table id="resizeMe" className="table">
+          <th>
+          <div key="gridelem_adaptor" className="scrollable main_cont">
             <AdaptorComponent state={this.state} />
             <EditorButtons state={this.state} />
             <div className="fields_container">
@@ -1330,7 +1397,9 @@ class Body extends React.Component {
               </div>
             </div>
           </div>
-          <div key="SideControls" className="not_draggable" >
+          </th>
+          <th className="side_controls_th">
+          <div key="SideControls" className="scrollable" >
             <SideButtons 
             insertBlankFrame={this.state.insertBlankFrame} 
             duplicateFrame={this.state.duplicateFrame}
@@ -1339,12 +1408,16 @@ class Body extends React.Component {
             clearAllFrames={this.state.clearAllFrames}
             framesAmount={this.state.framesAmount}
             />
-
           </div>
-          <div key="Protocols" className="not_draggable" >
+          </th>
+          <th className="lister_th" >
+          <div key="Protocols" className="scrollable" >
             <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID}/>
           </div>
-        </ResponsiveGridLayout>
+          </th>
+          </table>
+          </div>
+        {/* </ResponsiveGridLayout> */}
       </React.Fragment>
     )
   }

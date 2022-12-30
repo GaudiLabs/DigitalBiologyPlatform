@@ -1,5 +1,5 @@
 .side_btn {
-    background-color: rgba(224, 224, 224);
+    background-color: rgba(224, 224, 224) !important;
     border-radius: 8px;
     border-width: 0;
     color: #333333;
@@ -23,8 +23,11 @@
   .side_icon {
     float: left;
   }
-  
-  
+
+  .table > :not(caption) > * > * {
+    padding: 0.5rem 0.5rem;
+    border-bottom-width: 0px !important;
+  }
   .side_btn:disabled {
     color: #999999;
   }
@@ -40,15 +43,25 @@
   }
   
   .side_btn:hover:enabled {
-    background-color: rgba(185, 185, 185);
+    background-color: rgba(185, 185, 185) !important;
   }
   
   .side_btn:hover:active:enabled {
-    background-color: rgba(165, 165, 165);
+    background-color: rgba(165, 165, 165) !important;
   }
 
   .side_button_text {
     display: inline;
     margin-left: 5px;
     font-size: 15px;
+  }
+
+  .side_controls_th {
+    width: 200px;
+    max-width: 200px;
+    min-width: 200px;
+  }
+
+  .lister_th {
+    min-width: 200px;
   }
