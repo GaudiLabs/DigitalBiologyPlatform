@@ -282,6 +282,11 @@ class EditorButtons extends React.Component {
           Total amount of frames
         </label>
         <input className="control_input" name="frame_amount" type="number" value={this.props.state.framesAmount} onChange={this.props.state.handleFrameAmountChange} />
+        <br/>
+        <label htmlFor="default_duration">
+          Default new frame duration
+        </label>
+        <input className="control_input" name="default_duration" type="number" value={this.props.state.defaultDuration} onChange={this.props.state.setDefaultFrameDuration} />
       </form>
           <br/>
           <br/>

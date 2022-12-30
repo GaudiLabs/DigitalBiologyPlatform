@@ -66,6 +66,7 @@ class Body extends React.Component {
       deleteClick: this.deleteProtocolClick.bind(this),
       liveModeTrigger: this.liveModeTrigger.bind(this),
       handleFrameAmountChange: this.handleFrameAmountChange.bind(this),
+      setDefaultFrameDuration: this.setDefaultFrameDuration.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -79,7 +80,8 @@ class Body extends React.Component {
       protocols: [],
       loadedProtocolID : null, 
       loadedProtocolHash : "", 
-      loopMode : true
+      loopMode : true,
+      defaultDuration: 1000,
     };
 
     //retreive logged in infos
@@ -168,6 +170,19 @@ class Body extends React.Component {
         loopMode: !this.state.loopMode,
       })
   }
+
+  setDefaultFrameDuration(event) {
+
+        //Parse new amount, default to 2 if NaN
+        var parsedValue = (parseInt(event.target.value) || 1000)
+        if (parsedValue < 1) {
+          parsedValue = 1
+        }
+    this.setState({
+      defaultDuration: parsedValue,
+    })
+}
+
 
   goToNextFrame() {
     if (this.state.currently_edited_frame[0] == (this.state.framesAmount - 1)) {
@@ -1044,7 +1059,7 @@ class Body extends React.Component {
       //pushing new frames
       for (var i = 0; i < framesAmountSet; i++) {
         var new_frame = Object.create(frame);
-        new_frame.duration = 1000;
+        new_frame.duration = this.state.defaultDuration;
         new_frame.electrodes = Array(16).fill(Array(8).fill(null));
         newFrames.push(new_frame)
       }
