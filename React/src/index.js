@@ -65,6 +65,7 @@ class Body extends React.Component {
       saveClick: this.saveClick.bind(this),
       deleteClick: this.deleteProtocolClick.bind(this),
       liveModeTrigger: this.liveModeTrigger.bind(this),
+      handleFrameAmountChange: this.handleFrameAmountChange.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -78,7 +79,7 @@ class Body extends React.Component {
       protocols: [],
       loadedProtocolID : null, 
       loadedProtocolHash : "", 
-      loopMode : false
+      loopMode : true
     };
 
     //retreive logged in infos
@@ -1067,10 +1068,6 @@ class Body extends React.Component {
           Current frame duration (ms)
         </label>
         <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-        <label htmlFor="frame_amount">
-          Total amount of frames
-        </label>
-        <input className="control_input" name="frame_amount" type="number" value={this.state.framesAmount} onChange={this.handleFrameAmountChange.bind(this)} />
       </form>
     )
   }
