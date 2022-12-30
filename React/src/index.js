@@ -24,6 +24,7 @@ import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 import {SaveDialog, DeleteDialog, UnsavedDialog} from './dialogs';
 import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
+const default_frame_amount = 2;
 
 
 
@@ -108,7 +109,7 @@ class Body extends React.Component {
 
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT : Main")
-    this.allocCleanFrames(20)
+    this.allocCleanFrames(default_frame_amount)
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
@@ -168,11 +169,12 @@ class Body extends React.Component {
   }
 
   goToNextFrame() {
-    if (this.state.currently_edited_frame[0] !== (this.state.framesAmount - 1)) {
+    if (this.state.currently_edited_frame[0] == (this.state.framesAmount - 1)) {
+    this.setNewFrameAmount(this.state.framesAmount + 1)
+    }
       this.setState({
         currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
       }, this.handleLiveDeviceSend)
-    }
   }
 
   setEditedFrame(frame_id) {
@@ -380,7 +382,7 @@ class Body extends React.Component {
           loadedProtocolID : null
         }
       )
-      this.allocCleanFrames(20)
+      this.allocCleanFrames(default_frame_amount)
     }
   }
 
@@ -1003,19 +1005,18 @@ class Body extends React.Component {
 
   handleFrameAmountChange(event) {
 
-    //Parse new amount, default to 0 if NaN
+    //Parse new amount, default to 2 if NaN
     var newAmount = (parseInt(event.target.value) || 2)
     if (newAmount < 2) {
       newAmount = 2
     }
+    this.setNewFrameAmount(newAmount)
 
-    // if (newAmount === 0) {
-    //   this.setState({
-    //     currently_edited_frame: [0],
-    //     framesAmount: newAmount,
-    //   });
-    //   return
-    // }
+  }
+
+  // setNewFrameAmount sets a new frame amount,
+  // /!\ discard frames if new amount is smaller
+  setNewFrameAmount(newAmount) {
 
     const frame = {
       duration: 0,
@@ -1057,6 +1058,7 @@ class Body extends React.Component {
       framesAmount: newAmount,
     });
   }
+
 
   renderDurationInput() {
     return (
