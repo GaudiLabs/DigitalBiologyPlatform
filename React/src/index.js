@@ -19,6 +19,8 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import { GenerateAuthHeader, SimpleHash } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 
+
+
 import {SaveDialog, DeleteDialog, UnsavedDialog} from './dialogs';
 import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -177,46 +179,31 @@ class Body extends React.Component {
     })
   }
 
-  async readSerialBytes(numberOfBytes) {
-    let bytes = new Uint8Array(numberOfBytes);
-    let readBytes = 0;
-    let finished = false;
-
-
-    let reader = this.state.serialPort.readable.getReader();
-
-    try {
-      while (true) {
-        const { value, done } = await reader.read();
-        if (value) {
-          let chunk = value;
-
-          /*
-          if (readBytes === 0 && chunk[0] === SerialService.FAIL) {
-            return bytes;
-          }
-          */
-
-          for (let i = 0; i < chunk.length; i++) {
-            bytes[i] = chunk[i];
-            readBytes++;
-
-            if (readBytes >= numberOfBytes) {
-              finished = true;
-            }
-          }
-        }
-        if (done || finished) {
-          break;
-        }
+  async readInto(reader, buffer) {
+    let offset = 0;
+    while (offset < buffer.byteLength) {
+      const { value, done } = await reader.read(
+        new Uint8Array(buffer, offset)
+      );
+      if (done) {
+        break;
       }
-    } catch (error) {
-      console.error("Serial port reading error: " + error);
-    } finally {
-      reader.releaseLock();
+      buffer = value.buffer;
+      offset += value.byteLength;
     }
+    return buffer;
+  }
 
-    return bytes;
+  async readSerialBytes(amountOfBytes) {
+    // Open serail port with custom buffer
+    const reader = this.state.serialPort.readable.getReader({ mode: 'byob' });
+    let buffer = new ArrayBuffer(amountOfBytes);
+    // Read in buffer
+    buffer = await this.readInto(reader, buffer);
+    // Cast buffer to bytes array
+    const bytes = new Uint8Array(buffer, 0, amountOfBytes);
+    reader.releaseLock();
+    return bytes
   }
 
   async SendSerialData(data) {
@@ -228,29 +215,9 @@ class Body extends React.Component {
     await writer.write(data);
     writer.releaseLock();
 
+    //Feedback data
     let readBytes = await this.readSerialBytes(24)
     console.log(readBytes)
-    //Feedback playground [WIP]
-    // while (this.state.serialPort.readable) {
-    //   const reader = this.state.serialPort.readable.getReader();
-    //   try {
-    //     while (true) {
-    //       const { value, done } = await reader.read();
-    //       if (done) {
-    //         // |reader| has been canceled.
-    //         break;
-    //       }
-    //       console.log("SERIAL READ")
-    //       console.log(value)
-    //       // Do something with |value|...
-    //     }
-    //   } catch (error) {
-    //     // Handle |error|...
-    //   } finally {
-    //     reader.releaseLock();
-    //   }
-    // }
-    
   }
 
   sleep(ms) {
@@ -886,6 +853,7 @@ class Body extends React.Component {
   squaresToBytes(squares) {
     let output = new Uint8Array(32);
 
+    //Setting electrodes bytes
     for (let i = 0; i < 16; i++) {
       let byte = 0
       for (let j = 0; j < 8; j++) {
@@ -898,7 +866,25 @@ class Body extends React.Component {
       //console.log(this.dec2bin(byte))
       // output.push(this.renderSquare(i,j));
     }
-    //console.log(output)
+    //Setting commands bytes
+
+    //enable feedback
+    output[24] = 1
+
+    //temperature commands
+    //26 = temp 1
+    //27 = temp 2
+    //28 = temp 3
+    output[26] = 40
+
+    //magnet bytes
+    //0 = off
+    //1 = left magnet
+    //2 = right magnet
+    //3 = both
+    output[16] = 3
+
+    console.log(output)
     return output
   }
 
