@@ -18,6 +18,7 @@ import EditorButtons from './editor_buttons';
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { GenerateAuthHeader, SimpleHash } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 
@@ -67,6 +68,11 @@ class Body extends React.Component {
       liveModeTrigger: this.liveModeTrigger.bind(this),
       handleFrameAmountChange: this.handleFrameAmountChange.bind(this),
       setDefaultFrameDuration: this.setDefaultFrameDuration.bind(this),
+      insertBlankFrame : this.insertBlankFrame.bind(this),
+      duplicateFrame : this.duplicateFrame.bind(this),
+      deleteFrame : this.deleteFrame.bind(this),
+      clearFrame : this.clearFrame.bind(this),
+      clearAllFrames : this.clearAllFrames.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -1030,6 +1036,140 @@ class Body extends React.Component {
 
   }
 
+  newBlankFrame() {
+    const frame = {
+      duration: 0,
+      electrodes: []
+    };
+    var new_frame = Object.create(frame);
+    new_frame.duration = 1000;
+    new_frame.electrodes = Array(16);
+    for (var j = 0; j < new_frame.electrodes.length; j++) {
+      new_frame.electrodes[j] = Array(8).fill(null)
+    } 
+  return new_frame
+  }
+
+  insertBlankFrame() {
+    //this.setNewFrameAmount(this.state.framesAmount + 1)
+    let at = this.state.currently_edited_frame[0] + 1
+        //copy frames
+        let ret = Array()
+        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+          return { ...arr }
+        });
+        var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
+          return { ...arr }
+        });
+        // console.log("BEFORE:")
+        // console.log(beforeFrames)
+        // console.log("AFTER:")
+        // console.log(afterFrames)
+
+        ret.push(...beforeFrames)
+        ret.push(this.newBlankFrame())
+        ret.push(...afterFrames)
+        console.log("RET:")
+        console.log(ret)
+        this.setState({
+          currently_edited_frame: [at],
+          frames: ret,
+          framesAmount: this.state.framesAmount + 1,
+        }, this.handleLiveDeviceSend);
+  }
+
+  duplicateFrame() {
+    //this.setNewFrameAmount(this.state.framesAmount + 1)
+    let at = this.state.currently_edited_frame[0] + 1
+        //copy frames
+        let ret = Array()
+        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+          return { ...arr }
+        });
+        var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
+          return { ...arr }
+        });
+        // console.log("BEFORE:")
+        // console.log(beforeFrames)
+        // console.log("AFTER:")
+        // console.log(afterFrames)
+
+        ret.push(...beforeFrames)
+        ret.push(beforeFrames.slice(beforeFrames.length - 1, beforeFrames.length)[0])
+        ret.push(...afterFrames)
+        console.log("RET:")
+        console.log(ret)
+        this.setState({
+          currently_edited_frame: [at],
+          frames: ret,
+          framesAmount: this.state.framesAmount + 1,
+        }, this.handleLiveDeviceSend);
+  }
+
+  clearFrame() {
+    let at = this.state.currently_edited_frame[0] 
+
+    var framesCopy = this.state.frames.map(function (arr) {
+      return { ...arr }
+    });
+    framesCopy[at] = this.newBlankFrame()
+    this.setState({
+      frames: framesCopy,
+    }, this.handleLiveDeviceSend); 
+  }
+
+  clearAllFrames() {
+    this.allocCleanFrames(this.state.framesAmount)
+  }
+
+  deleteFrame() {
+    //this.setNewFrameAmount(this.state.framesAmount + 1)
+    if (this.state.framesAmount <= 2) {
+      toast.error("Minimal amount of 2 frames reached", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+      return
+    }
+    let at = this.state.currently_edited_frame[0]
+    if (at == this.state.framesAmount - 1) {
+      console.log("EDGE CASE")
+      this.setNewFrameAmount(this.state.framesAmount - 1)
+      this.setState({
+        currently_edited_frame: [at - 1],
+      }, this.handleLiveDeviceSend)
+     return
+    }
+        //copy frames
+        let ret = Array()
+        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+          return { ...arr }
+        });
+        var afterFrames = this.state.frames.slice(at + 1, this.state.frames.length).map(function (arr) {
+          return { ...arr }
+        });
+        // console.log("BEFORE:")
+        // console.log(beforeFrames)
+        // console.log("AFTER:")
+        // console.log(afterFrames)
+
+        ret.push(...beforeFrames)
+        ret.push(...afterFrames)
+        console.log("RET:")
+        console.log(ret)
+        this.setState({
+          currently_edited_frame: [at],
+          frames: ret,
+          framesAmount: this.state.framesAmount - 1,
+        }, this.handleLiveDeviceSend);
+  }
+
   // setNewFrameAmount sets a new frame amount,
   // /!\ discard frames if new amount is smaller
   setNewFrameAmount(newAmount) {
@@ -1059,8 +1199,11 @@ class Body extends React.Component {
       //pushing new frames
       for (var i = 0; i < framesAmountSet; i++) {
         var new_frame = Object.create(frame);
-        new_frame.duration = this.state.defaultDuration;
-        new_frame.electrodes = Array(16).fill(Array(8).fill(null));
+        new_frame.duration = 1000;
+        new_frame.electrodes = Array(16);
+        for (var j = 0; j < new_frame.electrodes.length; j++) {
+          new_frame.electrodes[j] = Array(8).fill(null)
+        } 
         newFrames.push(new_frame)
       }
     } else {
@@ -1127,13 +1270,14 @@ class Body extends React.Component {
 
   layout = [
     { i: "Adaptor", x: 0, y: 0, w: 4, h: 6, minH: 6, maxH: 6, maxW: 7 },
-    { i: "SideControls", x: 1, y: 0, w: 2, h: 1 },
-    { i: "Protocols", x: 1, y: 1, w: 3, h: 4 },
+    { i: "SideControls", x: 1, y: 0, w: 1, h: 3 },
+    { i: "Protocols", x: 2, y: 0, w: 3, h: 4 },
   ];
   renderMain() {
     console.log("RENDER MAIN")
     return (
       <React.Fragment>
+        <ToastContainer />
         <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
         <SaveDialog 
         open={this.state.saveDialogOpen} 
@@ -1182,7 +1326,15 @@ class Body extends React.Component {
             </div>
           </div>
           <div key="SideControls" className="not_draggable" >
-            <SideButtons />
+            <SideButtons 
+            insertBlankFrame={this.state.insertBlankFrame} 
+            duplicateFrame={this.state.duplicateFrame}
+            deleteFrame={this.state.deleteFrame}
+            clearFrame={this.state.clearFrame}
+            clearAllFrames={this.state.clearAllFrames}
+            framesAmount={this.state.framesAmount}
+            />
+
           </div>
           <div key="Protocols" className="not_draggable" >
             <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID}/>
