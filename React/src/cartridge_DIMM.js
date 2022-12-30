@@ -1,4 +1,5 @@
 import * as React from "react"
+import './cartridge_DIMM.scss';
 
 class CartridgeComponent extends React.Component {
 
@@ -29,7 +30,6 @@ class CartridgeComponent extends React.Component {
             //console.log(this.props.state);
             current_electrode.addEventListener('mousedown', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
-            //current_electrode.setAttribute('fill', 'this.renderElectrodeFill(current_electrode_id);' )
             
         }
     }
@@ -271,7 +271,7 @@ class CartridgeComponent extends React.Component {
                 transform="translate(-53.01 -88.215)"
             >
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(2)}
                     electrode_id="2"
                     fill={this.renderElectrodeFill(2)}
                     strokeWidth="2.185"
@@ -281,7 +281,7 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(3)}
                     electrode_id="3"
                     fill={this.renderElectrodeFill(3)}
                     strokeWidth="2.535"
@@ -291,7 +291,7 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(17)}
                     electrode_id="17"
                     fill={this.renderElectrodeFill(17)}
                     strokeWidth="0.578"
@@ -300,7 +300,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(9)}
                     electrode_id="9"
                     fill={this.renderElectrodeFill(9)}
                     strokeWidth="0.578"
@@ -309,7 +309,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(25)}
                     electrode_id="25"
                     fill={this.renderElectrodeFill(25)}
                     strokeWidth="0.578"
@@ -318,7 +318,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(33)}
                     electrode_id="33"
                     fill={this.renderElectrodeFill(33)}
                     strokeWidth="0.578"
@@ -327,7 +327,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(41)}
                     electrode_id="41"
                     fill={this.renderElectrodeFill(41)}
                     strokeWidth="0.578"
@@ -336,7 +336,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(49)}
                     electrode_id="49"
                     fill={this.renderElectrodeFill(49)}
                     strokeWidth="0.578"
@@ -345,7 +345,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(57)}
                     electrode_id="57"
                     fill={this.renderElectrodeFill(57)}
                     strokeWidth="0.578"
@@ -354,7 +354,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(65)}
                     electrode_id="65"
                     fill={this.renderElectrodeFill(65)}
                     strokeWidth="0.578"
@@ -363,7 +363,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(73)}
                     electrode_id="73"
                     fill={this.renderElectrodeFill(73)}
                     strokeWidth="0.578"
@@ -372,7 +372,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(81)}
                     electrode_id="81"
                     fill={this.renderElectrodeFill(81)}
                     strokeWidth="0.578"
@@ -381,7 +381,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(89)}
                     electrode_id="89"
                     fill={this.renderElectrodeFill(89)}
                     strokeWidth="0.578"
@@ -390,7 +390,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(97)}
                     electrode_id="97"
                     fill={this.renderElectrodeFill(97)}
                     strokeWidth="0.578"
@@ -399,7 +399,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(105)}
                     electrode_id="105"
                     fill={this.renderElectrodeFill(105)}
                     strokeWidth="0.578"
@@ -408,7 +408,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(113)}
                     electrode_id="113"
                     fill={this.renderElectrodeFill(113)}
                     strokeWidth="0.578"
@@ -417,7 +417,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(16)}
                     electrode_id="16"
                     fill={this.renderElectrodeFill(16)}
                     strokeWidth="0.578"
@@ -426,7 +426,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(8)}
                     electrode_id="8"
                     fill={this.renderElectrodeFill(8)}
                     strokeWidth="0.578"
@@ -435,7 +435,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(24)}
                     electrode_id="24"
                     fill={this.renderElectrodeFill(24)}
                     strokeWidth="0.578"
@@ -444,7 +444,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(32)}
                     electrode_id="32"
                     fill={this.renderElectrodeFill(32)}
                     strokeWidth="0.578"
@@ -453,7 +453,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(40)}
                     electrode_id="40"
                     fill={this.renderElectrodeFill(40)}
                     strokeWidth="0.578"
@@ -462,7 +462,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(48)}
                     electrode_id="48"
                     fill={this.renderElectrodeFill(48)}
                     strokeWidth="0.578"
@@ -471,7 +471,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(56)}
                     electrode_id="56"
                     fill={this.renderElectrodeFill(56)}
                     strokeWidth="0.578"
@@ -480,7 +480,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(64)}
                     electrode_id="64"
                     fill={this.renderElectrodeFill(64)}
                     strokeWidth="0.578"
@@ -489,7 +489,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(72)}
                     electrode_id="72"
                     fill={this.renderElectrodeFill(72)}
                     strokeWidth="0.578"
@@ -498,7 +498,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(80)}
                     electrode_id="80"
                     fill={this.renderElectrodeFill(80)}
                     strokeWidth="0.578"
@@ -507,7 +507,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(88)}
                     electrode_id="88"
                     fill={this.renderElectrodeFill(88)}
                     strokeWidth="0.578"
@@ -516,7 +516,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(96)}
                     electrode_id="96"
                     fill={this.renderElectrodeFill(96)}
                     strokeWidth="0.578"
@@ -525,7 +525,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(104)}
                     electrode_id="104"
                     fill={this.renderElectrodeFill(104)}
                     strokeWidth="0.578"
@@ -534,7 +534,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(112)}
                     electrode_id="112"
                     fill={this.renderElectrodeFill(112)}
                     strokeWidth="0.578"
@@ -543,7 +543,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(18)}
                     electrode_id="18"
                     fill={this.renderElectrodeFill(18)}
                     strokeWidth="0.578"
@@ -552,7 +552,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(10)}
                     electrode_id="10"
                     fill={this.renderElectrodeFill(10)}
                     strokeWidth="0.578"
@@ -561,7 +561,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(26)}
                     electrode_id="26"
                     fill={this.renderElectrodeFill(26)}
                     strokeWidth="0.578"
@@ -570,7 +570,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(34)}
                     electrode_id="34"
                     fill={this.renderElectrodeFill(34)}
                     strokeWidth="0.578"
@@ -579,7 +579,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(42)}
                     electrode_id="42"
                     fill={this.renderElectrodeFill(42)}
                     strokeWidth="0.578"
@@ -588,7 +588,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(50)}
                     electrode_id="50"
                     fill={this.renderElectrodeFill(50)}
                     strokeWidth="0.578"
@@ -597,7 +597,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(58)}
                     electrode_id="58"
                     fill={this.renderElectrodeFill(58)}
                     strokeWidth="0.578"
@@ -606,7 +606,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(66)}
                     electrode_id="66"
                     fill={this.renderElectrodeFill(66)}
                     strokeWidth="0.578"
@@ -615,7 +615,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(74)}
                     electrode_id="74"
                     fill={this.renderElectrodeFill(74)}
                     strokeWidth="0.578"
@@ -624,7 +624,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(82)}
                     electrode_id="82"
                     fill={this.renderElectrodeFill(82)}
                     strokeWidth="0.578"
@@ -633,7 +633,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(90)}
                     electrode_id="90"
                     fill={this.renderElectrodeFill(90)}
                     strokeWidth="0.578"
@@ -642,7 +642,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(98)}
                     electrode_id="98"
                     fill={this.renderElectrodeFill(98)}
                     strokeWidth="0.578"
@@ -651,7 +651,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(106)}
                     electrode_id="106"
                     fill={this.renderElectrodeFill(106)}
                     strokeWidth="0.578"
@@ -660,7 +660,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(114)}
                     electrode_id="114"
                     fill={this.renderElectrodeFill(114)}
                     strokeWidth="0.578"
@@ -669,7 +669,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(19)}
                     electrode_id="19"
                     fill={this.renderElectrodeFill(19)}
                     strokeWidth="0.578"
@@ -678,7 +678,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(11)}
                     electrode_id="11"
                     fill={this.renderElectrodeFill(11)}
                     strokeWidth="0.578"
@@ -687,7 +687,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(27)}
                     electrode_id="27"
                     fill={this.renderElectrodeFill(27)}
                     strokeWidth="0.578"
@@ -696,7 +696,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(35)}
                     electrode_id="35"
                     fill={this.renderElectrodeFill(35)}
                     strokeWidth="0.578"
@@ -705,7 +705,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(43)}
                     electrode_id="43"
                     fill={this.renderElectrodeFill(43)}
                     strokeWidth="0.578"
@@ -714,7 +714,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(51)}
                     electrode_id="51"
                     fill={this.renderElectrodeFill(51)}
                     strokeWidth="0.578"
@@ -723,7 +723,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(59)}
                     electrode_id="59"
                     fill={this.renderElectrodeFill(59)}
                     strokeWidth="0.578"
@@ -732,7 +732,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(67)}
                     electrode_id="67"
                     fill={this.renderElectrodeFill(67)}
                     strokeWidth="0.578"
@@ -741,7 +741,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(75)}
                     electrode_id="75"
                     fill={this.renderElectrodeFill(75)}
                     strokeWidth="0.578"
@@ -750,7 +750,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(83)}
                     electrode_id="83"
                     fill={this.renderElectrodeFill(83)}
                     strokeWidth="0.578"
@@ -759,7 +759,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(91)}
                     electrode_id="91"
                     fill={this.renderElectrodeFill(91)}
                     strokeWidth="0.578"
@@ -768,7 +768,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(99)}
                     electrode_id="99"
                     fill={this.renderElectrodeFill(99)}
                     strokeWidth="0.578"
@@ -777,7 +777,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(107)}
                     electrode_id="107"
                     fill={this.renderElectrodeFill(107)}
                     strokeWidth="0.578"
@@ -786,7 +786,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(115)}
                     electrode_id="115"
                     fill={this.renderElectrodeFill(115)}
                     strokeWidth="0.578"
@@ -795,7 +795,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(20)}
                     electrode_id="20"
                     fill={this.renderElectrodeFill(20)}
                     strokeWidth="0.578"
@@ -804,7 +804,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(12)}
                     electrode_id="12"
                     fill={this.renderElectrodeFill(12)}
                     strokeWidth="0.578"
@@ -813,7 +813,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(28)}
                     electrode_id="28"
                     fill={this.renderElectrodeFill(28)}
                     strokeWidth="0.578"
@@ -822,7 +822,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(36)}
                     electrode_id="36"
                     fill={this.renderElectrodeFill(36)}
                     strokeWidth="0.578"
@@ -831,7 +831,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(44)}
                     electrode_id="44"
                     fill={this.renderElectrodeFill(44)}
                     strokeWidth="0.578"
@@ -840,7 +840,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(52)}
                     electrode_id="52"
                     fill={this.renderElectrodeFill(52)}
                     strokeWidth="0.578"
@@ -849,7 +849,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(60)}
                     electrode_id="60"
                     fill={this.renderElectrodeFill(60)}
                     strokeWidth="0.578"
@@ -858,7 +858,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(68)}
                     electrode_id="68"
                     fill={this.renderElectrodeFill(68)}
                     strokeWidth="0.578"
@@ -867,7 +867,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(76)}
                     electrode_id="76"
                     fill={this.renderElectrodeFill(76)}
                     strokeWidth="0.578"
@@ -876,7 +876,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(84)}
                     electrode_id="84"
                     fill={this.renderElectrodeFill(84)}
                     strokeWidth="0.578"
@@ -885,7 +885,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(92)}
                     electrode_id="92"
                     fill={this.renderElectrodeFill(92)}
                     strokeWidth="0.578"
@@ -894,7 +894,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(100)}
                     electrode_id="100"
                     fill={this.renderElectrodeFill(100)}
                     strokeWidth="0.578"
@@ -903,7 +903,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(108)}
                     electrode_id="108"
                     fill={this.renderElectrodeFill(108)}
                     strokeWidth="0.578"
@@ -912,7 +912,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(116)}
                     electrode_id="116"
                     fill={this.renderElectrodeFill(116)}
                     strokeWidth="0.578"
@@ -921,7 +921,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(21)}
                     electrode_id="21"
                     fill={this.renderElectrodeFill(21)}
                     strokeWidth="0.578"
@@ -930,7 +930,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(13)}
                     electrode_id="13"
                     fill={this.renderElectrodeFill(13)}
                     strokeWidth="0.578"
@@ -939,7 +939,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(29)}
                     electrode_id="29"
                     fill={this.renderElectrodeFill(29)}
                     strokeWidth="0.578"
@@ -948,7 +948,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(37)}
                     electrode_id="37"
                     fill={this.renderElectrodeFill(37)}
                     strokeWidth="0.578"
@@ -957,7 +957,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(45)}
                     electrode_id="45"
                     fill={this.renderElectrodeFill(45)}
                     strokeWidth="0.578"
@@ -966,7 +966,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(53)}
                     electrode_id="53"
                     fill={this.renderElectrodeFill(53)}
                     strokeWidth="0.578"
@@ -975,7 +975,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(61)}
                     electrode_id="61"
                     fill={this.renderElectrodeFill(61)}
                     strokeWidth="0.578"
@@ -984,7 +984,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(69)}
                     electrode_id="69"
                     fill={this.renderElectrodeFill(69)}
                     strokeWidth="0.578"
@@ -993,7 +993,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(77)}
                     electrode_id="77"
                     fill={this.renderElectrodeFill(77)}
                     strokeWidth="0.578"
@@ -1002,7 +1002,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(85)}
                     electrode_id="85"
                     fill={this.renderElectrodeFill(85)}
                     strokeWidth="0.578"
@@ -1011,7 +1011,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(93)}
                     electrode_id="93"
                     fill={this.renderElectrodeFill(93)}
                     strokeWidth="0.578"
@@ -1020,7 +1020,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(101)}
                     electrode_id="101"
                     fill={this.renderElectrodeFill(101)}
                     strokeWidth="0.578"
@@ -1029,7 +1029,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(109)}
                     electrode_id="109"
                     fill={this.renderElectrodeFill(109)}
                     strokeWidth="0.578"
@@ -1038,7 +1038,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(117)}
                     electrode_id="117"
                     fill={this.renderElectrodeFill(117)}
                     strokeWidth="0.578"
@@ -1047,7 +1047,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(22)}
                     electrode_id="22"
                     fill={this.renderElectrodeFill(22)}
                     strokeWidth="0.578"
@@ -1056,7 +1056,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(14)}
                     electrode_id="14"
                     fill={this.renderElectrodeFill(14)}
                     strokeWidth="0.578"
@@ -1065,7 +1065,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(0)}
                     electrode_id="0"
                     fill={this.renderElectrodeFill(0)}
                     strokeWidth="0.578"
@@ -1074,7 +1074,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(7)}
                     electrode_id="7"
                     fill={this.renderElectrodeFill(7)}
                     strokeWidth="0.578"
@@ -1083,7 +1083,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(5)}
                     electrode_id="5"
                     fill={this.renderElectrodeFill(5)}
                     strokeWidth="2.185"
@@ -1093,7 +1093,7 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(30)}
                     electrode_id="30"
                     fill={this.renderElectrodeFill(30)}
                     strokeWidth="0.578"
@@ -1102,7 +1102,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(38)}
                     electrode_id="38"
                     fill={this.renderElectrodeFill(38)}
                     strokeWidth="0.578"
@@ -1111,7 +1111,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(46)}
                     electrode_id="46"
                     fill={this.renderElectrodeFill(46)}
                     strokeWidth="0.578"
@@ -1120,7 +1120,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(54)}
                     electrode_id="54"
                     fill={this.renderElectrodeFill(54)}
                     strokeWidth="0.578"
@@ -1129,7 +1129,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(62)}
                     electrode_id="62"
                     fill={this.renderElectrodeFill(62)}
                     strokeWidth="0.578"
@@ -1138,7 +1138,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(70)}
                     electrode_id="70"
                     fill={this.renderElectrodeFill(70)}
                     strokeWidth="0.578"
@@ -1147,7 +1147,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(78)}
                     electrode_id="78"
                     fill={this.renderElectrodeFill(78)}
                     strokeWidth="0.578"
@@ -1156,7 +1156,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(86)}
                     electrode_id="86"
                     fill={this.renderElectrodeFill(86)}
                     strokeWidth="0.578"
@@ -1165,7 +1165,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(94)}
                     electrode_id="94"
                     fill={this.renderElectrodeFill(94)}
                     strokeWidth="0.578"
@@ -1174,7 +1174,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(102)}
                     electrode_id="102"
                     fill={this.renderElectrodeFill(102)}
                     strokeWidth="0.578"
@@ -1183,7 +1183,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(110)}
                     electrode_id="110"
                     fill={this.renderElectrodeFill(110)}
                     strokeWidth="0.578"
@@ -1192,7 +1192,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(118)}
                     electrode_id="118"
                     fill={this.renderElectrodeFill(118)}
                     strokeWidth="0.578"
@@ -1201,7 +1201,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(120)}
                     electrode_id="120"
                     fill={this.renderElectrodeFill(120)}
                     strokeWidth="0.578"
@@ -1210,7 +1210,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(127)}
                     electrode_id="127"
                     fill={this.renderElectrodeFill(127)}
                     strokeWidth="0.578"
@@ -1219,7 +1219,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(122)}
                     electrode_id="122"
                     fill={this.renderElectrodeFill(122)}
                     strokeWidth="2.185"
@@ -1229,7 +1229,7 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(125)}
                     electrode_id="125"
                     fill={this.renderElectrodeFill(125)}
                     strokeWidth="2.185"
@@ -1239,7 +1239,7 @@ class CartridgeComponent extends React.Component {
                     transform="scale(.26458)"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(23)}
                     electrode_id="23"
                     fill={this.renderElectrodeFill(23)}
                     strokeWidth="0.578"
@@ -1248,7 +1248,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(15)}
                     electrode_id="15"
                     fill={this.renderElectrodeFill(15)}
                     strokeWidth="0.578"
@@ -1257,7 +1257,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(1)}
                     electrode_id="1"
                     fill={this.renderElectrodeFill(1)}  
                     strokeWidth="0.578"
@@ -1266,7 +1266,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(1)}
                     electrode_id="1"
                     fill={this.renderElectrodeFill(1)}  
                     strokeWidth="0.578"
@@ -1275,7 +1275,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(6)}
                     electrode_id="6"
                     fill={this.renderElectrodeFill(6)}
                     strokeWidth="0.578"
@@ -1284,7 +1284,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(6)}
                     electrode_id="6"
                     fill={this.renderElectrodeFill(6)}
                     strokeWidth="0.578"
@@ -1293,7 +1293,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(4)}
                     electrode_id="4"
                     fill={this.renderElectrodeFill(4)}
                     strokeWidth="0.671"
@@ -1302,7 +1302,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(123)}
                     electrode_id="123"
                     fill={this.renderElectrodeFill(123)}
                     strokeWidth="0.671"
@@ -1311,7 +1311,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(124)}
                     electrode_id="124"
                     fill={this.renderElectrodeFill(124)}
                     strokeWidth="0.671"
@@ -1321,7 +1321,7 @@ class CartridgeComponent extends React.Component {
                 ></path>
                 <path
 
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(31)}
                     electrode_id="31"
                     fill={this.renderElectrodeFill(31)}
                     strokeWidth="0.578"
@@ -1330,7 +1330,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(39)}
                     electrode_id="39"
                     fill={this.renderElectrodeFill(39)}
                     strokeWidth="0.578"
@@ -1339,7 +1339,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(47)}
                     electrode_id="47"
                     fill={this.renderElectrodeFill(47)}
                     strokeWidth="0.578"
@@ -1348,7 +1348,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(55)}
                     electrode_id="55"
                     fill={this.renderElectrodeFill(55)}
                     strokeWidth="0.578"
@@ -1357,7 +1357,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(63)}
                     electrode_id="63"
                     fill={this.renderElectrodeFill(63)}
                     strokeWidth="0.578"
@@ -1366,7 +1366,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(71)}
                     electrode_id="71"
                     fill={this.renderElectrodeFill(71)}
                     strokeWidth="0.578"
@@ -1375,7 +1375,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(79)}
                     electrode_id="79"
                     fill={this.renderElectrodeFill(79)}
                     strokeWidth="0.578"
@@ -1384,7 +1384,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(87)}
                     electrode_id="87"
                     fill={this.renderElectrodeFill(87)}
                     strokeWidth="0.578"
@@ -1393,7 +1393,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(95)}
                     electrode_id="95"
                     fill={this.renderElectrodeFill(95)}
                     strokeWidth="0.578"
@@ -1402,16 +1402,17 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                    className={"electrode" +  this.renderFeedbackClass(103)}
                     electrode_id="103"
                     fill={this.renderElectrodeFill(103)}
                     strokeWidth="0.578"
                     d="M114.191 123H116.741V125.55H114.191z"
                     display="inline"
                     stopColor="#000"
-                ></path>
+                >
+                </path>
                 <path
-                    className="electrode"
+                    className={"electrode" +  this.renderFeedbackClass(111)}
                     electrode_id="111"
                     fill={this.renderElectrodeFill(111)}
                     strokeWidth="0.578"
@@ -1420,7 +1421,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(119)}
                     electrode_id="119"
                     fill={this.renderElectrodeFill(119)}
                     strokeWidth="0.578"
@@ -1429,7 +1430,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(121)}
                     electrode_id="121"
                     fill={this.renderElectrodeFill(121)}
                     strokeWidth="0.578"
@@ -1438,7 +1439,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(121)}
                     electrode_id="121"
                     fill={this.renderElectrodeFill(121)}
                     strokeWidth="0.578"
@@ -1447,7 +1448,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(126)}
                     electrode_id="126"
                     fill={this.renderElectrodeFill(126)}
                     strokeWidth="0.578"
@@ -1456,7 +1457,7 @@ class CartridgeComponent extends React.Component {
                     stopColor="#000"
                 ></path>
                 <path
-                    className="electrode"
+                   className={"electrode" +  this.renderFeedbackClass(126)}
                     electrode_id="126"
                     fill={this.renderElectrodeFill(126)}
                     strokeWidth="0.578"
@@ -1493,6 +1494,29 @@ class CartridgeComponent extends React.Component {
             return ("#efd94c")
         }
     }
+
+    renderFeedbackClass(electrode_id) {
+        //convert electrode id to i/j coordinates:
+        var j = Math.floor(electrode_id / 8);
+        var i = electrode_id % 8;
+
+        //console.log("MODIFYING FRAME:")
+        ////console.log(this.props.state.currently_edited_frame[0])
+        ////console.log(this.state.frames)
+        ////console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+             //console.log("i=" + i + "j=" + j)
+            //console.log(this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[j][i])
+        //console.log(this.props.state)
+        if (this.props.state.electrodesFeedback[j][i] !== null) {
+           return (" electrode_feedback_on ")
+        } else {
+ 
+            return ("")
+        }
+    }
+
+
+
 
     render() {
         return (

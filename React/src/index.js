@@ -49,6 +49,7 @@ class Body extends React.Component {
       //squares: Array(16).fill(Array(8).fill("o")),
       //electrodes: Array(128).fill(null),
       instanciatedHooks: false,
+      electrodesFeedback: this.generateEmptyFeedbackArray(),
       serialPort: null,
       clickHandle: this.handleHover.bind(this),
       loggedInCallback: this.loggedInCallback.bind(this),
@@ -115,6 +116,14 @@ class Body extends React.Component {
         protocols : BackendProtocolsResponse.protocols
       }
     )
+  }
+
+  generateEmptyFeedbackArray() {
+    var feedbackArray = Array(16);
+    for (var j = 0; j < feedbackArray.length; j++) {
+      feedbackArray[j] = Array(8).fill(null)
+    } 
+    return feedbackArray
   }
 
   allocCleanFrames(framesAmount) {
@@ -206,7 +215,7 @@ class Body extends React.Component {
     return bytes
   }
 
-  async SendSerialData(data) {
+  async SendSerialDataAndCollectFeedback(data) {
     if (!this.state.liveMode) {
       return
     }
@@ -218,6 +227,31 @@ class Body extends React.Component {
     //Feedback data
     let readBytes = await this.readSerialBytes(24)
     console.log(readBytes)
+    let electrodesFeedback = readBytes.slice(0, 16)
+    this.setState(
+      {
+        electrodesFeedback : this.electrodeBytesToSquares(electrodesFeedback)
+      }
+    )
+  }
+
+  getNthBit(uint8, n){
+    return (uint8 >> n) & 0x1;
+  }
+
+  electrodeBytesToSquares(bytesArray) {
+    let squares = this.generateEmptyFeedbackArray()
+
+    for (let i = 0; i < 16; i++){
+      for (let j = 0; j < 8; j++) {
+        if (this.getNthBit(bytesArray[i], j) == 1) {
+        squares[i][7 - j] = 1
+        }
+      }
+    }
+    console.log("FEEDBACK:")
+    console.log(squares)
+    return squares
   }
 
   sleep(ms) {
@@ -241,7 +275,7 @@ class Body extends React.Component {
   async handleLiveDeviceSend() {
     if (this.state.liveMode) {
     let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
-    this.SendSerialData(data)
+    this.SendSerialDataAndCollectFeedback(data)
     }
   }
 
@@ -250,7 +284,7 @@ class Body extends React.Component {
 
     //send first frame
     let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
-    this.SendSerialData(data)
+    this.SendSerialDataAndCollectFeedback(data)
 
     await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
 
@@ -277,7 +311,7 @@ class Body extends React.Component {
         {
           currently_edited_frame: [newNb]
         }, () => {
-          this.SendSerialData(data);
+          this.SendSerialDataAndCollectFeedback(data);
         }
       )
         await this.sleep(this.state.frames[newNb].duration);
@@ -292,7 +326,7 @@ class Body extends React.Component {
             {
               currently_edited_frame: [newNb]
             }, () => {
-              this.SendSerialData(data);
+              this.SendSerialDataAndCollectFeedback(data);
             })
         await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
         }
@@ -803,8 +837,25 @@ class Body extends React.Component {
       {
         liveMode : !this.state.liveMode
       },
-      this.handleLiveDeviceSend
+      () => {
+    if (this.state.liveMode) {
+      console.log("STARTING LIVE MODE INTERVAL")
+      this.handleLiveDeviceSend()
+      const timer = setInterval(() => {
+        if (!this.state.liveMode) {
+          console.log("STOPPING LIVE MODE INTERVAL")
+          clearInterval(timer);
+          return;
+        }
+      this.handleLiveDeviceSend()
+      }, 500);
+    }
+    
+
+      }
+      //this.handleLiveDeviceSend
     )
+
 
   }
 
