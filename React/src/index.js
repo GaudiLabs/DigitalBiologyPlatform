@@ -239,15 +239,7 @@ class Body extends React.Component {
     return bytes
   }
 
-  async SendSerialDataAndCollectFeedback(data) {
-    if (!this.state.liveMode) {
-      return
-    }
-
-    const writer = this.state.serialPort.writable.getWriter();
-    await writer.write(data);
-    writer.releaseLock();
-
+  async collectFeedbackData() {
     //Feedback data
     let readBytes = await this.readSerialBytes(24)
     console.log(readBytes)
@@ -257,6 +249,19 @@ class Body extends React.Component {
         electrodesFeedback : this.electrodeBytesToSquares(electrodesFeedback)
       }
     )
+  }
+
+  async SendSerialDataAndCollectFeedback(data) {
+    if (!this.state.liveMode) {
+      await this.collectFeedbackData()
+      return
+    }
+
+    const writer = this.state.serialPort.writable.getWriter();
+    await writer.write(data);
+    writer.releaseLock();
+
+    await this.collectFeedbackData()
   }
 
   getNthBit(uint8, n){
