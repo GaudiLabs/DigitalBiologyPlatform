@@ -91,6 +91,7 @@ class Body extends React.Component {
       loadedProtocolHash: "",
       loopMode: true,
       defaultDuration: 1000,
+      temperatureReadings: new Float32Array(3).fill(0.0),
     };
 
     //retreive logged in infos
@@ -116,6 +117,17 @@ class Body extends React.Component {
         this.state.authHeader = GenerateAuthHeader(ausername, tokenObj)
       }
     }
+  }
+
+  setTemperatureReading(key, temprature) {
+    var newTempReadings = this.state.temperatureReadings
+    newTempReadings[key] = temprature
+
+    this.setState(
+      {
+        temperatureReadings : newTempReadings
+      }
+    )
   }
 
 
@@ -316,6 +328,25 @@ class Body extends React.Component {
         electrodesFeedback: this.electrodeBytesToSquares(electrodesFeedback)
       }
     )
+
+    this.parseTemperatures(readBytes.slice(17,23))
+  }
+
+  parseTemperatures(temperaturesBytes) {
+
+    var tempReadings = this.state.temperatureReadings
+
+    tempReadings[0] = parseFloat(temperaturesBytes[1])
+    tempReadings[1] = parseFloat(temperaturesBytes[3])
+    tempReadings[2] = parseFloat(temperaturesBytes[5])
+
+    this.setState(
+      {
+        temperatureReadings : tempReadings
+      }
+    )
+
+
   }
 
   async SendSerialDataAndCollectFeedback(data) {
@@ -1022,9 +1053,9 @@ class Body extends React.Component {
     //26 = temp 1
     //27 = temp 2
     //28 = temp 3
-    output[26] = 70
-    output[27] = 70
-    output[28] = 110
+    output[26] = 30
+    output[27] = 30
+    output[28] = 10
 
     //magnet bytes
     //0 = off
@@ -1312,7 +1343,7 @@ class Body extends React.Component {
             </label>
             <div className="temp_input">
               <input className="temp_field" name="temp1" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp1_reading" type="number" value="12.6" readonly disabled/>
+              <input className="temp_reading" name="temp1_reading"  value={this.state.temperatureReadings[0]+"°"} readonly disabled/>
             </div>
           </form>
           <form >
@@ -1321,7 +1352,7 @@ class Body extends React.Component {
             </label>
             <div className="temp_input">
               <input className="temp_field" name="temp2" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp2_reading" type="number" value="12.6" readonly disabled/>
+              <input className="temp_reading" name="temp2_reading" value={this.state.temperatureReadings[1]+"°"} readonly disabled/>
             </div>
           </form>
           <form >
@@ -1330,7 +1361,7 @@ class Body extends React.Component {
             </label>
             <div className="temp_input">
               <input className="temp_field" name="temp3" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp3_reading" type="number" value="12.6" readonly disabled/>
+              <input className="temp_reading" name="temp3_reading" value={this.state.temperatureReadings[2]+"°"} readonly disabled/>
             </div>
           </form>
         </div>
