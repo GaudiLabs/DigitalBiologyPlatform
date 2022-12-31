@@ -1,7 +1,7 @@
 import * as React from "react"
 import './editor_buttons.scss';
 import { Range, getTrackBackground } from "react-range";
-import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected } from "./graphics";
+import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected, SwitchTheme } from "./graphics";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faCircle, faCircleArrowLeft, faCircleDot, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
 import Switch from '@mui/material/Switch';
@@ -158,34 +158,7 @@ class EditorButtons extends React.Component {
     })
   }
 
-  SwitchTheme = createTheme({
-    components: {
-      MuiSwitch: {
-        styleOverrides: {
-          switchBase: {
-            // Controls default (unchecked) color for the thumb
-            color: "#888"
-          },
-          colorPrimary: {
-            "&.Mui-checked": {
-              // Controls checked color for the thumb
-              color: "red"
-            }
-          },
-          track: {
-            // Controls default (unchecked) color for the track
-            opacity: 0.6,
-            backgroundColor: "#aaa",
-            ".Mui-checked.Mui-checked + &": {
-              // Controls checked color for the track
-              opacity: 0.4,
-              backgroundColor: "red"
-            }
-          }
-        }
-      }
-    }
-  });
+
 
   render() {
 
@@ -267,7 +240,7 @@ class EditorButtons extends React.Component {
           Settings
           <br/>
           <br/>
-          <ThemeProvider theme={this.SwitchTheme}>
+          <ThemeProvider theme={SwitchTheme}>
             <Switch 
             //defaultChecked 
               size="small" 

@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const LoggedPicto = (props) => (
   <svg
@@ -214,4 +215,34 @@ const ConnectPictoConnected = (props) => (
   </svg>
 )
 
-export {ArrowRight, ArrowLeft, LoggedPicto, ConnectPictoVoid, ConnectPictoConnected};
+const SwitchTheme = createTheme({
+
+  components: {
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          // Controls default (unchecked) color for the thumb
+          color: "#888"
+        },
+        colorPrimary: {
+          "&.Mui-checked": {
+            // Controls checked color for the thumb
+            color: "red"
+          }
+        },
+        track: {
+          // Controls default (unchecked) color for the track
+          opacity: 0.6,
+          backgroundColor: "#aaa",
+          ".Mui-checked.Mui-checked + &": {
+            // Controls checked color for the track
+            opacity: 0.4,
+            backgroundColor: "red"
+          }
+        }
+      }
+    }
+  }
+});
+
+export {ArrowRight, ArrowLeft, LoggedPicto, ConnectPictoVoid, ConnectPictoConnected, SwitchTheme};

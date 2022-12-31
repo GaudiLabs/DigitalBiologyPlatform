@@ -141,17 +141,57 @@ body {
 }
 
 .fields_container {
+  display: flex;
+  align-items: stretch;
   width: 100%;
   overflow: auto;
 }
 
-.right_fields {
-  float: right;
+.fields_column {
+  flex: 1;
+  font-size: small;
 }
 
-.left_fields {
-  float: left;
+.temp_input {
 }
+
+.temp_field {
+  width: 50%;
+    font-size: 12px !important;
+    outline: none;
+    color: rgba(0, 0, 0, 0.8);
+    background: rgba(0,0,0, 0.1);
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 2px 2px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+.temp_reading {
+  margin-left: 10px;
+  width: 30%;
+  font-size: 12px !important;
+  outline: none;
+  color: rgba(192, 48, 48, 0.77);
+  background: rgba(0,0,0, 0.1);
+  border: 1px solid rgba(174, 47, 47, 0.5);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 2px 2px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+// .right_fields {
+//   float: right;
+// }
+
+// .left_fields {
+//   float: left;
+// }
 
 #main_grid {
   position: relative;
@@ -167,6 +207,20 @@ th {
   position: relative;
   height: 100%;
   max-height: 100%;
+}
+
+.side_controls_th {
+  width: 200px;
+  max-width: 200px;
+  min-width: 200px;
+}
+
+.lister_th {
+  min-width: 200px;
+}
+
+.adaptor_th {
+  width: 800px;
 }
 
 .resizer {

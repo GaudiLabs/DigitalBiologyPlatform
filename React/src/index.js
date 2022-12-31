@@ -20,9 +20,12 @@ import { GenerateAuthHeader, SimpleHash } from "./utils";
 import { faUtensilSpoon } from '@fortawesome/free-solid-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 
+import Switch from '@mui/material/Switch';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { SwitchTheme } from './graphics';
 
 
-import {SaveDialog, DeleteDialog, UnsavedDialog} from './dialogs';
+import { SaveDialog, DeleteDialog, UnsavedDialog } from './dialogs';
 import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const default_frame_amount = 2;
@@ -68,11 +71,11 @@ class Body extends React.Component {
       liveModeTrigger: this.liveModeTrigger.bind(this),
       handleFrameAmountChange: this.handleFrameAmountChange.bind(this),
       setDefaultFrameDuration: this.setDefaultFrameDuration.bind(this),
-      insertBlankFrame : this.insertBlankFrame.bind(this),
-      duplicateFrame : this.duplicateFrame.bind(this),
-      deleteFrame : this.deleteFrame.bind(this),
-      clearFrame : this.clearFrame.bind(this),
-      clearAllFrames : this.clearAllFrames.bind(this),
+      insertBlankFrame: this.insertBlankFrame.bind(this),
+      duplicateFrame: this.duplicateFrame.bind(this),
+      deleteFrame: this.deleteFrame.bind(this),
+      clearFrame: this.clearFrame.bind(this),
+      clearAllFrames: this.clearAllFrames.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -80,13 +83,13 @@ class Body extends React.Component {
       accessToken: null,
       playing: false,
       authHeader: "",
-      saveDialogOpen : false,
-      deleteDialogOpen : false,
-      unsavedDialogOpen : false,
+      saveDialogOpen: false,
+      deleteDialogOpen: false,
+      unsavedDialogOpen: false,
       protocols: [],
-      loadedProtocolID : null, 
-      loadedProtocolHash : "", 
-      loopMode : true,
+      loadedProtocolID: null,
+      loadedProtocolHash: "",
+      loopMode: true,
       defaultDuration: 1000,
     };
 
@@ -97,20 +100,20 @@ class Body extends React.Component {
     console.log(atoken)
     console.log(ausername)
 
-  
+
     if (atoken != null && ausername != null) {
-    var tokenObj = JSON.parse(atoken)
+      var tokenObj = JSON.parse(atoken)
 
-    var token_expiration_date = DateTime.fromISO(tokenObj.expiration_date)
-    var now = DateTime.now()
+      var token_expiration_date = DateTime.fromISO(tokenObj.expiration_date)
+      var now = DateTime.now()
 
-    var expired_token = (token_expiration_date < now)
-    
-    if (!expired_token) {
-      this.state.loggedIn = true
-      this.state.username = ausername
-      this.state.accessToken = tokenObj
-      this.state.authHeader = GenerateAuthHeader(ausername, tokenObj)
+      var expired_token = (token_expiration_date < now)
+
+      if (!expired_token) {
+        this.state.loggedIn = true
+        this.state.username = ausername
+        this.state.accessToken = tokenObj
+        this.state.authHeader = GenerateAuthHeader(ausername, tokenObj)
       }
     }
   }
@@ -123,33 +126,32 @@ class Body extends React.Component {
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols
+        protocols: BackendProtocolsResponse.protocols
       }
     )
 
     // Query the table
-const table = document.getElementById('resizeMe');
+    const table = document.getElementById('resizeMe');
 
-// Query all headers
-const cols = table.querySelectorAll('th');
+    // Query all headers
+    const cols = table.querySelectorAll('th');
 
-// Loop over them
-for (let i =0; i< cols.length; i ++)
-{
-  let col = cols[i]
-  const resizer = document.createElement('div');
-  resizer.classList.add('resizer');
+    // Loop over them
+    for (let i = 0; i < cols.length; i++) {
+      let col = cols[i]
+      const resizer = document.createElement('div');
+      resizer.classList.add('resizer');
 
-  // Set the height
-  resizer.style.height = `${table.offsetHeight}px`;
+      // Set the height
+      resizer.style.height = `${table.offsetHeight}px`;
 
-  // Add a resizer element to the column
-  col.appendChild(resizer);
+      // Add a resizer element to the column
+      col.appendChild(resizer);
 
-  // Will be implemented in the next section
- this.createResizableColumn (col, resizer);
+      // Will be implemented in the next section
+      this.createResizableColumn(col, resizer);
 
-}
+    }
   }
 
 
@@ -159,32 +161,32 @@ for (let i =0; i< cols.length; i ++)
     let w = 0;
 
     const mouseDownHandler = function (e) {
-        // Get the current mouse position
-        x = e.clientX;
+      // Get the current mouse position
+      x = e.clientX;
 
-        // Calculate the current width of column
-        const styles = window.getComputedStyle(col);
-        w = parseInt(styles.width, 10);
+      // Calculate the current width of column
+      const styles = window.getComputedStyle(col);
+      w = parseInt(styles.width, 10);
 
-        // Attach listeners for document's events
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-        resizer.classList.add('resizing');
+      // Attach listeners for document's events
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+      resizer.classList.add('resizing');
     };
 
     const mouseMoveHandler = function (e) {
-        // Determine how far the mouse has been moved
-        const dx = e.clientX - x;
+      // Determine how far the mouse has been moved
+      const dx = e.clientX - x;
 
-        // Update the width of column
-        col.style.width = `${w + dx}px`;
+      // Update the width of column
+      col.style.width = `${w + dx}px`;
     };
 
     // When user releases the mouse, remove the existing event listeners
     const mouseUpHandler = function () {
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-  resizer.classList.remove('resizing');
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+      resizer.classList.remove('resizing');
     };
 
     resizer.addEventListener('mousedown', mouseDownHandler);
@@ -196,7 +198,7 @@ for (let i =0; i< cols.length; i ++)
     var feedbackArray = Array(16);
     for (var j = 0; j < feedbackArray.length; j++) {
       feedbackArray[j] = Array(8).fill(null)
-    } 
+    }
     return feedbackArray
   }
 
@@ -215,8 +217,8 @@ for (let i =0; i< cols.length; i ++)
       new_frame.electrodes = Array(16);
       for (var j = 0; j < new_frame.electrodes.length; j++) {
         new_frame.electrodes[j] = Array(8).fill(null)
-      } 
-    //console.log(new_frame)
+      }
+      //console.log(new_frame)
       new_frames.push(new_frame)
     }
 
@@ -236,31 +238,31 @@ for (let i =0; i< cols.length; i ++)
   }
 
   toggleLoopMode() {
-      this.setState({
-        loopMode: !this.state.loopMode,
-      })
+    this.setState({
+      loopMode: !this.state.loopMode,
+    })
   }
 
   setDefaultFrameDuration(event) {
 
-        //Parse new amount, default to 2 if NaN
-        var parsedValue = (parseInt(event.target.value) || 1000)
-        if (parsedValue < 1) {
-          parsedValue = 1
-        }
+    //Parse new amount, default to 2 if NaN
+    var parsedValue = (parseInt(event.target.value) || 1000)
+    if (parsedValue < 1) {
+      parsedValue = 1
+    }
     this.setState({
       defaultDuration: parsedValue,
     })
-}
+  }
 
 
   goToNextFrame() {
     if (this.state.currently_edited_frame[0] == (this.state.framesAmount - 1)) {
-    this.setNewFrameAmount(this.state.framesAmount + 1)
+      this.setNewFrameAmount(this.state.framesAmount + 1)
     }
-      this.setState({
-        currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
-      }, this.handleLiveDeviceSend)
+    this.setState({
+      currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
+    }, this.handleLiveDeviceSend)
   }
 
   setEditedFrame(frame_id) {
@@ -306,11 +308,12 @@ for (let i =0; i< cols.length; i ++)
   async collectFeedbackData() {
     //Feedback data
     let readBytes = await this.readSerialBytes(24)
+    console.log("RAW FEEDBACK BYTES:")
     console.log(readBytes)
     let electrodesFeedback = readBytes.slice(0, 16)
     this.setState(
       {
-        electrodesFeedback : this.electrodeBytesToSquares(electrodesFeedback)
+        electrodesFeedback: this.electrodeBytesToSquares(electrodesFeedback)
       }
     )
   }
@@ -328,17 +331,17 @@ for (let i =0; i< cols.length; i ++)
     await this.collectFeedbackData()
   }
 
-  getNthBit(uint8, n){
+  getNthBit(uint8, n) {
     return (uint8 >> n) & 0x1;
   }
 
   electrodeBytesToSquares(bytesArray) {
     let squares = this.generateEmptyFeedbackArray()
 
-    for (let i = 0; i < 16; i++){
+    for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 8; j++) {
         if (this.getNthBit(bytesArray[i], j) == 1) {
-        squares[i][7 - j] = 1
+          squares[i][7 - j] = 1
         }
       }
     }
@@ -367,8 +370,8 @@ for (let i =0; i< cols.length; i ++)
 
   async handleLiveDeviceSend() {
     if (this.state.liveMode) {
-    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
-    this.SendSerialDataAndCollectFeedback(data)
+      let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
+      this.SendSerialDataAndCollectFeedback(data)
     }
   }
 
@@ -399,14 +402,14 @@ for (let i =0; i< cols.length; i ++)
       //   }
       // }
       if (newNb != this.state.framesAmount) {
-      let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
-      this.setState(
-        {
-          currently_edited_frame: [newNb]
-        }, () => {
-          this.SendSerialDataAndCollectFeedback(data);
-        }
-      )
+        let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
+        this.setState(
+          {
+            currently_edited_frame: [newNb]
+          }, () => {
+            this.SendSerialDataAndCollectFeedback(data);
+          }
+        )
         await this.sleep(this.state.frames[newNb].duration);
       } else {
         //End of frames reached
@@ -421,7 +424,7 @@ for (let i =0; i< cols.length; i ++)
             }, () => {
               this.SendSerialDataAndCollectFeedback(data);
             })
-        await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
+          await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
         }
 
       }
@@ -436,41 +439,41 @@ for (let i =0; i< cols.length; i ++)
     //writer.releaseLock();
   }
 
-  async refreshUserProtocols(){
+  async refreshUserProtocols() {
     console.log("REFRESH PROTOCOLS TRIGGER")
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols
+        protocols: BackendProtocolsResponse.protocols
       }
     )
   }
 
-  async deleteProtocolClick(protocolID, protocolName){
+  async deleteProtocolClick(protocolID, protocolName) {
     console.log("DELETE PROTOCOL CLICK TRIGGER")
 
     this.setState({
-      deleteDialogOpen : true,
-      protocolToDeleteID : protocolID,
-      protocolToDeleteName : protocolName
+      deleteDialogOpen: true,
+      protocolToDeleteID: protocolID,
+      protocolToDeleteName: protocolName
     })
 
   }
 
-  async handleDeleteProtocol(){
-    await this.deleteProtocol(this.state.protocolToDeleteID) 
+  async handleDeleteProtocol() {
+    await this.deleteProtocol(this.state.protocolToDeleteID)
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols,
-        deleteDialogOpen : false
+        protocols: BackendProtocolsResponse.protocols,
+        deleteDialogOpen: false
       }
     )
     if (this.state.protocolToDeleteID == this.state.loadedProtocolID) {
       this.setState(
         {
-          loadedProtocolID : null
+          loadedProtocolID: null
         }
       )
       this.allocCleanFrames(default_frame_amount)
@@ -519,11 +522,11 @@ for (let i =0; i< cols.length; i ++)
       liveMode: false,
       playing: false,
       authHeader: "",
-      saveDialogOpen : false,
-      deleteDialogOpen : false,
+      saveDialogOpen: false,
+      deleteDialogOpen: false,
       protocols: [],
-      loadedProtocolID : null, 
-      loopMode : false
+      loadedProtocolID: null,
+      loopMode: false
     })
   }
 
@@ -654,7 +657,7 @@ for (let i =0; i< cols.length; i ++)
   async overwriteProtocol(protocolID, protocol) {
 
     let requestResp
-    const route = "/protocol/"+protocolID
+    const route = "/protocol/" + protocolID
     const api_url = process.env.REACT_APP_API_URL
 
     try {
@@ -719,14 +722,14 @@ for (let i =0; i< cols.length; i ++)
         new_frame.electrodes[k] = Array(8).fill(null)
       }
       //populating with electrodes
-      if (backendProtocol.frames[i].electrodes != null) { 
-      for (var j = 0; j < backendProtocol.frames[i].electrodes.length; j++) {
-        var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
-        var x = Math.floor(electrode_id / 8);
-        var y = electrode_id % 8;
-        new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value
+      if (backendProtocol.frames[i].electrodes != null) {
+        for (var j = 0; j < backendProtocol.frames[i].electrodes.length; j++) {
+          var electrode_id = parseInt(backendProtocol.frames[i].electrodes[j].electrode_id)
+          var x = Math.floor(electrode_id / 8);
+          var y = electrode_id % 8;
+          new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value
+        }
       }
-    }
       newFrames.push(new_frame)
     }
     this.setState(
@@ -737,14 +740,14 @@ for (let i =0; i< cols.length; i ++)
         protocolName: backendProtocol.name,
         protocolDescription: backendProtocol.description,
       }, () => {
-    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
-    let protocolHash = SimpleHash(protocolStr)
-    console.log("LOADED PROTOCOL HASH ="+protocolHash)
-    this.setState(
-      {
-        loadedProtocolHash : protocolHash
-      }
-    )
+        let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+        let protocolHash = SimpleHash(protocolStr)
+        console.log("LOADED PROTOCOL HASH =" + protocolHash)
+        this.setState(
+          {
+            loadedProtocolHash: protocolHash
+          }
+        )
       }
     )
 
@@ -755,12 +758,12 @@ for (let i =0; i< cols.length; i ++)
     console.log("LOAD PROTOCOL CALL")
     let protocolStr = JSON.stringify(this.SerializeStateProtocol())
     let protocolHash = SimpleHash(protocolStr)
-    console.log("ACTUAL PROTOCOL HASH="+protocolHash)
-    console.log("LOADED PROTOCOL HASH="+this.state.loadedProtocolHash)
+    console.log("ACTUAL PROTOCOL HASH=" + protocolHash)
+    console.log("LOADED PROTOCOL HASH=" + this.state.loadedProtocolHash)
     if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash) {
       this.setState({
         protocolToLoadID: protocol_id,
-        unsavedDialogOpen : true
+        unsavedDialogOpen: true
       })
       return;
     }
@@ -772,11 +775,11 @@ for (let i =0; i< cols.length; i ++)
     let BackendProtocol = await this.retreiveProtocol(protocol_id)
     console.log(BackendProtocol)
     this.loadBackendProtocolToState(BackendProtocol)
-    
-   //TODO : error handling
+
+    //TODO : error handling
     this.setState(
       {
-        loadedProtocolID : protocol_id
+        loadedProtocolID: protocol_id
       }
     )
   }
@@ -840,7 +843,7 @@ for (let i =0; i< cols.length; i ++)
             //rebuilding electrode
             var electrodeToAdd = Object.create(electrode)
             electrodeToAdd.electrode_id = ((x * 8) + y).toString()
-            electrodeToAdd.value = parseInt(this.state.frames[i].electrodes[x][y]) 
+            electrodeToAdd.value = parseInt(this.state.frames[i].electrodes[x][y])
             console.log(electrodeToAdd)
             frameToAdd.electrodes.push(electrodeToAdd)
           }
@@ -857,9 +860,9 @@ for (let i =0; i< cols.length; i ++)
     console.log("SAVE CLICK TRIGGER")
     //TODO : here add popup, choices etc
     if (this.state.loadedProtocolID != null) {
-    this.setState({
-      saveDialogOpen : true
-    })
+      this.setState({
+        saveDialogOpen: true
+      })
     } else {
       await this.handleCreateNewProtocol()
     }
@@ -879,18 +882,18 @@ for (let i =0; i< cols.length; i ++)
   async handleCreateNewProtocol() {
     console.log("NEW PROTOCOL CLICK TRIGGER")
     this.setState({
-      saveDialogOpen : false
+      saveDialogOpen: false
     })
 
-     var currentProtocol = this.SerializeStateProtocol()
+    var currentProtocol = this.SerializeStateProtocol()
 
     let resp = await this.saveNewProtocol(currentProtocol)
     console.log(resp)
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols,
-        loadedProtocolID : resp.id
+        protocols: BackendProtocolsResponse.protocols,
+        loadedProtocolID: resp.id
       }
     )
   }
@@ -898,26 +901,26 @@ for (let i =0; i< cols.length; i ++)
   async handleOverwriteProtocol() {
     console.log("OVERWRITE PROTOCOL CLICK TRIGGER")
     this.setState({
-      saveDialogOpen : false
+      saveDialogOpen: false
     })
 
-     var currentProtocol = this.SerializeStateProtocol()
+    var currentProtocol = this.SerializeStateProtocol()
 
     await this.overwriteProtocol(this.state.loadedProtocolID, currentProtocol)
     //TODO : check save success ?
     let protocolStr = JSON.stringify(this.SerializeStateProtocol())
     let protocolHash = SimpleHash(protocolStr)
-    console.log("SAVED PROTOCOL HASH ="+protocolHash)
+    console.log("SAVED PROTOCOL HASH =" + protocolHash)
     this.setState(
       {
-        loadedProtocolHash : protocolHash
+        loadedProtocolHash: protocolHash
       }
     )
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
     this.setState(
       {
-        protocols : BackendProtocolsResponse.protocols
+        protocols: BackendProtocolsResponse.protocols
       }
     )
   }
@@ -928,22 +931,22 @@ for (let i =0; i< cols.length; i ++)
     console.log("LIVE MODE CLICK TRIGGER")
     this.setState(
       {
-        liveMode : !this.state.liveMode
+        liveMode: !this.state.liveMode
       },
       () => {
-    if (this.state.liveMode) {
-      console.log("STARTING LIVE MODE INTERVAL")
-      this.handleLiveDeviceSend()
-      const timer = setInterval(() => {
-        if (!this.state.liveMode) {
-          console.log("STOPPING LIVE MODE INTERVAL")
-          clearInterval(timer);
-          return;
+        if (this.state.liveMode) {
+          console.log("STARTING LIVE MODE INTERVAL")
+          this.handleLiveDeviceSend()
+          const timer = setInterval(() => {
+            if (!this.state.liveMode) {
+              console.log("STOPPING LIVE MODE INTERVAL")
+              clearInterval(timer);
+              return;
+            }
+            this.handleLiveDeviceSend()
+          }, 500);
         }
-      this.handleLiveDeviceSend()
-      }, 500);
-    }
-    
+
 
       }
       //this.handleLiveDeviceSend
@@ -961,18 +964,18 @@ for (let i =0; i< cols.length; i ++)
 
     try {
       requestResp = await fetch(api_url + route, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + this.state.authHeader 
-      },
-    })
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.state.authHeader
+        },
+      })
     }
     catch (error) {
       this.setState(
         {
-          error : true,
-          errorMessage : "Unable to reach server"
+          error: true,
+          errorMessage: "Unable to reach server"
         }
       )
       console.log(error)
@@ -980,11 +983,11 @@ for (let i =0; i< cols.length; i ++)
     }
     //No network error, handle regular errors
     if (!this.handleHTTPErrors(requestResp)) {
-    //TODO : empty body error case
-    //console.log(requestResp.json())
-    return requestResp.json()
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp.json()
     }
- }
+  }
 
   bit_set(num, bit) {
     return num | (1 << bit);
@@ -1019,15 +1022,18 @@ for (let i =0; i< cols.length; i ++)
     //26 = temp 1
     //27 = temp 2
     //28 = temp 3
-    output[26] = 40
+    output[26] = 70
+    output[27] = 70
+    output[28] = 110
 
     //magnet bytes
     //0 = off
     //1 = left magnet
     //2 = right magnet
     //3 = both
-    output[16] = 3
+    output[16] = 0
 
+    console.log("SENT DATA:")
     console.log(output)
     return output
   }
@@ -1115,68 +1121,68 @@ for (let i =0; i< cols.length; i ++)
     new_frame.electrodes = Array(16);
     for (var j = 0; j < new_frame.electrodes.length; j++) {
       new_frame.electrodes[j] = Array(8).fill(null)
-    } 
-  return new_frame
+    }
+    return new_frame
   }
 
   insertBlankFrame() {
     //this.setNewFrameAmount(this.state.framesAmount + 1)
     let at = this.state.currently_edited_frame[0] + 1
-        //copy frames
-        let ret = Array()
-        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
-          return { ...arr }
-        });
-        var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
-          return { ...arr }
-        });
-        // console.log("BEFORE:")
-        // console.log(beforeFrames)
-        // console.log("AFTER:")
-        // console.log(afterFrames)
+    //copy frames
+    let ret = Array()
+    var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+      return { ...arr }
+    });
+    var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
+      return { ...arr }
+    });
+    // console.log("BEFORE:")
+    // console.log(beforeFrames)
+    // console.log("AFTER:")
+    // console.log(afterFrames)
 
-        ret.push(...beforeFrames)
-        ret.push(this.newBlankFrame())
-        ret.push(...afterFrames)
-        console.log("RET:")
-        console.log(ret)
-        this.setState({
-          currently_edited_frame: [at],
-          frames: ret,
-          framesAmount: this.state.framesAmount + 1,
-        }, this.handleLiveDeviceSend);
+    ret.push(...beforeFrames)
+    ret.push(this.newBlankFrame())
+    ret.push(...afterFrames)
+    console.log("RET:")
+    console.log(ret)
+    this.setState({
+      currently_edited_frame: [at],
+      frames: ret,
+      framesAmount: this.state.framesAmount + 1,
+    }, this.handleLiveDeviceSend);
   }
 
   duplicateFrame() {
     //this.setNewFrameAmount(this.state.framesAmount + 1)
     let at = this.state.currently_edited_frame[0] + 1
-        //copy frames
-        let ret = Array()
-        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
-          return { ...arr }
-        });
-        var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
-          return { ...arr }
-        });
-        // console.log("BEFORE:")
-        // console.log(beforeFrames)
-        // console.log("AFTER:")
-        // console.log(afterFrames)
+    //copy frames
+    let ret = Array()
+    var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+      return { ...arr }
+    });
+    var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
+      return { ...arr }
+    });
+    // console.log("BEFORE:")
+    // console.log(beforeFrames)
+    // console.log("AFTER:")
+    // console.log(afterFrames)
 
-        ret.push(...beforeFrames)
-        ret.push(beforeFrames.slice(beforeFrames.length - 1, beforeFrames.length)[0])
-        ret.push(...afterFrames)
-        console.log("RET:")
-        console.log(ret)
-        this.setState({
-          currently_edited_frame: [at],
-          frames: ret,
-          framesAmount: this.state.framesAmount + 1,
-        }, this.handleLiveDeviceSend);
+    ret.push(...beforeFrames)
+    ret.push(beforeFrames.slice(beforeFrames.length - 1, beforeFrames.length)[0])
+    ret.push(...afterFrames)
+    console.log("RET:")
+    console.log(ret)
+    this.setState({
+      currently_edited_frame: [at],
+      frames: ret,
+      framesAmount: this.state.framesAmount + 1,
+    }, this.handleLiveDeviceSend);
   }
 
   clearFrame() {
-    let at = this.state.currently_edited_frame[0] 
+    let at = this.state.currently_edited_frame[0]
 
     var framesCopy = this.state.frames.map(function (arr) {
       return { ...arr }
@@ -1184,7 +1190,7 @@ for (let i =0; i< cols.length; i ++)
     framesCopy[at] = this.newBlankFrame()
     this.setState({
       frames: framesCopy,
-    }, this.handleLiveDeviceSend); 
+    }, this.handleLiveDeviceSend);
   }
 
   clearAllFrames() {
@@ -1203,7 +1209,7 @@ for (let i =0; i< cols.length; i ++)
         draggable: true,
         progress: undefined,
         theme: "light",
-        });
+      });
       return
     }
     let at = this.state.currently_edited_frame[0]
@@ -1213,30 +1219,30 @@ for (let i =0; i< cols.length; i ++)
       this.setState({
         currently_edited_frame: [at - 1],
       }, this.handleLiveDeviceSend)
-     return
+      return
     }
-        //copy frames
-        let ret = Array()
-        var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
-          return { ...arr }
-        });
-        var afterFrames = this.state.frames.slice(at + 1, this.state.frames.length).map(function (arr) {
-          return { ...arr }
-        });
-        // console.log("BEFORE:")
-        // console.log(beforeFrames)
-        // console.log("AFTER:")
-        // console.log(afterFrames)
+    //copy frames
+    let ret = Array()
+    var beforeFrames = this.state.frames.slice(0, at).map(function (arr) {
+      return { ...arr }
+    });
+    var afterFrames = this.state.frames.slice(at + 1, this.state.frames.length).map(function (arr) {
+      return { ...arr }
+    });
+    // console.log("BEFORE:")
+    // console.log(beforeFrames)
+    // console.log("AFTER:")
+    // console.log(afterFrames)
 
-        ret.push(...beforeFrames)
-        ret.push(...afterFrames)
-        console.log("RET:")
-        console.log(ret)
-        this.setState({
-          currently_edited_frame: [at],
-          frames: ret,
-          framesAmount: this.state.framesAmount - 1,
-        }, this.handleLiveDeviceSend);
+    ret.push(...beforeFrames)
+    ret.push(...afterFrames)
+    console.log("RET:")
+    console.log(ret)
+    this.setState({
+      currently_edited_frame: [at],
+      frames: ret,
+      framesAmount: this.state.framesAmount - 1,
+    }, this.handleLiveDeviceSend);
   }
 
   // setNewFrameAmount sets a new frame amount,
@@ -1272,7 +1278,7 @@ for (let i =0; i< cols.length; i ++)
         new_frame.electrodes = Array(16);
         for (var j = 0; j < new_frame.electrodes.length; j++) {
           new_frame.electrodes[j] = Array(8).fill(null)
-        } 
+        }
         newFrames.push(new_frame)
       }
     } else {
@@ -1290,12 +1296,68 @@ for (let i =0; i< cols.length; i ++)
 
   renderDurationInput() {
     return (
-      <form >
-        <label htmlFor="frame_duration">
-          Current frame duration (ms)
-        </label>
-        <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-      </form>
+      <React.Fragment>
+        <div className="fields_column">
+          <form >
+            <label htmlFor="frame_duration">
+              Frame duration (ms)
+            </label>
+            <input className="control_input" name="frame_duration" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+          </form>
+        </div>
+        <div className="fields_column">
+          <form >
+            <label htmlFor="temp1">
+              Temperature 1 (°c)
+            </label>
+            <div className="temp_input">
+              <input className="temp_field" name="temp1" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+              <input className="temp_reading" name="temp1_reading" type="number" value="12.6" readonly disabled/>
+            </div>
+          </form>
+          <form >
+            <label htmlFor="temp2">
+              Temperature 2 (°c)
+            </label>
+            <div className="temp_input">
+              <input className="temp_field" name="temp2" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+              <input className="temp_reading" name="temp2_reading" type="number" value="12.6" readonly disabled/>
+            </div>
+          </form>
+          <form >
+            <label htmlFor="temp3">
+              Temperature 3 (°c)
+            </label>
+            <div className="temp_input">
+              <input className="temp_field" name="temp3" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
+              <input className="temp_reading" name="temp3_reading" type="number" value="12.6" readonly disabled/>
+            </div>
+          </form>
+        </div>
+        <div className="fields_column">
+        <ThemeProvider theme={SwitchTheme}>
+          <form>
+            <Switch 
+            //defaultChecked 
+              size="small" 
+              // checked={this.props.state.loopMode}
+              // onChange={this.props.state.toggleLoopMode}
+            /> Magnet 1
+            </form>
+
+          <form>
+            <Switch 
+            //defaultChecked 
+              size="small" 
+            // checked={this.props.state.loopMode}
+              // onChange={this.props.state.toggleLoopMode}
+            /> Magnet 2
+            </form>
+ 
+          </ThemeProvider>
+        </div>
+ 
+      </React.Fragment>
     )
   }
 
@@ -1317,21 +1379,21 @@ for (let i =0; i< cols.length; i ++)
   handleSaveDialogClose = () => {
     this.setState(
       {
-        saveDialogOpen : false
+        saveDialogOpen: false
       }
     )
   };
   handleDeleteDialogClose = () => {
     this.setState(
       {
-        deleteDialogOpen : false
+        deleteDialogOpen: false
       }
     )
   };
   handleUnsavedDialogClose = () => {
     this.setState(
       {
-        unsavedDialogOpen : false
+        unsavedDialogOpen: false
       }
     )
   };
@@ -1348,30 +1410,31 @@ for (let i =0; i< cols.length; i ++)
       <React.Fragment>
         <ToastContainer />
         <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
-        <SaveDialog 
-        open={this.state.saveDialogOpen} 
-        //open={false} 
-        handleClose={this.handleSaveDialogClose.bind(this)}
-        handleCreateNew={this.handleCreateNewProtocol.bind(this)}
-        handleOverwrite={this.handleOverwriteProtocol.bind(this)}
+        <SaveDialog
+          open={this.state.saveDialogOpen}
+          //open={false} 
+          handleClose={this.handleSaveDialogClose.bind(this)}
+          handleCreateNew={this.handleCreateNewProtocol.bind(this)}
+          handleOverwrite={this.handleOverwriteProtocol.bind(this)}
         />
-        <DeleteDialog 
-        open={this.state.deleteDialogOpen} 
-        handleClose={this.handleDeleteDialogClose.bind(this)}
-        handleDelete={this.handleDeleteProtocol.bind(this)}
-        protocolName={this.state.protocolToDeleteName}
+        <DeleteDialog
+          open={this.state.deleteDialogOpen}
+          handleClose={this.handleDeleteDialogClose.bind(this)}
+          handleDelete={this.handleDeleteProtocol.bind(this)}
+          protocolName={this.state.protocolToDeleteName}
         />
-        <UnsavedDialog 
-        open={this.state.unsavedDialogOpen} 
-        handleClose={this.handleUnsavedDialogClose.bind(this)}
-        handleDiscard={() => { this.loadProtocol(this.state.protocolToLoadID)
-        this.setState({
-          unsavedDialogOpen : false
-        })
-        }}
-        protocolName={this.state.protocolName}
+        <UnsavedDialog
+          open={this.state.unsavedDialogOpen}
+          handleClose={this.handleUnsavedDialogClose.bind(this)}
+          handleDiscard={() => {
+            this.loadProtocol(this.state.protocolToLoadID)
+            this.setState({
+              unsavedDialogOpen: false
+            })
+          }}
+          protocolName={this.state.protocolName}
         />
- 
+
         {/* <ResponsiveGridLayout
           layouts={{ lg: this.layout }}
           breakpoints={{ lg: 1200 }}//, sm: 768, xs: 400 }}
@@ -1383,40 +1446,38 @@ for (let i =0; i< cols.length; i ++)
           maxRows={6}
         > */}
         <div id="main_grid">
-        <table id="resizeMe" className="table">
-          <th>
-          <div key="gridelem_adaptor" className="scrollable main_cont">
-            <AdaptorComponent state={this.state} />
-            <EditorButtons state={this.state} />
-            <div className="fields_container">
-              <div className="left_fields">
-              {this.renderDurationInput()}
+          <table id="resizeMe" className="table">
+            <th className="adaptor_th" >
+              <div key="gridelem_adaptor" className="scrollable main_cont">
+                <AdaptorComponent state={this.state} />
+                <EditorButtons state={this.state} />
+                <div className="fields_container">
+                  {this.renderDurationInput()}
+                  <div className="fields_column">
+                    {this.renderMetadataInput()}
+                  </div>
+                </div>
               </div>
-              <div className="right_fields">
-              {this.renderMetadataInput()}
+            </th>
+            <th className="side_controls_th">
+              <div key="SideControls" className="scrollable" >
+                <SideButtons
+                  insertBlankFrame={this.state.insertBlankFrame}
+                  duplicateFrame={this.state.duplicateFrame}
+                  deleteFrame={this.state.deleteFrame}
+                  clearFrame={this.state.clearFrame}
+                  clearAllFrames={this.state.clearAllFrames}
+                  framesAmount={this.state.framesAmount}
+                />
               </div>
-            </div>
-          </div>
-          </th>
-          <th className="side_controls_th">
-          <div key="SideControls" className="scrollable" >
-            <SideButtons 
-            insertBlankFrame={this.state.insertBlankFrame} 
-            duplicateFrame={this.state.duplicateFrame}
-            deleteFrame={this.state.deleteFrame}
-            clearFrame={this.state.clearFrame}
-            clearAllFrames={this.state.clearAllFrames}
-            framesAmount={this.state.framesAmount}
-            />
-          </div>
-          </th>
-          <th className="lister_th" >
-          <div key="Protocols" className="scrollable" >
-            <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID}/>
-          </div>
-          </th>
+            </th>
+            <th className="lister_th" >
+              <div key="Protocols" className="scrollable" >
+                <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID} />
+              </div>
+            </th>
           </table>
-          </div>
+        </div>
         {/* </ResponsiveGridLayout> */}
       </React.Fragment>
     )
