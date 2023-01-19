@@ -30,7 +30,12 @@ import { DateTime } from "luxon";
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const default_frame_amount = 2;
 
-
+const frame = {
+  duration: 0,
+  electrodes: [],
+  temperatures: new Float32Array(3).fill(null),
+  magnets: Array(2).fill(null)
+};
 
 class Body extends React.Component {
   constructor(props) {
@@ -41,12 +46,16 @@ class Body extends React.Component {
       currently_edited_frame: [0],
       frames: [{
         duration: 0,
-        electrodes: Array(16).fill(Array(8).fill(null))
+        electrodes: Array(16).fill(Array(8).fill(null)),
+        temperatures: new Float32Array(3).fill(null),
+        magnets: Array(2).fill(null)
       }
         ,
       {
         duration: 0,
-        electrodes: Array(16).fill(Array(8).fill(null))
+        electrodes: Array(16).fill(Array(8).fill(null)),
+        temperatures: new Float32Array(3).fill(null),
+        magnets: Array(2).fill(null)
       }
       ],
       protocolName: "New Protocol",
@@ -118,18 +127,6 @@ class Body extends React.Component {
       }
     }
   }
-
-  setTemperatureReading(key, temprature) {
-    var newTempReadings = this.state.temperatureReadings
-    newTempReadings[key] = temprature
-
-    this.setState(
-      {
-        temperatureReadings : newTempReadings
-      }
-    )
-  }
-
 
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT : Main")
@@ -217,20 +214,9 @@ class Body extends React.Component {
   allocCleanFrames(framesAmount) {
     let new_frames = [];
 
-    const frame = {
-      duration: 0,
-      electrodes: []
-    };
-
     for (var i = 0; i < framesAmount; i++) {
 
-      var new_frame = Object.create(frame);
-      new_frame.duration = 1000;
-      new_frame.electrodes = Array(16);
-      for (var j = 0; j < new_frame.electrodes.length; j++) {
-        new_frame.electrodes[j] = Array(8).fill(null)
-      }
-      //console.log(new_frame)
+      var new_frame = this.newBlankFrame()
       new_frames.push(new_frame)
     }
 
@@ -322,29 +308,25 @@ class Body extends React.Component {
     let readBytes = await this.readSerialBytes(24)
     console.log("RAW FEEDBACK BYTES:")
     console.log(readBytes)
-    let electrodesFeedback = readBytes.slice(0, 16)
+    var electrodesFeedback = readBytes.slice(0, 16)
+    var tempReadings = this.parseTemperatures(readBytes.slice(17, 23))
     this.setState(
       {
-        electrodesFeedback: this.electrodeBytesToSquares(electrodesFeedback)
+        electrodesFeedback: this.electrodeBytesToSquares(electrodesFeedback),
+        tempReadings: tempReadings
       }
     )
-
-    this.parseTemperatures(readBytes.slice(17,23))
   }
 
   parseTemperatures(temperaturesBytes) {
 
     var tempReadings = this.state.temperatureReadings
 
-    tempReadings[0] = parseFloat(temperaturesBytes[1])
-    tempReadings[1] = parseFloat(temperaturesBytes[3])
-    tempReadings[2] = parseFloat(temperaturesBytes[5])
+    tempReadings[0] = (parseFloat(temperaturesBytes[1]) + (parseFloat(temperaturesBytes[0]) * 0.01));
+    tempReadings[1] = (parseFloat(temperaturesBytes[3]) + (parseFloat(temperaturesBytes[2]) * 0.01));
+    tempReadings[2] = (parseFloat(temperaturesBytes[5]) + (parseFloat(temperaturesBytes[4]) * 0.01));
 
-    this.setState(
-      {
-        temperatureReadings : tempReadings
-      }
-    )
+    return tempReadings
 
 
   }
@@ -731,27 +713,12 @@ class Body extends React.Component {
       return
     }
 
-    const frame = {
-      duration: 0,
-      electrodes: []
-    };
-
     var newFrames = Array()
 
-
-    //console.log("NEWAMOUNT:")
-    //console.log(newAmount)
-
-    //TODO:
-    //use clean alloc
-    //pushing new frames
     for (var i = 0; i < newAmount; i++) {
-      var new_frame = Object.create(frame);
+      var new_frame = this.newBlankFrame();
       new_frame.duration = backendProtocol.frames[i].duration;
-      new_frame.electrodes = Array(16);
-      for (var k = 0; k < 16; k++) {
-        new_frame.electrodes[k] = Array(8).fill(null)
-      }
+
       //populating with electrodes
       if (backendProtocol.frames[i].electrodes != null) {
         for (var j = 0; j < backendProtocol.frames[i].electrodes.length; j++) {
@@ -824,10 +791,22 @@ class Body extends React.Component {
       "electrode_id": "placeholder electrode id"
     }
 
-    const frame = {
+    const temperature = {
+      "index": 0,
+      "value": 0.00,
+    }
+
+    const magnet = {
+      "index": 0,
+      "value": false,
+    }
+
+    const ser_frame = {
       rank: 0,
       duration: 0,
-      electrodes: []
+      electrodes: [],
+      temperatures : [],
+      magnets : [],
     };
 
     const rankedAuthor = {
@@ -847,7 +826,7 @@ class Body extends React.Component {
     var returnedProtocol = Object.create(protocol)
     returnedProtocol.name = this.state.protocolName
     returnedProtocol.description = this.state.protocolDescription
-    //TODO: this must not be harcoded, this is a stub
+    //TODO: this value must not be harcoded, this is a stub
     returnedProtocol.device_id = 2
     returnedProtocol.frames = []
     returnedProtocol.author_list = []
@@ -861,7 +840,32 @@ class Body extends React.Component {
 
     for (var i = 0; i < this.state.framesAmount; i++) {
       console.log("ADDING FRAME")
-      var frameToAdd = Object.create(frame)
+      var frameToAdd = Object.create(ser_frame)
+      frameToAdd.duration = parseInt(this.state.frames[i].duration)
+
+      var temperaturesToAdd = new Array()
+      for (var temp_index = 0; temp_index < this.state.frames[i].temperatures.length; temp_index++) {
+        if (parseFloat(this.state.frames[i].temperatures[temp_index]).toFixed(2) == '0.00') {
+          continue
+        }
+        var temperatureToAdd = Object.create(temperature)
+        temperatureToAdd.index = temp_index
+        temperatureToAdd.value = parseFloat(parseFloat(this.state.frames[i].temperatures[temp_index]).toFixed(2)) 
+
+        temperaturesToAdd.push(temperatureToAdd) 
+      }
+      frameToAdd.temperatures = temperaturesToAdd
+
+      var magnetsToAdd = new Array()
+      for (var magnet_index = 0; magnet_index < this.state.frames[i].magnets.length; magnet_index++) {
+        var magnetToAdd = Object.create(magnet)
+        magnetToAdd.index = magnet_index
+        magnetToAdd.value = this.state.frames[i].magnets[magnet_index]
+
+        magnetsToAdd.push(magnetToAdd) 
+      }
+      frameToAdd.magnets = magnetsToAdd
+
       frameToAdd.duration = parseInt(this.state.frames[i].duration)
       frameToAdd.rank = i
       frameToAdd.electrodes = []
@@ -1053,7 +1057,7 @@ class Body extends React.Component {
     //26 = temp 1
     //27 = temp 2
     //28 = temp 3
-    output[26] = 30
+    output[26] = 110
     output[27] = 30
     output[28] = 10
 
@@ -1122,6 +1126,38 @@ class Body extends React.Component {
     )
   }
 
+  handleTempChange(event) {
+
+    var newFrames = this.state.frames.map(function (arr) {
+      //return arr.slice();
+      return { ...arr }
+    });
+
+    let temp_index = parseInt(event.target.getAttribute("temp_id")) - 1
+    newFrames[this.state.currently_edited_frame[0]].temperatures[temp_index] = parseFloat(event.target.value).toFixed(2)
+
+    this.setState({
+      frames: newFrames,
+    });
+  }
+
+  handleMagnetChange(event) {
+
+    var newFrames = this.state.frames.map(function (arr) {
+      //return arr.slice();
+      return { ...arr }
+    });
+
+    let magnet_index = parseInt(event.target.getAttribute("title")) - 1
+    console.log(magnet_index)
+    console.log(this.state.frames[this.state.currently_edited_frame[0]].magnets)
+    newFrames[this.state.currently_edited_frame[0]].magnets[magnet_index] = !this.state.frames[this.state.currently_edited_frame[0]].magnets[magnet_index]
+
+    this.setState({
+      frames: newFrames,
+    });
+  }
+
   handleDescriptionChange(event) {
     this.setState(
       {
@@ -1143,16 +1179,15 @@ class Body extends React.Component {
   }
 
   newBlankFrame() {
-    const frame = {
-      duration: 0,
-      electrodes: []
-    };
     var new_frame = Object.create(frame);
     new_frame.duration = 1000;
     new_frame.electrodes = Array(16);
+
     for (var j = 0; j < new_frame.electrodes.length; j++) {
       new_frame.electrodes[j] = Array(8).fill(null)
     }
+    new_frame.temperatures = new Float32Array(3).fill(0.0)
+    new_frame.magnets = Array(2).fill(false)
     return new_frame
   }
 
@@ -1280,11 +1315,6 @@ class Body extends React.Component {
   // /!\ discard frames if new amount is smaller
   setNewFrameAmount(newAmount) {
 
-    const frame = {
-      duration: 0,
-      electrodes: []
-    };
-
     //copy frames
     var newFrames = this.state.frames.map(function (arr) {
       return { ...arr }
@@ -1304,12 +1334,7 @@ class Body extends React.Component {
 
       //pushing new frames
       for (var i = 0; i < framesAmountSet; i++) {
-        var new_frame = Object.create(frame);
-        new_frame.duration = 1000;
-        new_frame.electrodes = Array(16);
-        for (var j = 0; j < new_frame.electrodes.length; j++) {
-          new_frame.electrodes[j] = Array(8).fill(null)
-        }
+        var new_frame = this.newBlankFrame();
         newFrames.push(new_frame)
       }
     } else {
@@ -1342,8 +1367,13 @@ class Body extends React.Component {
               Temperature 1 (°c)
             </label>
             <div className="temp_input">
-              <input className="temp_field" name="temp1" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp1_reading"  value={this.state.temperatureReadings[0]+"°"} readonly disabled/>
+
+              <input className="temp_field" name="temp1" type="number" temp_id="1"
+                step="0.01"
+                min='0'
+                max='120'
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[0].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+              <input className="temp_reading" name="temp1_reading" value={this.state.temperatureReadings[0].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>
           <form >
@@ -1351,8 +1381,12 @@ class Body extends React.Component {
               Temperature 2 (°c)
             </label>
             <div className="temp_input">
-              <input className="temp_field" name="temp2" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp2_reading" value={this.state.temperatureReadings[1]+"°"} readonly disabled/>
+              <input className="temp_field" name="temp2" type="number" temp_id="2"
+                step="0.01"
+                min='0'
+                max='120'
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[1].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+              <input className="temp_reading" name="temp2_reading" value={this.state.temperatureReadings[1].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>
           <form >
@@ -1360,34 +1394,40 @@ class Body extends React.Component {
               Temperature 3 (°c)
             </label>
             <div className="temp_input">
-              <input className="temp_field" name="temp3" type="number" value={this.state.frames[this.state.currently_edited_frame[0]].duration} onChange={this.handleDurationChange.bind(this)} />
-              <input className="temp_reading" name="temp3_reading" value={this.state.temperatureReadings[2]+"°"} readonly disabled/>
+              <input className="temp_field" name="temp3" type="number" temp_id="3"
+                step="0.01"
+                min='0'
+                max='120'
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[2].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+              <input className="temp_reading" name="temp3_reading" value={this.state.temperatureReadings[2].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>
         </div>
         <div className="fields_column">
-        <ThemeProvider theme={SwitchTheme}>
-          <form>
-            <Switch 
-            //defaultChecked 
-              size="small" 
-              // checked={this.props.state.loopMode}
-              // onChange={this.props.state.toggleLoopMode}
-            /> Magnet 1
+          <ThemeProvider theme={SwitchTheme}>
+            <form>
+              <Switch
+                inputProps={{ 'title': '1' }}
+                //defaultChecked 
+                size="small"
+                checked={this.state.frames[this.state.currently_edited_frame[0]].magnets[0]}
+                onChange={this.handleMagnetChange.bind(this)}
+              /> Magnet 1
             </form>
 
-          <form>
-            <Switch 
-            //defaultChecked 
-              size="small" 
-            // checked={this.props.state.loopMode}
-              // onChange={this.props.state.toggleLoopMode}
-            /> Magnet 2
+            <form>
+              <Switch
+                inputProps={{ 'title': '2' }}
+                //defaultChecked 
+                size="small"
+                checked={this.state.frames[this.state.currently_edited_frame[0]].magnets[1]}
+                onChange={this.handleMagnetChange.bind(this)}
+              /> Magnet 2
             </form>
- 
+
           </ThemeProvider>
         </div>
- 
+
       </React.Fragment>
     )
   }
