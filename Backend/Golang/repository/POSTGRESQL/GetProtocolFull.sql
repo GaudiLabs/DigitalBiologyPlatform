@@ -8,9 +8,18 @@ WITH frame AS (
 				   jsonb_agg(jsonb_build_object('electrode_id', he.svg_denomination, 'value', fe.value)) 
 				   FILTER (WHERE fe.electrode_id IS NOT NULL), '[]'
 			   ) as electrodes
+			   , COALESCE(
+				   jsonb_agg(jsonb_build_object('feature_id', hef.name, 'value', fef.value)) 
+				   FILTER (WHERE fef.hardware_feature_id IS NOT NULL), '[]'
+			   ) as electrodes_features
 		FROM protocols.frame as f 
+		
 		LEFT JOIN protocols.frame_electrode as fe ON f.id = fe.frame_id
 		LEFT JOIN hardware.electrode as he ON fe.electrode_id = he.id
+		
+		LEFT JOIN protocols.frame_feature as fef ON f.id = fef.frame_id
+		LEFT JOIN hardware.electrode_feature as hef ON fef.hardware_feature_id = hef.id
+		
 		GROUP BY f.id, f.duration, f.protocol_id
 		ORDER BY rank
 ),
@@ -39,7 +48,8 @@ protocol AS (
 		      , array_agg(jsonb_build_object(
 		       'duration', frame.duration,
 		       'rank', frame.rank,
-		       'electrodes', frame.electrodes
+		       'electrodes', frame.electrodes,
+		       'features', frame.electrodes_features
 		       )) as frames
 		FROM protocols.protocol as p 
 		JOIN frame ON p.id = frame.protocol_id

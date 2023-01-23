@@ -3,15 +3,25 @@ package repository
 import (
 	"database/sql"
 	"embed"
+	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/config"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
+	"github.com/DigitalBiologyPlatform/Backend/utils"
 	"github.com/davecgh/go-spew/spew"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	DBMagnetPrefix      = "magnet"
+	DBTemperaturePrefix = "temp"
+	DBPrefixDelimiter   = "_"
 )
 
 type PostgresRepo struct {
@@ -21,6 +31,71 @@ type PostgresRepo struct {
 	password string
 	dbName   string
 	dbConn   *sql.DB
+}
+
+// Electrode defines model for Electrode.
+type Electrode struct {
+	ElectrodeId string `json:"electrode_id,omitempty"`
+	Value       int    `json:"value,omitempty"`
+}
+
+// Frame defines model for Frame.
+type Frame struct {
+	Features     []DbFeature           `json:"features,omitempty"`
+	Duration     int                   `json:"duration,omitempty"`
+	Electrodes   []Electrode           `json:"electrodes,omitempty"`
+	Rank         int                   `json:"rank,omitempty"`
+	Magnets      *[]IndexedMagnet      `json:"magnets,omitempty"`
+	Temperatures *[]IndexedTemperature `json:"temperatures,omitempty"`
+}
+
+// IndexedMagnet defines model for IndexedMagnet.
+type IndexedMagnet struct {
+	Index int  `json:"index"`
+	Value bool `json:"value"`
+}
+
+// IndexedTemperature defines model for IndexedTemperature.
+type IndexedTemperature struct {
+	Index int     `json:"index"`
+	Value float32 `json:"value"`
+}
+
+// RankedAuthor defines model for RankedAuthor.
+type RankedAuthor struct {
+	Author string `json:"author,omitempty"`
+	Rank   int    `json:"rank,omitempty"`
+}
+
+// ShortProtocol defines model for ShortProtocol.
+type ShortProtocol struct {
+	AuthorList    []RankedAuthor `json:"author_list"`
+	AuthorRank    int            `json:"author_rank"`
+	FrameCount    int            `json:"frame_count"`
+	Id            int            `json:"id"`
+	MaskFrame     []Frame        `json:"mask_frame"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	TotalDuration int            `json:"total_duration"`
+	DeviceID      int            `json:"device_id"`
+}
+
+// ShortProtocol defines model for ShortProtocol.
+type DbProtocol struct {
+	AuthorList    []RankedAuthor `json:"author_list"`
+	FrameCount    int            `json:"frame_count"`
+	Id            int            `json:"id"`
+	Frames        []Frame        `json:"frames"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	TotalDuration int            `json:"total_duration"`
+	DeviceID      int            `json:"device_id"`
+	MaskFrame     Frame          `json:"mask_frame"`
+}
+
+type DbFeature struct {
+	Value      int    `json:"value,omitempty"`
+	FeatureKey string `json:"feature_id,omitempty"`
 }
 
 // Ensure repo interface is implemented
@@ -452,6 +527,12 @@ func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol, username
 		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
 	}
 
+	filename = "POSTGRESQL/CreateFrameFeature.sql"
+	createFrameFeatureQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
 	filename = "POSTGRESQL/CreateFrame.sql"
 	createFrameQuery, err := embeddedSQL.ReadFile(filename)
 	if err != nil {
@@ -545,6 +626,43 @@ func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol, username
 				return -1, err
 			}
 		}
+
+		//TODO: For special features, check device ID
+
+		if frame.Magnets != nil {
+			//Populating magnets
+			for _, magnet := range *frame.Magnets {
+				//TODO : set magnet in consts
+				hardwareFeatureName := fmt.Sprintf("%s%s%d", DBMagnetPrefix, DBPrefixDelimiter, magnet.Index)
+				spew.Dump(hardwareFeatureName)
+				_, err := dbTransaction.Exec(string(createFrameFeatureQuery),
+					frameID,
+					utils.BoolToInt(magnet.Value),
+					hardwareFeatureName,
+				)
+				if err != nil {
+					return -1, err
+				}
+			}
+
+		}
+
+		if frame.Temperatures != nil {
+			//Populating magnets
+			for _, temperature := range *frame.Temperatures {
+				//TODO : set temp in consts
+				hardwareFeatureName := fmt.Sprintf("%s%s%d", DBTemperaturePrefix, DBPrefixDelimiter, temperature.Index)
+				spew.Dump(hardwareFeatureName)
+				_, err := dbTransaction.Exec(string(createFrameFeatureQuery),
+					frameID,
+					int(temperature.Value*100),
+					hardwareFeatureName,
+				)
+				if err != nil {
+					return -1, err
+				}
+			}
+		}
 	}
 
 	_, err = dbTransaction.Exec(string(createAuthorQuery),
@@ -613,14 +731,60 @@ func (repo *PostgresRepo) GetProtocol(protocolID int) (defines.FullProtocol, err
 		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
 	}
 
-	var returnedProtocol defines.FullProtocol
 	rows := repo.dbConn.QueryRow(string(queryBytes), protocolID)
 
-	//TODO: check SQL error ?
-	err = rows.Scan(&returnedProtocol)
+	var returnedProtocol defines.FullProtocol
+	var jsonBytes []byte
+
+	err = rows.Scan(&jsonBytes)
 	if err != nil {
 		return returnedProtocol, err
 	}
+
+	var DbProtocol DbProtocol
+	json.Unmarshal(jsonBytes, &DbProtocol)
+
+	var magnetList []IndexedMagnet
+	var temperatureList []IndexedTemperature
+	for frameIndex, frame := range DbProtocol.Frames {
+		for _, feature := range frame.Features {
+			split := strings.Split(feature.FeatureKey, DBPrefixDelimiter)
+			if split[0] == DBMagnetPrefix {
+				index, _ := strconv.Atoi(split[1])
+				magnetList = append(magnetList, IndexedMagnet{Index: index, Value: utils.IntToBool(feature.Value)})
+			} else if split[0] == DBTemperaturePrefix {
+				index, _ := strconv.Atoi(split[1])
+				temperatureList = append(temperatureList, IndexedTemperature{Index: index, Value: float32(feature.Value) / 100})
+			}
+			DbProtocol.Frames[frameIndex].Magnets = &magnetList
+			DbProtocol.Frames[frameIndex].Temperatures = &temperatureList
+
+		}
+	}
+
+	//json.Unmarshal(jsonBytes, &returnedProtocol)
+
+	//TODO: check SQL error ?
+	//err = rows.Scan(&returnedProtocol)
+	//if err != nil {
+	//	return returnedProtocol, err
+	//}
+
+	/*
+		var returnedFeatures defines.FullProtocol
+		err = rows.Scan(&returnedFeatures)
+		if err != nil {
+			return returnedProtocol, err
+		}
+	*/
+	spew.Dump("FEATURES:")
+	//spew.Dump(returnedFeatures)
+
+	bytes, _ := json.Marshal(DbProtocol)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocol)
+
+	spew.Dump("PROTOCOL:")
 	spew.Dump(returnedProtocol)
 
 	return returnedProtocol, nil
