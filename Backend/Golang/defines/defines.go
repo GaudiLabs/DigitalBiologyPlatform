@@ -37,9 +37,23 @@ type Electrode struct {
 
 // Frame defines model for Frame.
 type Frame struct {
-	Duration   int         `json:"duration,omitempty"`
-	Electrodes []Electrode `json:"electrodes,omitempty"`
-	Rank       int         `json:"rank,omitempty"`
+	Duration     int                   `json:"duration,omitempty"`
+	Electrodes   []Electrode           `json:"electrodes,omitempty"`
+	Rank         int                   `json:"rank,omitempty"`
+	Magnets      *[]IndexedMagnet      `json:"magnets,omitempty"`
+	Temperatures *[]IndexedTemperature `json:"temperatures,omitempty"`
+}
+
+// IndexedMagnet defines model for IndexedMagnet.
+type IndexedMagnet struct {
+	Index float32 `json:"index"`
+	Value bool    `json:"value"`
+}
+
+// IndexedTemperature defines model for IndexedTemperature.
+type IndexedTemperature struct {
+	Index float32 `json:"index"`
+	Value float32 `json:"value"`
 }
 
 // RankedAuthor defines model for RankedAuthor.

@@ -288,6 +288,14 @@ components:
           type: "number"
         rank: 
           type: "number"
+        temperatures: 
+          type: "array"
+          items:
+             $ref: '#/components/schemas/IndexedTemperature'
+        magnets: 
+          type: "array"
+          items:
+             $ref: '#/components/schemas/IndexedMagnet'
         electrodes: 
           type: "array"
           items:
@@ -303,6 +311,28 @@ components:
           type: "number"
         author: 
           type: "string"
+
+    IndexedTemperature:
+      type: object
+      required: 
+        - "index"
+        - "value"
+      properties: 
+        index: 
+          type: "number"
+        value: 
+          type: "number"
+
+    IndexedMagnet:
+      type: object
+      required: 
+        - "index"
+        - "value"
+      properties: 
+        index: 
+          type: "number"
+        value: 
+          type: "boolean"
 
     ShortProtocol:
       type: object

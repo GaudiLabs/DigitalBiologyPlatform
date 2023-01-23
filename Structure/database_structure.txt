@@ -54,12 +54,6 @@ Table hardware.feedback_type {
    data_type varchar
  }
  
-Table hardware.feature_type {
-   id int [pk, increment]
-   name varchar
-   data_type varchar
- }
- 
 Table hardware.electrode_feedback {
    id int [pk, increment]
    feedback_type_id int [ ref: > hardware.feedback_type.id ]
@@ -70,11 +64,16 @@ Table hardware.electrode_feedback {
  
 Table hardware.electrode_feature {
    id int [pk, increment]
-   feature_type_id int [ ref: > hardware.feature_type.id ]
-   electrode_cartridge_id int [ ref: > hardware.electrode.id ]
-   require_device_id int [ ref: > hardware.device.id ] 
-  
+   name varchar
+   svg_electrode_id int [ ref: > hardware.electrode.id ]
 }
+
+Table hardware.feature_compatibility {
+  id int [pk, increment]
+  electrode_feature_id int [ ref: > hardware.electrode_feature.id ]
+  comptabile_with_device_id int [ ref: > hardware.device.id ]
+}
+ 
 
 Table users.protocol_access {
   id int [pk, increment]
@@ -123,7 +122,6 @@ Table protocols.frame_electrode {
 Table protocols.frame_feature {
   id int [pk, increment]
   frame_id int [ ref: > protocols.frame.id]
-  electrode_id int [ ref: > hardware.electrode.id]
   hardware_feature_id int [ ref: > hardware.electrode_feature.id]
   value int
 }
