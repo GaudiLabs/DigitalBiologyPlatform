@@ -728,6 +728,32 @@ class Body extends React.Component {
           new_frame.electrodes[x][y] = backendProtocol.frames[i].electrodes[j].value
         }
       }
+
+      //populating magnets
+      if (backendProtocol.frames[i].magnets != null) {
+        console.log("POPULATING MAGNETS:")
+        for (var j = 0; j < backendProtocol.frames[i].magnets.length; j++) {
+          if (j == 2) {
+            break
+          }
+          new_frame.magnets[backendProtocol.frames[i].magnets[j].index] = backendProtocol.frames[i].magnets[j].value 
+       }
+      }
+
+      //populating magnets
+      if (backendProtocol.frames[i].temperatures != null) {
+        console.log("POPULATING TEMPS:")
+        for (var j = 0; j < backendProtocol.frames[i].temperatures.length; j++) {
+          if (j == 3) {
+            break
+          }
+          new_frame.temperatures[backendProtocol.frames[i].temperatures[j].index] = backendProtocol.frames[i].temperatures[j].value 
+       }
+      }
+
+
+
+
       newFrames.push(new_frame)
     }
     this.setState(

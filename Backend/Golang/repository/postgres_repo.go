@@ -744,9 +744,9 @@ func (repo *PostgresRepo) GetProtocol(protocolID int) (defines.FullProtocol, err
 	var DbProtocol DbProtocol
 	json.Unmarshal(jsonBytes, &DbProtocol)
 
-	var magnetList []IndexedMagnet
-	var temperatureList []IndexedTemperature
 	for frameIndex, frame := range DbProtocol.Frames {
+		var magnetList []IndexedMagnet
+		var temperatureList []IndexedTemperature
 		for _, feature := range frame.Features {
 			split := strings.Split(feature.FeatureKey, DBPrefixDelimiter)
 			if split[0] == DBMagnetPrefix {
