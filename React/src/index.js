@@ -740,7 +740,7 @@ class Body extends React.Component {
        }
       }
 
-      //populating magnets
+      //populating temperatures
       if (backendProtocol.frames[i].temperatures != null) {
         console.log("POPULATING TEMPS:")
         for (var j = 0; j < backendProtocol.frames[i].temperatures.length; j++) {
@@ -750,9 +750,6 @@ class Body extends React.Component {
           new_frame.temperatures[backendProtocol.frames[i].temperatures[j].index] = backendProtocol.frames[i].temperatures[j].value 
        }
       }
-
-
-
 
       newFrames.push(new_frame)
     }

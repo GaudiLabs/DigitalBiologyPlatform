@@ -148,6 +148,12 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 
 	var filename string
 
+	filename = "POSTGRESQL/CreateFrameFeature.sql"
+	createFrameFeatureQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
 	filename = "POSTGRESQL/CreateFrameElectrode.sql"
 	createFrameElectrodeQuery, err := embeddedSQL.ReadFile(filename)
 	if err != nil {
@@ -180,6 +186,12 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 
 	filename = "POSTGRESQL/DeleteFramesOfProtocol.sql"
 	deleteFramesQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	filename = "POSTGRESQL/DeleteFeaturesOfProtocol.sql"
+	deleteFeaturesQuery, err := embeddedSQL.ReadFile(filename)
 	if err != nil {
 		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
 	}
@@ -225,6 +237,14 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 
 	//Deleting old electrodes
 	_, err = dbTransaction.Exec(string(deleteElectrodesQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old features
+	_, err = dbTransaction.Exec(string(deleteFeaturesQuery),
 		protocolID,
 	)
 	if err != nil {
@@ -328,6 +348,42 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 				return err
 			}
 		}
+
+		//TODO: For special features, check device ID
+
+		if frame.Magnets != nil {
+			//Populating magnets
+			for _, magnet := range *frame.Magnets {
+				//TODO : set magnet in consts
+				hardwareFeatureName := fmt.Sprintf("%s%s%d", DBMagnetPrefix, DBPrefixDelimiter, magnet.Index)
+				spew.Dump(hardwareFeatureName)
+				_, err := dbTransaction.Exec(string(createFrameFeatureQuery),
+					frameID,
+					utils.BoolToInt(magnet.Value),
+					hardwareFeatureName,
+				)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		if frame.Temperatures != nil {
+			//Populating magnets
+			for _, temperature := range *frame.Temperatures {
+				//TODO : set temp in consts
+				hardwareFeatureName := fmt.Sprintf("%s%s%d", DBTemperaturePrefix, DBPrefixDelimiter, temperature.Index)
+				spew.Dump(hardwareFeatureName)
+				_, err := dbTransaction.Exec(string(createFrameFeatureQuery),
+					frameID,
+					int(temperature.Value*100),
+					hardwareFeatureName,
+				)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 
 	//Creating the authors
@@ -351,6 +407,12 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 func (repo *PostgresRepo) DeleteProtocol(protocolID int) error {
 
 	var filename string
+
+	filename = "POSTGRESQL/DeleteFeaturesOfProtocol.sql"
+	deleteFeaturesQuery, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
 
 	filename = "POSTGRESQL/DeleteElectrodesOfProtocol.sql"
 	deleteElectrodesQuery, err := embeddedSQL.ReadFile(filename)
@@ -411,6 +473,14 @@ func (repo *PostgresRepo) DeleteProtocol(protocolID int) error {
 
 	//Deleting old electrodes
 	_, err = dbTransaction.Exec(string(deleteElectrodesQuery),
+		protocolID,
+	)
+	if err != nil {
+		return err
+	}
+
+	//Deleting old features
+	_, err = dbTransaction.Exec(string(deleteFeaturesQuery),
 		protocolID,
 	)
 	if err != nil {
