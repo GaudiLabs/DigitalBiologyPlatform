@@ -1,7 +1,38 @@
   .lister_container {
     height: inherit;
+    //overflow-y: scroll;
+  }
+
+  .your_protocols_container {
+    height: 60%;
+  }
+
+  .public_protocols_container {
+    height: 40%;
+  }
+
+  // .your_protocols_shad {
+  //   position: relative;
+  //   z-index: 999;
+  //   height: 90%;
+  //   box-shadow: 
+  //   inset 0px 11px 8px -10px rgb(255, 255, 255),
+  //   inset 0px -11px 8px -10px rgb(255, 255, 255); 
+  //   z-index: 99;
+  // }
+
+  .your_protocols {
+    height: 90%;
+    overflow-y: scroll;
+    z-index: -1;
+  }
+
+  .public_protocols {
+    height: 90%;
     overflow-y: scroll;
   }
+
+
   ul {
     list-style-type: none;
     padding: 5px;
@@ -58,9 +89,23 @@
     float: left;
   }
 
+  .public_protocol_title {
+    // border : 1px solid #333;
+     border-radius: 2px;
+     padding: 2px;
+     margin-top: 5px;
+     background-color:rgba(128, 183, 144, 0.84);
+     width: 70%;
+     font-size: 1em;
+     margin-bottom: 5px;
+     font-weight: bold;
+     float: left;
+   }
+
   .protocol_desc {
     // border : 1px solid #333;
      width: 70%;
+     font-weight: 1;
    }
 
   .protocol_buttons {
@@ -94,7 +139,40 @@
     height: 30px;
     width: 30px;
   }
-  
+
+
+  .public_lister_btn {
+    background-color:rgba(128, 183, 144, 0.84);
+    border-radius: 8px;
+    border-width: 0;
+    color: rgb(18, 18, 18);
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 2px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    height: 30px;
+    width: 30px;
+  }
+
+  .public_lister_btn:hover:enabled {
+    background-color: #1c8d00
+  }
+
+  .public_protocol {
+    background-color:rgba(109, 200, 136, 0.708);
+    color: rgb(18, 18, 18);
+  }
   
   .lister_btn:disabled {
     color: #999999;
@@ -106,5 +184,9 @@
 
   .loaded_protocol {
     background-color: rgba(41, 68, 123, 0.708);
+  }
+
+  .public_loaded_protocol {
+    background-color: rgba(0, 140, 61, 0.708);
   }
   

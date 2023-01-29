@@ -40,6 +40,7 @@ protocol AS (
 		      p.id as protocol_id
 		      --, array_agg(DISTINCT u.login ORDER BY pa.rank) as authors
 			  , p.name
+			  , p.public
 		      , p.frame_count
 		      , p.device_id
 		      , p.description
@@ -55,7 +56,7 @@ protocol AS (
 		JOIN frame ON p.id = frame.protocol_id
 		JOIN authors_list ON authors_list.protocol_id = p.id
 		WHERE p.id = $1
-		GROUP BY p.id, authors_list.list, p.device_id
+		GROUP BY p.id, authors_list.list, p.device_id, p.public
 
 )
 SELECT
@@ -67,7 +68,8 @@ SELECT
 	'frame_count', frame_count,
 	'total_duration', total_duration,
 	'frames', frames,
+	'public', p.public,
 	'author_list', p.authors_list
 	) AS protocol
 FROM protocol AS p
-GROUP BY p.protocol_id, name, frame_count, total_duration, frames, description, p.authors_list, p.device_id
+GROUP BY p.protocol_id, name, frame_count, total_duration, frames, description, p.authors_list, p.device_id, p.public

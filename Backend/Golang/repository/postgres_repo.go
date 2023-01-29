@@ -91,6 +91,7 @@ type DbProtocol struct {
 	TotalDuration int            `json:"total_duration"`
 	DeviceID      int            `json:"device_id"`
 	MaskFrame     Frame          `json:"mask_frame"`
+	Public        bool           `json:"public"`
 }
 
 type DbFeature struct {
@@ -303,7 +304,7 @@ func (repo *PostgresRepo) OverwriteProtocol(protocolID int, protocol defines.Ful
 		1,   //Version
 		nil, //Fork of
 		protocol.DeviceID,
-		false, //Public bool
+		protocol.Public, //Public bool
 	)
 	spew.Dump(err)
 	if err != nil {
@@ -535,35 +536,6 @@ func (repo *PostgresRepo) DeleteProtocol(protocolID int) error {
 	return nil
 }
 
-func (repo *PostgresRepo) getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error) {
-	var returnedMap = make(map[string]int, len(svgDenominations))
-
-	const filename = "POSTGRESQL/GetElectrodeIDsBySVGDenomination.sql"
-	queryBytes, err := embeddedSQL.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
-	}
-
-	rows, err := repo.dbConn.Query(string(queryBytes), svgDenominations, deviceID)
-	if err != nil {
-		//TODO: handle error
-		return returnedMap, err
-	}
-
-	for rows.Next() {
-		var svgDenomination string
-		var electrodeID int
-		err := rows.Scan(&svgDenomination, &electrodeID)
-		if err != nil {
-			//TODO: handle error
-			return returnedMap, err
-		}
-		returnedMap[svgDenomination] = electrodeID
-	}
-
-	return returnedMap, err
-}
-
 func (repo *PostgresRepo) CreateUser(user defines.User) error {
 	const filename = "POSTGRESQL/CreateUser.sql"
 	queryBytes, err := embeddedSQL.ReadFile(filename)
@@ -667,7 +639,7 @@ func (repo *PostgresRepo) CreateProtocol(protocol defines.FullProtocol, username
 		1,   //Version
 		nil, //Fork of
 		protocol.DeviceID,
-		false, //Public bool
+		protocol.Public, //Public bool
 	)
 	//TODO: check SQL error ?
 	err = row.Scan(&protocolID)
@@ -813,6 +785,8 @@ func (repo *PostgresRepo) GetProtocol(protocolID int) (defines.FullProtocol, err
 
 	var DbProtocol DbProtocol
 	json.Unmarshal(jsonBytes, &DbProtocol)
+	spew.Dump("DBPROTOCOL:")
+	spew.Dump(DbProtocol)
 
 	for frameIndex, frame := range DbProtocol.Frames {
 		var magnetList []IndexedMagnet
@@ -873,6 +847,44 @@ func (repo *PostgresRepo) GetUserProtocols(username string) ([]defines.ShortProt
 	var returnedProtocols []defines.ShortProtocol
 	rows, err := repo.dbConn.Query(string(queryBytes), username)
 	if err != nil {
+		//TODO: handle error
+	}
+
+	for rows.Next() {
+		var shortProtocol defines.ShortProtocol
+		err := rows.Scan(&shortProtocol)
+		if err != nil {
+			//TODO: handle error
+		}
+		returnedProtocols = append(returnedProtocols, shortProtocol)
+	}
+
+	//TODO: check SQL error ?
+	/*
+		err = rows.Scan(&returnedUser)
+		if err != nil {
+			return returnedUser, err
+		}
+		spew.Dump(returnedUser)
+	*/
+
+	return returnedProtocols, nil
+}
+
+// GetUserProtocols returns the infos about the user passed as parameter as well as its valid access tokens
+func (repo *PostgresRepo) GetPublicProtocols(limit int, offset int) ([]defines.ShortProtocol, error) {
+
+	const filename = "POSTGRESQL/GetPublicProtocolsPaginated.sql"
+	queryBytes, err := embeddedSQL.ReadFile(filename)
+	if err != nil {
+		log.Fatalf("Could not find embedded SQL file '%s' : %s", filename, err.Error())
+	}
+
+	//TODO : implement with new struct
+	var returnedProtocols []defines.ShortProtocol
+	rows, err := repo.dbConn.Query(string(queryBytes), limit, offset)
+	if err != nil {
+		return returnedProtocols, err
 		//TODO: handle error
 	}
 

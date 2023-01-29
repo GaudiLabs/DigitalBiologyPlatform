@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/DigitalBiologyPlatform/Backend/auth"
+	"github.com/DigitalBiologyPlatform/Backend/config"
 	"github.com/DigitalBiologyPlatform/Backend/defines"
 	"github.com/DigitalBiologyPlatform/Backend/repository"
 	"github.com/davecgh/go-spew/spew"
@@ -152,7 +153,49 @@ func (w *Handlers) GetSelfProtocolList(ctx echo.Context) error {
 
 	//Mapping returned Object
 	//Attempt at automatic mapping
-	var returnedProtocols UserProtocolsList
+	var returnedProtocols ShortProtocolsList
+	bytes, _ := json.Marshal(protocols)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocols.Protocols)
+	//returnedProtocols.Protocols = make([]ShortProtocol, len(protocols))
+	//automapper.Map(protocols, &returnedProtocols.Protocols)
+
+	//returnedUser.Id = &user.Id
+	//returnedUser.Username = &user.Login
+	//TODO: auto parse token generate returned logintokens
+	//returnedUser.Tokens = user.Tokens
+
+	ctx.JSON(http.StatusOK, returnedProtocols)
+
+	return nil
+}
+
+func (w *Handlers) GetPublicProtocolsList(ctx echo.Context, params GetPublicProtocolsListParams) error {
+	var (
+		limit  int
+		offset int
+	)
+
+	if params.Limit != nil {
+		limit = *params.Limit
+	}
+	if params.Offset != nil && *params.Offset >= 0 {
+		offset = *params.Offset
+	}
+
+	if limit <= 0 {
+		limit = config.GetConfig().GetDefaultPaginationLimit()
+	}
+
+	protocols, err := w.repository.GetPublicProtocols(limit, offset)
+	if err != nil {
+		return err
+	}
+	//spew.Dump(protocols)
+
+	//Mapping returned Object
+	//Attempt at automatic mapping
+	var returnedProtocols ShortProtocolsList
 	bytes, _ := json.Marshal(protocols)
 	//TODO: properly handle error
 	json.Unmarshal(bytes, &returnedProtocols.Protocols)
@@ -318,7 +361,6 @@ func (w *Handlers) OverwriteProtocol(ctx echo.Context, protocolID int) error {
 	_ = tokenBearer
 	ctx.JSON(http.StatusNoContent, "")
 	return nil
-	return nil
 }
 
 func (w *Handlers) DeleteProtocol(ctx echo.Context, protocolID int) error {
@@ -384,6 +426,29 @@ func (w *Handlers) UpdateUser(ctx echo.Context, username string) error {
 func (w *Handlers) GetProtocol(ctx echo.Context, protocolID int) error {
 
 	protocol, err := w.repository.GetProtocol(protocolID)
+	//TODO : here verify token bearer is in author list
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})
+		}
+		return err
+	}
+	//spew.Dump(protocol)
+
+	//Mapping returned Object
+	var returnedProtocol FullProtocol
+	bytes, _ := json.Marshal(protocol)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedProtocol)
+
+	ctx.JSON(http.StatusOK, returnedProtocol)
+	return nil
+}
+
+func (w *Handlers) GetPublicProtocol(ctx echo.Context, protocolID int) error {
+
+	protocol, err := w.repository.GetProtocol(protocolID)
+	//TODO : here, verify publicness of protocol
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Protocol '%d' not found", protocolID)})

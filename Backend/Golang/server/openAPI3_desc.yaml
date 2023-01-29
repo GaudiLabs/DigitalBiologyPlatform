@@ -110,7 +110,32 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProtocolsList'
+                $ref: '#/components/schemas/ShortProtocolsList'
+  /public/protocol/all:
+    get:
+      tags:
+        - protocol public
+      summary: Get public protocols list
+      description: return a list of public protocols
+      operationId: getPublicProtocolsList
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortProtocolsList'
   /protocol/{protocolID}:
     get:
       security:
@@ -177,6 +202,27 @@ paths:
       responses:
         default:
           description: successful operation
+  /public/protocol/{protocolID}:
+    get:
+      tags:
+        - protocol
+      summary: Get a particular protocol by its ID
+      description: return a protocol
+      parameters:
+        - in: path
+          name: protocolID
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the protocol to get
+      operationId: getPublicProtocol
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullProtocol'
   /protocol:
     post:
       security:
@@ -218,6 +264,7 @@ components:
         - "frames"
         - "author_list"
         - "device_id"
+        - "public"
       properties: 
         device_id:
           type: "number"
@@ -233,6 +280,8 @@ components:
           type: "array"
           items: 
             $ref: '#/components/schemas/RankedAuthor'
+        public: 
+          type: "boolean"
 
     FullProtocol:
       type : object
@@ -244,6 +293,7 @@ components:
         - "frame_count"
         - "total_duration"
         - "device_id"
+        - "public"
       properties: 
         id: 
           type: "number"
@@ -265,6 +315,10 @@ components:
           type: "number"
         total_duration: 
           type: "number"
+        public: 
+          type: "boolean"
+
+
 
     Electrode:
       type: object
@@ -371,7 +425,7 @@ components:
           type: "number"
 
  
-    UserProtocolsList:
+    ShortProtocolsList:
       type: object
       required: 
         - "protocols"

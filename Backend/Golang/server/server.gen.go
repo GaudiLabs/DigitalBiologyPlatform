@@ -54,6 +54,7 @@ type FullProtocol struct {
 	Frames        []Frame         `json:"frames"`
 	Id            float32         `json:"id"`
 	Name          string          `json:"name"`
+	Public        bool            `json:"public"`
 	TotalDuration float32         `json:"total_duration"`
 }
 
@@ -100,6 +101,11 @@ type ShortProtocol struct {
 	TotalDuration float32        `json:"total_duration"`
 }
 
+// ShortProtocolsList defines model for ShortProtocolsList.
+type ShortProtocolsList struct {
+	Protocols []ShortProtocol `json:"protocols"`
+}
+
 // UploadProtocolParams defines model for UploadProtocolParams.
 type UploadProtocolParams struct {
 	AuthorList  []RankedAuthor `json:"author_list"`
@@ -107,6 +113,7 @@ type UploadProtocolParams struct {
 	DeviceId    float32        `json:"device_id"`
 	Frames      []Frame        `json:"frames"`
 	Name        string         `json:"name"`
+	Public      bool           `json:"public"`
 }
 
 // User defines model for User.
@@ -117,16 +124,20 @@ type User struct {
 	Username *string       `json:"username,omitempty"`
 }
 
-// UserProtocolsList defines model for UserProtocolsList.
-type UserProtocolsList struct {
-	Protocols []ShortProtocol `json:"protocols"`
-}
-
 // UploadProtocolJSONBody defines parameters for UploadProtocol.
 type UploadProtocolJSONBody = UploadProtocolParams
 
 // OverwriteProtocolJSONBody defines parameters for OverwriteProtocol.
 type OverwriteProtocolJSONBody = UploadProtocolParams
+
+// GetPublicProtocolsListParams defines parameters for GetPublicProtocolsList.
+type GetPublicProtocolsListParams struct {
+	// The number of items to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// The numbers of items to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
 
 // CreateUserJSONBody defines parameters for CreateUser.
 type CreateUserJSONBody = CreateUserParams
@@ -163,6 +174,12 @@ type ServerInterface interface {
 	// update a particular entire protocol by its ID
 	// (PUT /protocol/{protocolID})
 	OverwriteProtocol(ctx echo.Context, protocolID int) error
+	// Get public protocols list
+	// (GET /public/protocol/all)
+	GetPublicProtocolsList(ctx echo.Context, params GetPublicProtocolsListParams) error
+	// Get a particular protocol by its ID
+	// (GET /public/protocol/{protocolID})
+	GetPublicProtocol(ctx echo.Context, protocolID int) error
 	// Serve a json file representing this swaggerfile
 	// (GET /swagger.json)
 	ServeSwaggerFile(ctx echo.Context) error
@@ -258,6 +275,47 @@ func (w *ServerInterfaceWrapper) OverwriteProtocol(ctx echo.Context) error {
 	return err
 }
 
+// GetPublicProtocolsList converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPublicProtocolsList(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetPublicProtocolsListParams
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetPublicProtocolsList(ctx, params)
+	return err
+}
+
+// GetPublicProtocol converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPublicProtocol(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "protocolID" -------------
+	var protocolID int
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "protocolID", runtime.ParamLocationPath, ctx.Param("protocolID"), &protocolID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter protocolID: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetPublicProtocol(ctx, protocolID)
+	return err
+}
+
 // ServeSwaggerFile converts echo context to params.
 func (w *ServerInterfaceWrapper) ServeSwaggerFile(ctx echo.Context) error {
 	var err error
@@ -329,6 +387,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/protocol/:protocolID", wrapper.DeleteProtocol)
 	router.GET(baseURL+"/protocol/:protocolID", wrapper.GetProtocol)
 	router.PUT(baseURL+"/protocol/:protocolID", wrapper.OverwriteProtocol)
+	router.GET(baseURL+"/public/protocol/all", wrapper.GetPublicProtocolsList)
+	router.GET(baseURL+"/public/protocol/:protocolID", wrapper.GetPublicProtocol)
 	router.GET(baseURL+"/swagger.json", wrapper.ServeSwaggerFile)
 	router.POST(baseURL+"/user", wrapper.CreateUser)
 	router.POST(baseURL+"/user/login", wrapper.LoginUser)
@@ -339,34 +399,36 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

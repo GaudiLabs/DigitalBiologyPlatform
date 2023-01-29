@@ -15,6 +15,7 @@ type ConfigInterface interface {
 	GetPostgresUser() string
 	GethCaptchaSecret() string
 	GethCaptchaVerifyURL() string
+	GetDefaultPaginationLimit() int
 }
 
 func LoadConfig() {

@@ -12,16 +12,17 @@ var _ ConfigInterface = (*ViperConfig)(nil)
 const errorFormat string = "configuration error : '%s' key is missing"
 
 type ViperConfig struct {
-	serverHost           string
-	serverPort           string
-	postgresUser         string
-	postgresPassword     string
-	postgresDatabaseName string
-	postgresHost         string
-	postgresPort         string
-	hCaptchaSecret       string
-	hCaptchaVerifyURL    string
-	tokenTTL             int
+	serverHost             string
+	serverPort             string
+	postgresUser           string
+	postgresPassword       string
+	postgresDatabaseName   string
+	postgresHost           string
+	postgresPort           string
+	hCaptchaSecret         string
+	hCaptchaVerifyURL      string
+	tokenTTL               int
+	defaultPaginationLimit int
 }
 
 func newViperConfig() (ViperConfig, error) {
@@ -97,6 +98,12 @@ func newViperConfig() (ViperConfig, error) {
 	}
 	returnedConfig.tokenTTL = viper.GetInt(envConfigName)
 
+	envConfigName = "DEFAULT_PAGINATION_LIMIT"
+	if !viper.IsSet(envConfigName) {
+		return returnedConfig, fmt.Errorf(errorFormat, envConfigName)
+	}
+	returnedConfig.defaultPaginationLimit = viper.GetInt(envConfigName)
+
 	return returnedConfig, nil
 }
 
@@ -129,4 +136,7 @@ func (config *ViperConfig) GethCaptchaVerifyURL() string {
 }
 func (config *ViperConfig) GetTokenTTL() int {
 	return config.tokenTTL
+}
+func (config *ViperConfig) GetDefaultPaginationLimit() int {
+	return config.defaultPaginationLimit
 }

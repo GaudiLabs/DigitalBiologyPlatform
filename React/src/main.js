@@ -102,6 +102,8 @@ class Body extends React.Component {
       loopMode: true,
       defaultDuration: 1000,
       temperatureReadings: new Float32Array(3).fill(0.0),
+      protocolPublicness: false,
+      publicProtocols : [],
     };
 
     //retreive logged in infos
@@ -145,6 +147,16 @@ class Body extends React.Component {
     )
     }
   }
+
+    let BackendPublicProtocolsResponse = await this.retreivePublicProtocols()
+    if (BackendPublicProtocolsResponse != undefined) {
+    this.setState(
+      {
+        publicProtocols: BackendPublicProtocolsResponse.protocols
+      }
+    )
+    }
+
   }
 
 
@@ -788,12 +800,15 @@ class Body extends React.Component {
 
       newFrames.push(new_frame)
     }
+    console.log("BACKEND PROCTOL:")
+    console.log(backendProtocol)
     this.setState(
       {
         currently_edited_frame: [0],
         frames: newFrames,
         framesAmount: backendProtocol.frame_count,
         protocolName: backendProtocol.name,
+        protocolPublicness : backendProtocol.public,
         protocolDescription: backendProtocol.description,
       }, () => {
         let protocolStr = JSON.stringify(this.SerializeStateProtocol())
@@ -878,11 +893,13 @@ class Body extends React.Component {
       "device_id": 0,
       "description": "placeholder desc",
       "author_list": [],
+      "public" : false
     }
 
 
     var returnedProtocol = Object.create(protocol)
     returnedProtocol.name = this.state.protocolName
+    returnedProtocol.public = this.state.protocolPublicness
     returnedProtocol.description = this.state.protocolDescription
     //TODO: this value must not be harcoded, this is a stub
     returnedProtocol.device_id = 2
@@ -1082,6 +1099,39 @@ class Body extends React.Component {
     }
   }
 
+  async retreivePublicProtocols() {
+
+    let requestResp
+    const route = "/public/protocol/all"
+    const api_url = process.env.REACT_APP_API_URL
+
+    try {
+      requestResp = await fetch(api_url + route, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.state.authHeader
+        },
+      })
+    }
+    catch (error) {
+      this.setState(
+        {
+          error: true,
+          errorMessage: "Unable to reach server"
+        }
+      )
+      console.log(error)
+      return
+    }
+    //No network error, handle regular errors
+    if (!this.handleHTTPErrors(requestResp)) {
+      //TODO : empty body error case
+      //console.log(requestResp.json())
+      return requestResp.json()
+    }
+  }
+
   bit_set(num, bit) {
     return num | (1 << bit);
   }
@@ -1215,6 +1265,17 @@ class Body extends React.Component {
       frames: newFrames,
     });
   }
+
+
+  handlePublicnessChange(event) {
+
+    console.log("CHANGING PUBLICNESS")
+    this.setState({
+      protocolPublicness : !this.state.protocolPublicness,
+    });
+  }
+
+
 
   handleDescriptionChange(event) {
     this.setState(
@@ -1501,6 +1562,17 @@ class Body extends React.Component {
           Protocol description
         </label>
         <input className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
+        <ThemeProvider theme={SwitchTheme}>
+            <div className='public_field'>
+              <Switch
+                inputProps={{ 'title': '1' }}
+                //defaultChecked 
+                size="small"
+                checked={this.state.protocolPublicness}
+                onChange={this.handlePublicnessChange.bind(this)}
+              /> Public Protocol
+              </div>
+        </ThemeProvider>
       </form>
     )
   }
@@ -1608,7 +1680,13 @@ class Body extends React.Component {
             </th>
             <th className="lister_th" >
               <div key="Protocols" className="scrollable" >
-                <ProtocolsLister loggedIn={this.state.loggedIn} protocolLoadClick={this.state.loadProtocol} protocols={this.state.protocols} protocolDeleteClick={this.state.deleteClick} loadedProtocolID={this.state.loadedProtocolID} />
+                <ProtocolsLister 
+                loggedIn={this.state.loggedIn} 
+                protocolLoadClick={this.state.loadProtocol} 
+                protocols={this.state.protocols} 
+                publicProtocols={this.state.publicProtocols}
+                protocolDeleteClick={this.state.deleteClick} 
+                loadedProtocolID={this.state.loadedProtocolID} />
               </div>
             </th>
           </table>

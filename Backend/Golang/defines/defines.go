@@ -86,6 +86,7 @@ type FullProtocol struct {
 	TotalDuration int            `json:"total_duration"`
 	DeviceID      int            `json:"device_id"`
 	MaskFrame     Frame          `json:"mask_frame"`
+	Public        bool           `json:"public"`
 }
 
 func (fp *FullProtocol) AuthoredBy(username string) bool {
