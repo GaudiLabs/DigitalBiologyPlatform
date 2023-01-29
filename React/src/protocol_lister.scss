@@ -50,7 +50,7 @@
     overflow:hidden;
     margin: 5px;
     border-radius: 5px;
-    background: #999;
+    background: rgb(132, 132, 132);
     padding: 2px;
     color:white;
     position: relative;
@@ -68,6 +68,18 @@
     align-items: center;
     width: 30%;
     border-left: 1px solid white;
+    padding-left: 5px;
+    height: 100%;
+    right: 0;
+    position: absolute;
+    font-size: 0.8em;
+  }
+
+  .public_protocol_meta {
+    display: flex;
+    align-items: center;
+    width: 30%;
+    border-left: 1px solid rgb(143, 143, 143);
     padding-left: 5px;
     height: 100%;
     right: 0;
@@ -94,18 +106,17 @@
     background: #666;
     width: 70%;
     font-size: 1em;
-    box-shadow: 3px 3px 3px gray;
     margin-bottom: 5px;
     font-weight: bold;
     float: left;
   }
 
   .public_protocol_title {
+    background-color: rgba(40, 72, 136, 0.335);
     // border : 1px solid #333;
      border-radius: 2px;
      padding: 2px;
      margin-top: 5px;
-     background-color:rgba(11, 104, 37, 0.275);
      width: 70%;
      font-size: 1em;
      margin-bottom: 5px;
@@ -153,7 +164,7 @@
 
 
   .public_lister_btn {
-    background-color:rgba(128, 183, 144, 0.84);
+    background-color: rgba(40, 72, 136, 0.335);
     border-radius: 8px;
     border-width: 0;
     color: rgb(18, 18, 18);
@@ -177,12 +188,13 @@
   }
 
   .public_lister_btn:hover:enabled {
-    background-color: #64aa53
+
+    background-color: rgba(41, 68, 123, 0.581);
   }
 
   .public_protocol {
     border: 1px solid rgb(143, 143, 143);
-    background-color:rgba(224, 246, 231, 0.708);
+    background-color: rgba(41, 68, 123, 0.231);
     color: rgb(18, 18, 18);
   }
   
@@ -191,7 +203,7 @@
   }
   
   .lister_btn:hover:enabled {
-    background-color: #333333
+    background-color: #111111
   }
 
   .loaded_protocol {
@@ -199,6 +211,6 @@
   }
 
   .public_loaded_protocol {
-    background-color: rgba(124, 207, 161, 0.708);
+    background-color: rgba(41, 68, 123, 0.569);
   }
   

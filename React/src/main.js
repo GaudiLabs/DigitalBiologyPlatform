@@ -73,6 +73,7 @@ class Body extends React.Component {
       loggedInCallback: this.loggedInCallback.bind(this),
       logOut: this.logOut.bind(this),
       loadProtocol: this.handleLoadProtocol.bind(this),
+      publicLoadProtocol: this.handlePublicLoadProtocol.bind(this),
       setEditedFrame: this.setEditedFrame.bind(this),
       setSerialPort: this.setSerialPort.bind(this),
       serialSendClick: this.serialSendClick.bind(this),
@@ -512,9 +513,11 @@ class Body extends React.Component {
   async refreshUserProtocols() {
     console.log("REFRESH PROTOCOLS TRIGGER")
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    let BackendPublicProtocolsResponse = await this.retreivePublicProtocols()
     this.setState(
       {
-        protocols: BackendProtocolsResponse.protocols
+        protocols: BackendProtocolsResponse.protocols,
+        publicProtocols: BackendPublicProtocolsResponse.protocols,
       }
     )
   }
@@ -534,8 +537,10 @@ class Body extends React.Component {
     await this.deleteProtocol(this.state.protocolToDeleteID)
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    let BackendPublicProtocolsResponse = await this.retreivePublicProtocols()
     this.setState(
       {
+        publicProtocols: BackendPublicProtocolsResponse.protocols,
         protocols: BackendProtocolsResponse.protocols,
         deleteDialogOpen: false
       }
@@ -617,11 +622,15 @@ class Body extends React.Component {
   }
 
 
-  async retreiveProtocol(protocolID) {
+  async retreiveProtocol(protocolID, publicAPI) {
 
     let requestResp
-    const route = "/protocol/" + protocolID
+    let route = "/protocol/" + protocolID
     const api_url = process.env.REACT_APP_API_URL
+
+    if (publicAPI){
+      route = "/public/protocol/" + protocolID
+    }
 
     try {
       requestResp = await fetch(api_url + route, {
@@ -827,6 +836,40 @@ class Body extends React.Component {
 
   }
 
+  async handlePublicLoadProtocol(protocol_id) {
+    //Detecting unsaved change in loaded protocol
+    console.log("LOAD PROTOCOL CALL")
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("ACTUAL PROTOCOL HASH=" + protocolHash)
+    console.log("LOADED PROTOCOL HASH=" + this.state.loadedProtocolHash)
+    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash) {
+      this.setState({
+        protocolToLoadID: protocol_id,
+        protocolToLoadPublic: true,
+        unsavedDialogOpen: true,
+      })
+      return;
+    }
+    await this.loadProtocol(protocol_id, true)
+  }
+
+  async loadProtocol(protocol_id, publicAPI) {
+    console.log(protocol_id)
+    let BackendProtocol = await this.retreiveProtocol(protocol_id, publicAPI)
+    console.log(BackendProtocol)
+    this.loadBackendProtocolToState(BackendProtocol)
+
+    //TODO : error handling
+    this.setState(
+      {
+        loadedProtocolID: protocol_id
+      }
+    )
+  }
+
+
+
   async handleLoadProtocol(protocol_id) {
     //Detecting unsaved change in loaded protocol
     console.log("LOAD PROTOCOL CALL")
@@ -841,24 +884,8 @@ class Body extends React.Component {
       })
       return;
     }
-    await this.loadProtocol(protocol_id)
+    await this.loadProtocol(protocol_id, false)
   }
-
-  async loadProtocol(protocol_id) {
-    console.log(protocol_id)
-    let BackendProtocol = await this.retreiveProtocol(protocol_id)
-    console.log(BackendProtocol)
-    this.loadBackendProtocolToState(BackendProtocol)
-
-    //TODO : error handling
-    this.setState(
-      {
-        loadedProtocolID: protocol_id
-      }
-    )
-  }
-
-
 
   SerializeStateProtocol() {
 
@@ -1003,8 +1030,10 @@ class Body extends React.Component {
     let resp = await this.saveNewProtocol(currentProtocol)
     console.log(resp)
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    let BackendPublicProtocolsResponse = await this.retreivePublicProtocols()
     this.setState(
       {
+        publicProtocols : BackendPublicProtocolsResponse.protocols,
         protocols: BackendProtocolsResponse.protocols,
         loadedProtocolID: resp.id
       }
@@ -1031,9 +1060,11 @@ class Body extends React.Component {
     )
 
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
+    let BackendPublicProtocolsResponse = await this.retreivePublicProtocols()
     this.setState(
       {
-        protocols: BackendProtocolsResponse.protocols
+        protocols: BackendProtocolsResponse.protocols,
+        publicProtocols : BackendPublicProtocolsResponse.protocols,
       }
     )
   }
@@ -1106,10 +1137,12 @@ class Body extends React.Component {
 
     let requestResp
     const route = "/public/protocol/all"
+    //TODO: proper pagination handling
+    const queryParams = "?limit=999"
     const api_url = process.env.REACT_APP_API_URL
 
     try {
-      requestResp = await fetch(api_url + route, {
+      requestResp = await fetch(api_url + route + queryParams, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -1645,9 +1678,10 @@ class Body extends React.Component {
           open={this.state.unsavedDialogOpen}
           handleClose={this.handleUnsavedDialogClose.bind(this)}
           handleDiscard={() => {
-            this.loadProtocol(this.state.protocolToLoadID)
+            this.loadProtocol(this.state.protocolToLoadID, this.protocolToLoadPublic)
             this.setState({
-              unsavedDialogOpen: false
+              unsavedDialogOpen: false,
+              protocolToLoadPublic: false,
             })
           }}
           protocolName={this.state.protocolName}
@@ -1694,6 +1728,7 @@ class Body extends React.Component {
                 <ProtocolsLister 
                 loggedIn={this.state.loggedIn} 
                 protocolLoadClick={this.state.loadProtocol} 
+                publicProtocolLoadClick={this.state.publicLoadProtocol} 
                 protocols={this.state.protocols} 
                 publicProtocols={this.state.publicProtocols}
                 protocolDeleteClick={this.state.deleteClick} 

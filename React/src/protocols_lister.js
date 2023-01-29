@@ -89,6 +89,9 @@ class ProtocolsLister extends React.PureComponent {
 
   renderSinglePublicProtocol(protocol, loadedProtocolID) {
     var authorsList = ""
+    if (protocol === undefined) {
+      return
+    }
     for (var i = 0; i < Object.keys(protocol.author_list).length; i++) {
       authorsList += protocol.author_list[i].author + ' '
     }
@@ -99,7 +102,7 @@ class ProtocolsLister extends React.PureComponent {
             {protocol.name}
           </div>
           <div className="protocol_buttons">
-            <button title="Load protocol" className="public_lister_btn" onClick={() => this.props.protocolLoadClick(protocol.id)}>
+            <button title="Load protocol" className="public_lister_btn" onClick={() => this.props.publicProtocolLoadClick(protocol.id)}>
               {/* onClick={props.onClick}> */}
               <FontAwesomeIcon icon={faCloudArrowDown} />
             </button>
@@ -109,7 +112,7 @@ class ProtocolsLister extends React.PureComponent {
             {this.formatDescription(protocol.description)}
           </div>
         </div>
-        <div className="protocol_meta">
+        <div className="public_protocol_meta">
           Frames : {protocol.frame_count}<br />
           Duration : {formatDuration(protocol.total_duration)} <br />
           By : {authorsList} <br />
@@ -153,6 +156,8 @@ class ProtocolsLister extends React.PureComponent {
     console.log(this.props.publicProtocols)
 
     let protocolsList = [];
+    console.log("PUBLIC PROTOCOLS:")
+    console.log(this.props.publicProtocols)
     if (this.props.publicProtocols === undefined) {
       return
     }
