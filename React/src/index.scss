@@ -43,7 +43,8 @@ body {
   }
 
   .public_field {
-    margin-top: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     font-weight: 1;
   }
 
@@ -145,6 +146,23 @@ body {
     transition: 0.3s ease;
 }
 
+  .control_textarea {
+    font-size: 12px !important;
+    outline: none;
+    display: block;
+    color: rgba(0, 0, 0, 0.8);
+    background: rgba(0,0,0, 0.1);
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 2px 2px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    transition: 0.3s ease;
+    width: 100%;
+}
+
 .fields_container {
   display: flex;
   align-items: stretch;
@@ -153,7 +171,7 @@ body {
 }
 
 .fields_column {
-  flex: 1;
+  flex: 2;
   font-size: small;
 }
 
@@ -174,6 +192,7 @@ body {
     font-size: inherit;
     line-height: inherit;
 }
+
 .temp_reading {
   margin-left: 10px;
   width: 30%;
@@ -189,14 +208,6 @@ body {
   font-size: inherit;
   line-height: inherit;
 }
-
-// .right_fields {
-//   float: right;
-// }
-
-// .left_fields {
-//   float: left;
-// }
 
 #main_grid {
   position: relative;

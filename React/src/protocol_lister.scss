@@ -66,13 +66,24 @@
   .protocol_meta {
     display: flex;
     align-items: center;
-    width: 35%;
+    width: 30%;
     border-left: 1px solid white;
     padding-left: 5px;
     height: 100%;
     right: 0;
     position: absolute;
     font-size: 0.8em;
+  }
+
+ .protocol_license {
+    float: right;
+    align-items: center;
+    width: 5%;
+    min-width: 27px;
+    height: 100%;
+    right: 0;
+    position: absolute;
+    font-size: 1.6em;
   }
   
   .protocol_title {
@@ -94,7 +105,7 @@
      border-radius: 2px;
      padding: 2px;
      margin-top: 5px;
-     background-color:rgba(128, 183, 144, 0.84);
+     background-color:rgba(11, 104, 37, 0.275);
      width: 70%;
      font-size: 1em;
      margin-bottom: 5px;
@@ -166,11 +177,12 @@
   }
 
   .public_lister_btn:hover:enabled {
-    background-color: #1c8d00
+    background-color: #64aa53
   }
 
   .public_protocol {
-    background-color:rgba(109, 200, 136, 0.708);
+    border: 1px solid rgb(143, 143, 143);
+    background-color:rgba(224, 246, 231, 0.708);
     color: rgb(18, 18, 18);
   }
   
@@ -187,6 +199,6 @@
   }
 
   .public_loaded_protocol {
-    background-color: rgba(0, 140, 61, 0.708);
+    background-color: rgba(124, 207, 161, 0.708);
   }
   

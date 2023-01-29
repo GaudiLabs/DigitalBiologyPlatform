@@ -847,7 +847,7 @@ func (repo *PostgresRepo) GetUserProtocols(username string) ([]defines.ShortProt
 	var returnedProtocols []defines.ShortProtocol
 	rows, err := repo.dbConn.Query(string(queryBytes), username)
 	if err != nil {
-		//TODO: handle error
+		return returnedProtocols, err
 	}
 
 	for rows.Next() {

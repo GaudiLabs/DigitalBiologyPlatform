@@ -36,6 +36,7 @@ WITH frame AS (
 
 		SELECT 
 		      p.id as protocol_id
+              , p.public
 			  , p.name
 		      , p.frame_count
 		      , p.total_duration
@@ -54,7 +55,7 @@ WITH frame AS (
 		JOIN authors_list ON authors_list.protocol_id = p.id
 		--WHERE authors.login = 'testuser'
 		WHERE p."public" IS TRUE
-		GROUP BY p.id, authors_list.list, p.device_id, authors.login, authors.rank, p.description
+		GROUP BY p.id, authors_list.list, p.device_id, authors.login, authors.rank, p.description, p.public
         ORDER BY p.id
 		LIMIT $1
 		OFFSET $2
@@ -69,7 +70,8 @@ SELECT
 	'author_list', protocol.authors_list,
 	'author_rank', protocol.author_rank,
 	'description', protocol.description,
-	'device_id', protocol.device_id
+	'device_id', protocol.device_id,
+    'public', protocol.public
 	) AS protocols
 FROM protocol
-GROUP BY protocol.protocol_id, name, frame_count, total_duration, mask_frame, protocol.authors_list, protocol.author_rank, protocol.description, protocol.device_id
+GROUP BY protocol.protocol_id, name, frame_count, total_duration, mask_frame, protocol.authors_list, protocol.author_rank, protocol.description, protocol.device_id, protocol.public

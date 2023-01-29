@@ -400,6 +400,7 @@ components:
         - "total_duration"
         - "description"
         - "device_id"
+        - "public"
       properties: 
         id: 
           type: "number"
@@ -423,6 +424,10 @@ components:
           type: "number"
         total_duration: 
           type: "number"
+        public: 
+          type: "boolean"
+
+
 
  
     ShortProtocolsList:

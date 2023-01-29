@@ -28,6 +28,9 @@ import { SwitchTheme } from './graphics';
 import { SaveDialog, DeleteDialog, UnsavedDialog } from './dialogs';
 import { DateTime } from "luxon";
 import Hotkeys from 'react-hot-keys';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrashCan, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faCreativeCommons } from '@fortawesome/free-brands-svg-icons'
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const default_frame_amount = 2;
 
@@ -1558,10 +1561,7 @@ class Body extends React.Component {
           Protocol name
         </label>
         <input className="control_input" name="protocol_name" type="text" value={this.state.protocolName} onChange={this.handleNameChange.bind(this)} />
-        <label htmlFor="protocol_description">
-          Protocol description
-        </label>
-        <input className="control_input" name="protocol_description" type="text" value={this.state.protocolDescription} onChange={this.handleDescriptionChange.bind(this)} />
+ 
         <ThemeProvider theme={SwitchTheme}>
             <div className='public_field'>
               <Switch
@@ -1570,9 +1570,20 @@ class Body extends React.Component {
                 size="small"
                 checked={this.state.protocolPublicness}
                 onChange={this.handlePublicnessChange.bind(this)}
-              /> Public Protocol
+              /> Public Protocol &nbsp; 
+              <FontAwesomeIcon icon={faCreativeCommons} />
               </div>
         </ThemeProvider>
+       <label htmlFor="protocol_description">
+          Protocol description
+        </label>
+        <textarea 
+        className="control_textarea" 
+        name="protocol_description" 
+        value={this.state.protocolDescription} 
+        onChange={this.handleDescriptionChange.bind(this)} 
+        rows={4}
+        />
       </form>
     )
   }

@@ -73,6 +73,7 @@ type ShortProtocol struct {
 	Description   string         `json:"description"`
 	TotalDuration int            `json:"total_duration"`
 	DeviceID      int            `json:"device_id"`
+	Public        bool           `json:"public"`
 }
 
 // ShortProtocol defines model for ShortProtocol.

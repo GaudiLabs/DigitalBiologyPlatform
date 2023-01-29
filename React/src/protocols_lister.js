@@ -1,7 +1,8 @@
 import * as React from "react"
 import './protocol_lister.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashCan, faCloudArrowDown, } from '@fortawesome/free-solid-svg-icons'
+import { faTrashCan, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons'
+import { faCreativeCommons } from '@fortawesome/free-brands-svg-icons'
 import { formatDuration } from "./utils";
 
 
@@ -30,6 +31,23 @@ class ProtocolsLister extends React.PureComponent {
     //TO-DO
   }
 
+
+  renderLicense(publicness)
+  { 
+    if (publicness) {
+    return <FontAwesomeIcon alt="Public Protocol (Creative Common)" icon={faCreativeCommons}></FontAwesomeIcon>
+    } else {
+      return 
+    }
+  }
+
+  formatDescription(description) {
+    if (description.length > 200) {
+      return description.substring(0, 200)+ " [...]"
+    }
+    return description
+  }
+
   renderSingleProtocol(protocol, loadedProtocolID) {
     var authorsList = ""
     for (var i = 0; i < Object.keys(protocol.author_list).length; i++) {
@@ -54,13 +72,16 @@ class ProtocolsLister extends React.PureComponent {
 
           </div>
           <div className="protocol_desc">
-            {protocol.description}
+            {this.formatDescription(protocol.description)}
           </div>
         </div>
         <div className="protocol_meta">
           Frames : {protocol.frame_count}<br />
           Duration : {formatDuration(protocol.total_duration)} <br />
           By : {authorsList} <br />
+        </div>
+        <div className="protocol_license">
+             {this.renderLicense(protocol.public)} 
         </div>
       </li>
     )
@@ -85,13 +106,16 @@ class ProtocolsLister extends React.PureComponent {
 
           </div>
           <div className="protocol_desc">
-            {protocol.description}
+            {this.formatDescription(protocol.description)}
           </div>
         </div>
         <div className="protocol_meta">
           Frames : {protocol.frame_count}<br />
           Duration : {formatDuration(protocol.total_duration)} <br />
           By : {authorsList} <br />
+        </div>
+        <div className="protocol_license">
+              <FontAwesomeIcon icon={faCreativeCommons} />
         </div>
       </li>
     )
