@@ -171,7 +171,9 @@ class LoginForm extends React.Component {
     if (token) {
       //TODO : local store the token
       //localStorage.setItem('token', JSON.stringify(token));
-      this.props.state.loggedInCallback(loginParamsToSend.username, token)
+      //this.props.state.loggedInCallback(loginParamsToSend.username, token)
+      localStorage.setItem('token', JSON.stringify(token));
+      localStorage.setItem('username', this.state.username);
       //setToken(token);
       this.setState({
         captchaToken : "",
