@@ -27,6 +27,7 @@ import { SwitchTheme } from './graphics';
 
 import { SaveDialog, DeleteDialog, UnsavedDialog } from './dialogs';
 import { DateTime } from "luxon";
+import Hotkeys from 'react-hot-keys';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const default_frame_amount = 2;
 
@@ -146,6 +147,33 @@ class Body extends React.Component {
   }
   }
 
+
+  onKeyUp(keyName, e, handle) {
+    //console.log("test:onKeyUp", e, handle)
+  }
+
+  onKeyDown(keyName, e, handle) {
+    //console.log("test:onKeyDown", keyName, e, handle)
+    switch (e.key) {
+      case "Left": // IE/Edge specific value
+      case "ArrowLeft":
+        this.goToPreviousFrame()
+        // Do something for "left arrow" key press.
+        break;
+      case "Right": // IE/Edge specific value
+      case "ArrowRight":
+        this.goToNextFrame()
+        // Do something for "right arrow" key press.
+        break;
+      case " ":
+        this.serialSendClick()
+        // Do something for "esc" key press.
+        break;
+      default:
+        return; // Quit when this doesn't handle the key event.
+    }
+    e.preventDefault();
+  }
 
   attachResizingHandle() {
     console.log("RESIZING OPERATION")
@@ -904,12 +932,12 @@ class Body extends React.Component {
       for (var x = 0; x < 16; x++) {
         for (var y = 0; y < 8; y++) {
           if (this.state.frames[i].electrodes[x][y] != null) {
-            console.log("DETECTED ELECTRODE")
+            //console.log("DETECTED ELECTRODE")
             //rebuilding electrode
             var electrodeToAdd = Object.create(electrode)
             electrodeToAdd.electrode_id = ((x * 8) + y).toString()
             electrodeToAdd.value = parseInt(this.state.frames[i].electrodes[x][y])
-            console.log(electrodeToAdd)
+            //console.log(electrodeToAdd)
             frameToAdd.electrodes.push(electrodeToAdd)
           }
         }
@@ -1509,6 +1537,11 @@ class Body extends React.Component {
   render() {
     console.log("RENDER MAIN")
     return (
+      <Hotkeys 
+        keyName="left,right,space" 
+        onKeyDown={this.onKeyDown.bind(this)}
+        onKeyUp={this.onKeyUp.bind(this)}
+      >
       <React.Fragment>
         <ToastContainer />
         <HeaderTop username={this.state.username} loggedIn={this.state.loggedIn} logOutHandler={this.state.logOut} />
@@ -1582,6 +1615,7 @@ class Body extends React.Component {
         </div>
         {/* </ResponsiveGridLayout> */}
       </React.Fragment>
+      </Hotkeys>
     )
   }
 
