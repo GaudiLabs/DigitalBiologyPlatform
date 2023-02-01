@@ -313,8 +313,10 @@ class Body extends React.Component {
 
 
   goToNextFrame() {
+    //HERE FOR COPY LAST FRAME
     if (this.state.currently_edited_frame[0] == (this.state.framesAmount - 1)) {
-      this.setNewFrameAmount(this.state.framesAmount + 1)
+      this.duplicateFrame()
+      //this.setNewFrameAmount(this.state.framesAmount + 1)
     }
     this.setState({
       currently_edited_frame: [this.state.currently_edited_frame[0] + 1],
@@ -336,16 +338,19 @@ class Body extends React.Component {
 
   async readInto(reader, buffer) {
     let offset = 0;
+    var rdone = false;
     while (offset < buffer.byteLength) {
       const { value, done } = await reader.read(
         new Uint8Array(buffer, offset)
       );
+      rdone = done
       if (done) {
         break;
       }
       buffer = value.buffer;
       offset += value.byteLength;
     }
+    //bytes prune
     return buffer;
   }
 
@@ -355,6 +360,16 @@ class Body extends React.Component {
     let buffer = new ArrayBuffer(amountOfBytes);
     // Read in buffer
     buffer = await this.readInto(reader, buffer);
+    //var { value, done } = await reader.read();
+    //purge left bytes
+    // while (true) {
+    //   const { value, done } = await reader.read();
+    //   console.log("READ DONE:" + done)
+    //   if (done) {
+    //     break;
+    //   }
+    // }
+
     // Cast buffer to bytes array
     const bytes = new Uint8Array(buffer, 0, amountOfBytes);
     reader.releaseLock();
@@ -441,7 +456,12 @@ class Body extends React.Component {
 
   async handleLiveDeviceSend() {
     if (this.state.liveMode) {
-      let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
+    let data = this.squaresToBytes(
+      this.state.frames[this.state.currently_edited_frame[0]].electrodes,
+      this.state.frames[this.state.currently_edited_frame[0]].temperatures,
+      this.state.frames[this.state.currently_edited_frame[0]].magnets,
+      )
+ 
       this.SendSerialDataAndCollectFeedback(data)
     }
   }
@@ -450,7 +470,11 @@ class Body extends React.Component {
     var n = this.state.framesAmount
 
     //send first frame
-    let data = this.squaresToBytes(this.state.frames[this.state.currently_edited_frame[0]].electrodes)
+    let data = this.squaresToBytes(
+      this.state.frames[this.state.currently_edited_frame[0]].electrodes,
+      this.state.frames[this.state.currently_edited_frame[0]].temperatures,
+      this.state.frames[this.state.currently_edited_frame[0]].magnets,
+      )
     this.SendSerialDataAndCollectFeedback(data)
 
     await this.sleep(this.state.frames[this.state.currently_edited_frame[0]].duration);
@@ -473,7 +497,10 @@ class Body extends React.Component {
       //   }
       // }
       if (newNb != this.state.framesAmount) {
-        let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
+        let data = this.squaresToBytes(this.state.frames[newNb].electrodes,
+          this.state.frames[newNb].temperatures,
+          this.state.frames[newNb].magnets
+          )
         this.setState(
           {
             currently_edited_frame: [newNb]
@@ -488,7 +515,10 @@ class Body extends React.Component {
           break;
         } else {
           let newNb = 0
-          let data = this.squaresToBytes(this.state.frames[newNb].electrodes)
+          let data = this.squaresToBytes(this.state.frames[newNb].electrodes,
+            this.state.frames[newNb].temperatures,
+            this.state.frames[newNb].magnets
+            )
           this.setState(
             {
               currently_edited_frame: [newNb]
@@ -1176,7 +1206,7 @@ class Body extends React.Component {
     return (dec >>> 0).toString(2);
   }
 
-  squaresToBytes(squares) {
+  squaresToBytes(squares, temps, magnets) {
     let output = new Uint8Array(32);
 
     //Setting electrodes bytes
@@ -1201,16 +1231,26 @@ class Body extends React.Component {
     //26 = temp 1
     //27 = temp 2
     //28 = temp 3
-    output[26] = 110
-    output[27] = 30
-    output[28] = 10
+    output[26] = Math.round(temps[0])
+    output[27] = Math.round(temps[1])
+    output[28] = Math.round(temps[2])
 
     //magnet bytes
     //0 = off
     //1 = left magnet
     //2 = right magnet
     //3 = both
-    output[16] = 0
+    var magnetsValue = 0
+
+    if (magnets[0]) {
+      magnetsValue = this.bit_set(magnetsValue,0)
+    }
+
+    if (magnets[1]) {
+      magnetsValue = this.bit_set(magnetsValue,1)
+    }
+
+    output[16] = magnetsValue
 
     console.log("SENT DATA:")
     console.log(output)
@@ -1385,13 +1425,11 @@ class Body extends React.Component {
     var afterFrames = this.state.frames.slice(at, this.state.frames.length).map(function (arr) {
       return { ...arr }
     });
-    // console.log("BEFORE:")
-    // console.log(beforeFrames)
-    // console.log("AFTER:")
-    // console.log(afterFrames)
 
     ret.push(...beforeFrames)
-    ret.push(beforeFrames.slice(beforeFrames.length - 1, beforeFrames.length)[0])
+    var clone = structuredClone(beforeFrames.slice(beforeFrames.length - 1, beforeFrames.length)[0])
+    ret.push(clone)
+
     ret.push(...afterFrames)
     console.log("RET:")
     console.log(ret)
@@ -1508,6 +1546,10 @@ class Body extends React.Component {
   renderDurationInput() {
     return (
       <React.Fragment>
+        <div className="frame_settings">
+          <div className='frame_settings_title'>
+        Frame Settings
+          </div>
         <div className="fields_column">
           <form >
             <label htmlFor="frame_duration">
@@ -1582,6 +1624,7 @@ class Body extends React.Component {
 
           </ThemeProvider>
         </div>
+        </div>
 
       </React.Fragment>
     )
@@ -1603,8 +1646,9 @@ class Body extends React.Component {
                 size="small"
                 checked={this.state.protocolPublicness}
                 onChange={this.handlePublicnessChange.bind(this)}
-              /> Public Protocol &nbsp; 
+              />
               <FontAwesomeIcon icon={faCreativeCommons} />
+              &nbsp; Public Protocol 
               </div>
         </ThemeProvider>
        <label htmlFor="protocol_description">

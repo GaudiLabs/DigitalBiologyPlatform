@@ -144,6 +144,7 @@ body {
     font-size: inherit;
     line-height: inherit;
     transition: 0.3s ease;
+    width: 100%;
 }
 
   .control_textarea {
@@ -168,11 +169,30 @@ body {
   align-items: stretch;
   width: 100%;
   overflow: auto;
+  position: relative;
 }
 
 .fields_column {
   flex: 2;
   font-size: small;
+  padding-right: 5px;
+}
+
+.frame_settings {
+  display: flex;
+  flex: 3;
+  align-items: stretch;
+  font-size: small;
+  border: 1px solid darkgray;
+  margin-right: 5px;
+  padding: 3px;
+  border-radius: 3px;
+  margin-top: 1em;
+}
+
+.frame_settings_title {
+  position:absolute;
+  top: 0;
 }
 
 .temp_input {
