@@ -139,6 +139,30 @@ func (w *Handlers) GetSelfUser(ctx echo.Context) error {
 	return nil
 }
 
+func (w *Handlers) GetDevices(ctx echo.Context) error {
+
+	var returnedDevices []FullDevice
+	devices, err := w.repository.GetAllDevices()
+	spew.Dump("DEVICES FROM DB:")
+	spew.Dump(devices)
+	if err != nil {
+		return err
+	}
+
+	//Mapping DB return
+	for _, device := range devices {
+		var deviceToAdd FullDevice
+		bytes, _ := json.Marshal(device)
+		//TODO: properly handle error
+		json.Unmarshal(bytes, &deviceToAdd)
+		returnedDevices = append(returnedDevices, deviceToAdd)
+	}
+
+	ctx.JSON(http.StatusOK, returnedDevices)
+
+	return nil
+}
+
 func (w *Handlers) GetSelfProtocolList(ctx echo.Context) error {
 	tokenBearer, err := auth.GetTokenObjectFromRequest(ctx.Request())
 	if err != nil {

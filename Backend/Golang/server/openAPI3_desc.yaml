@@ -223,6 +223,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FullProtocol'
+
+  /hardware/device/all:
+    get:
+      tags:
+        - hardware
+      summary: Get a particular dive infos by its ID
+      description: return a list of electrodes compatible with the device, its name, its svg
+      operationId: getDevices
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/FullDevice'
   /protocol:
     post:
       security:
@@ -282,6 +298,23 @@ components:
             $ref: '#/components/schemas/RankedAuthor'
         public: 
           type: "boolean"
+
+    FullDevice:
+      type : object
+      required: 
+        - "id"
+        - "name"
+        - "electrodes"
+        - "svg"
+      properties: 
+        id: 
+          type: "number"
+        name: 
+          type: "string"
+        electrodes: 
+          type: "array"
+          items: 
+            type : string
 
     FullProtocol:
       type : object

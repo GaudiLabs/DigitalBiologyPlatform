@@ -90,6 +90,13 @@ type FullProtocol struct {
 	Public        bool           `json:"public"`
 }
 
+type Device struct {
+	ID         int      `json:"id"`
+	Electrodes []string `json:"electrodes"`
+	SVG        string   `json:"svg"`
+	Name       string   `json:"name"`
+}
+
 func (fp *FullProtocol) AuthoredBy(username string) bool {
 	for _, author := range fp.AuthorList {
 		if author.Author == username {
@@ -111,4 +118,8 @@ func (sp *ShortProtocol) Scan(value interface{}) error {
 
 func (sp *FullProtocol) Scan(value interface{}) error {
 	return utils.BytesUnmarshall(&sp, value)
+}
+
+func (d *Device) Scan(value interface{}) error {
+	return utils.BytesUnmarshall(&d, value)
 }

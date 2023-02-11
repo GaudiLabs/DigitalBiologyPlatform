@@ -1,5 +1,6 @@
 import * as React from "react"
 import CartridgeComponent from './cartridge_DIMM';
+import GlassCartridgeComponent from './cartridge_Glass';
 
 class AdaptorComponent extends React.Component {
 
@@ -614,14 +615,23 @@ class AdaptorComponent extends React.Component {
       )
     }
 
+
+
     render() { 
+      var renderedCartridge = <CartridgeComponent state={this.props.state}/> 
+      switch (this.props.state.currentCartridge) {
+        case "glass":
+          renderedCartridge = <GlassCartridgeComponent state={this.props.state}/>
+      }
         return(
     <svg
     viewBox="0 0 101.149 74.773"
     xmlns="http://www.w3.org/2000/svg"
     >
     {this.renderAdaptorBoard()}
-    <CartridgeComponent state={this.props.state}/>
+    {/* <CartridgeComponent state={this.props.state}/> */}
+    {renderedCartridge}
+    
     {this.renderConnector()}
   </svg> 
 )

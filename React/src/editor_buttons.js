@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, ConnectPictoVoid, ConnectPictoConnected, SwitchT
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faCircle, faCircleArrowLeft, faCircleDot, faCog, faExpand, faFloppyDisk, faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
 import Switch from '@mui/material/Switch';
+import { FormControl, InputLabel, MenuItem,Select } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 
@@ -38,7 +39,7 @@ function Send(props) {
 
   if (props.state.playing) {
     return (
-      <button  title="Pause Sequence" className="editor_btn" onClick={props.onClick}>
+      <button title="Pause Sequence" className="editor_btn" onClick={props.onClick}>
         <FontAwesomeIcon icon={faPause} />
       </button>
     );
@@ -124,7 +125,7 @@ class EditorButtons extends React.Component {
     super(props);
     //console.log(this.props)
     this.state = {
-      settingsOpen: false
+      settingsOpen: true
     }
   }
 
@@ -154,7 +155,7 @@ class EditorButtons extends React.Component {
 
   ToggleSettingsClick() {
     this.setState({
-      settingsOpen : !this.state.settingsOpen
+      settingsOpen: !this.state.settingsOpen
     })
   }
 
@@ -236,33 +237,70 @@ class EditorButtons extends React.Component {
           <Live state={this.props.state} onClick={() => this.props.state.liveModeTrigger()} />
           <Save state={this.props.state} onClick={() => this.props.state.saveClick()} />
         </div>
-        <div className="settings_container" style={{display: this.state.settingsOpen ? 'block' : 'none' }}>
           Settings
-          <br/>
-          <br/>
+        <div className="fullsettings_container" style={{ display: this.state.settingsOpen ? 'block' : 'none' }}>
+          <br />
+          <br />
+          <div className="settings_container">
+          <div className="column_settings">
           <ThemeProvider theme={SwitchTheme}>
-            <Switch 
-            //defaultChecked 
-              size="small" 
-            checked={this.props.state.loopMode}
+            <Switch
+              //defaultChecked 
+              size="small"
+              checked={this.props.state.loopMode}
               onChange={this.props.state.toggleLoopMode}
             /> Loop Mode
           </ThemeProvider>
-          <br/>
-          <br/>
+          </div>
+
+          <div className="column_settings">
+          <FormControl fullWidth size="small">
+            <InputLabel id="demo-simple-select-label">Adaptor</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={"Standard"}
+              label="Adaptor"
+              onChange={() => {}}
+            >
+              <MenuItem value={"Standard"}>Standard</MenuItem>
+              <MenuItem value={"TempM"}>Temperatures & magnets</MenuItem>
+            </Select>
+          </FormControl>
+          </div>
+
+          <div className="column_settings">
+
+          <FormControl fullWidth size="small">
+            <InputLabel id="demo-simple-select-label">Cartridge</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={this.props.state.currentCartridge}
+              label="Adaptor"
+              onChange={this.props.state.changeCartridge}
+            >
+              <MenuItem value={"standard"}>Standard</MenuItem>
+              <MenuItem value={"glass"}>Glass cartridge</MenuItem>
+            </Select>
+          </FormControl>
+          </div>
+          </div>
+          <br />
+          <br />
           <form>
-          <label htmlFor="frame_amount">
-          Total amount of frames
-        </label>
-        <input className="control_input" name="frame_amount" type="number" value={this.props.state.framesAmount} onChange={this.props.state.handleFrameAmountChange} />
-        <br/>
-        <label htmlFor="default_duration">
-          Default new frame duration
-        </label>
-        <input className="control_input" name="default_duration" type="number" value={this.props.state.defaultDuration} onChange={this.props.state.setDefaultFrameDuration} />
-      </form>
-          <br/>
-          <br/>
+            <label htmlFor="frame_amount">
+              Total amount of frames
+            </label>
+            <input className="settings_control_input" name="frame_amount" type="number" value={this.props.state.framesAmount} onChange={this.props.state.handleFrameAmountChange} />
+            <br />
+            <label htmlFor="default_duration">
+              Default new frame duration
+            </label>
+            <input className="settings_control_input" name="default_duration" type="number" value={this.props.state.defaultDuration} onChange={this.props.state.setDefaultFrameDuration} />
+          </form>
+          <br />
+          <br />
         </div>
       </React.Fragment>
     )

@@ -12,6 +12,7 @@ type RepositoryInterface interface {
 	CreateProtocol(protocol defines.FullProtocol, username string) (protocolID int, err error)
 	OverwriteProtocol(protocolID int, protocol defines.FullProtocol, username string) error
 	DeleteProtocol(protocolID int) error
+	GetAllDevices() ([]defines.Device, error)
 	//GetDeviceElectrodes(deviceID int) (electrodes []defines.Electrode, err error)
 	//getElectrodeIDsBySVGDenomination(deviceID int, svgDenominations []string) (map[string]int, error)
 }

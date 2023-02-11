@@ -61,11 +61,17 @@
   margin-bottom: 10px;
 }
 
-.settings_container{
+.fullsettings_container{
   font-size: 12px;
   line-height: 1;
   color: rgba(0, 0, 0, 0.8);
   font-weight: bold;
+  border: 1px solid darkgray;
+  border-radius: 5px;
+  margin: 5px;
+  margin-bottom: 10px;
+  border-bottom-width: 1px !important;
+
 }
 
 .active_live_btn{
@@ -75,4 +81,40 @@
 
 .active_live_btn:hover{
   background-color: rgb(182, 97, 97) !important ;
+}
+
+.settings_container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+.column_settings {
+  display: flex;
+  flex: 3 1;
+  align-items: stretch;
+  font-size: small;
+  margin-right: 5px;
+  padding: 3px;
+  border-radius: 3px;
+  margin-top: 1em;
+}
+
+input.settings_control_input {
+  font-size: 12px !important;
+  outline: none;
+  display: block;
+  color: rgba(0, 0, 0, 0.8);
+  background: rgba(0,0,0, 0.1);
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 2px 2px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  transition: 0.3s ease;
+  width: 100px;
 }

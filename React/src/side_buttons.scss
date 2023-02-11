@@ -24,10 +24,10 @@
     float: left;
   }
 
-  .table > :not(caption) > * > * {
-    padding: 0.5rem 0.5rem;
-    border-bottom-width: 0px !important;
-  }
+  // .table > :not(caption) > * > * {
+  //   padding: 0.5rem 0.5rem;
+  //   border-bottom-width: 0px !important;
+  // }
   .side_btn:disabled {
     color: #999999;
   }

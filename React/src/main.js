@@ -90,6 +90,7 @@ class Body extends React.Component {
       deleteFrame: this.deleteFrame.bind(this),
       clearFrame: this.clearFrame.bind(this),
       clearAllFrames: this.clearAllFrames.bind(this),
+      changeCartridge: this.changeCartridge.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -108,6 +109,8 @@ class Body extends React.Component {
       temperatureReadings: new Float32Array(3).fill(0.0),
       protocolPublicness: false,
       publicProtocols : [],
+      currentCartridge : "standard",
+      currentAdaptor : "standard",
     };
 
     //retreive logged in infos
@@ -1126,6 +1129,16 @@ class Body extends React.Component {
       //this.handleLiveDeviceSend
     )
 
+
+  }
+
+  changeCartridge(event) {
+    console.log("CHANGE CARTRIDGE CLICK TRIGGER")
+    console.log(event.target.value)
+
+    this.setState({
+      currentCartridge : event.target.value
+    })
 
   }
 
