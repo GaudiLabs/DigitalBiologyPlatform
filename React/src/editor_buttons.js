@@ -255,23 +255,6 @@ class EditorButtons extends React.Component {
 
           <div className="column_settings">
           <FormControl fullWidth size="small">
-            <InputLabel id="demo-simple-select-label">Adaptor</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={"Standard"}
-              label="Adaptor"
-              onChange={() => {}}
-            >
-              <MenuItem value={"Standard"}>Standard</MenuItem>
-              <MenuItem value={"TempM"}>Temperatures & magnets</MenuItem>
-            </Select>
-          </FormControl>
-          </div>
-
-          <div className="column_settings">
-
-          <FormControl fullWidth size="small">
             <InputLabel id="demo-simple-select-label">Cartridge</InputLabel>
             <Select
               labelId="demo-simple-select-label"

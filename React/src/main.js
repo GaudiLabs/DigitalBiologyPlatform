@@ -847,8 +847,16 @@ class Body extends React.Component {
     }
     console.log("BACKEND PROCTOL:")
     console.log(backendProtocol)
+
+    //TODO : this is a stub, needs reflow (ask bakcend at init to have list of devices and their ids, etc)
+    var cartridge = "standard"
+    if (backendProtocol.device_id == 5) {
+      cartridge = "glass"
+    }
+
     this.setState(
       {
+        currentCartridge : cartridge,
         currently_edited_frame: [0],
         frames: newFrames,
         framesAmount: backendProtocol.frame_count,
@@ -964,8 +972,15 @@ class Body extends React.Component {
     returnedProtocol.name = this.state.protocolName
     returnedProtocol.public = this.state.protocolPublicness
     returnedProtocol.description = this.state.protocolDescription
+
     //TODO: this value must not be harcoded, this is a stub
     returnedProtocol.device_id = 2
+
+    if (this.state.currentCartridge == "glass") {
+      returnedProtocol.device_id = 5
+    }
+
+
     returnedProtocol.frames = []
     returnedProtocol.author_list = []
 
