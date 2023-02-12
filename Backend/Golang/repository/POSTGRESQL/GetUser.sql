@@ -18,9 +18,13 @@ WITH users AS (
 	SELECT
 		jsonb_build_object(
 			'id', users.id,
-			'login', users.login,
+			'username', users.login,
 			'tokens', tokens.tokens,
-			'password', users.password
+			'password', users.password,
+			'fullname', users.fullname,
+			'bio', users.bio,
+			'institution', users.institution,
+			'website', users.website
 			)
 	FROM users, tokens
 	WHERE users.login = $1

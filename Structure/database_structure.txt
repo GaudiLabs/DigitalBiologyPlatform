@@ -14,7 +14,6 @@ These feedback and features can require a certain device.
 
 
 Current data structure (WIP) :
-
 Table hardware.device_type {
    id int [pk, increment]
    name varchar
@@ -65,7 +64,7 @@ Table hardware.electrode_feedback {
 Table hardware.electrode_feature {
    id int [pk, increment]
    name varchar
-   svg_electrode_id int [ ref: > hardware.electrode.id ]
+   svg_electrode_id varchar
 }
 
 Table hardware.feature_compatibility {
@@ -139,6 +138,11 @@ Table users.user {
   login varchar
   password varchar
   email varchar
+  
+  fullname varchar
+  institution varchar
+  website varchar
+  bio varchar
 }
 
 Table users.token {

@@ -92,7 +92,11 @@ func (w *Handlers) CreateUser(ctx echo.Context) error {
 	}
 
 	//Handle bad mail address case
-	_, err = mail.ParseAddress(receivedUser.Email)
+	email := ""
+	if receivedUser.Email != nil {
+		email = *receivedUser.Email
+	}
+	_, err = mail.ParseAddress(email)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, defines.SimpleReturnMessage{Message: "Provided email is invalid"})
 		return nil
@@ -190,6 +194,38 @@ func (w *Handlers) GetSelfProtocolList(ctx echo.Context) error {
 	//returnedUser.Tokens = user.Tokens
 
 	ctx.JSON(http.StatusOK, returnedProtocols)
+
+	return nil
+}
+
+func (w *Handlers) GetUser(ctx echo.Context, usernameToGet string) error {
+
+	user, err := w.repository.GetUser(usernameToGet)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, defines.SimpleReturnMessage{Message: fmt.Sprintf("Username '%s' not found", usernameToGet)})
+		}
+		return err
+	}
+	spew.Dump(user)
+	//spew.Dump(protocols)
+
+	//Mapping returned Object
+	//Attempt at automatic mapping
+	var returnedUser PublicUser
+	bytes, _ := json.Marshal(user)
+	//TODO: properly handle error
+	json.Unmarshal(bytes, &returnedUser)
+	//returnedProtocols.Protocols = make([]ShortProtocol, len(protocols))
+	//automapper.Map(protocols, &returnedProtocols.Protocols)
+
+	//returnedUser.Id = &user.Id
+	//returnedUser.Username = &user.Login
+	//TODO: auto parse token generate returned logintokens
+	//returnedUser.Tokens = user.Tokens
+
+	//TODO : change this !
+	ctx.JSON(http.StatusOK, returnedUser)
 
 	return nil
 }

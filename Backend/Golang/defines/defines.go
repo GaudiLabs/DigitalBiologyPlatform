@@ -22,11 +22,15 @@ type AuthToken struct {
 
 // User defines model for User.
 type User struct {
-	Id       int64  `json:"id,omitempty"`
-	Password string `json:"password,omitempty"`
-	Login    string `json:"username,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Tokens   []LoginToken
+	Id          int64  `json:"id,omitempty"`
+	Password    string `json:"password,omitempty"`
+	Login       string `json:"username,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Fullname    string `json:"fullname,omitempty"`
+	Bio         string `json:"bio,omitempty"`
+	Website     string `json:"website,omitempty"`
+	Institution string `json:"institution,omitempty"`
+	Tokens      []LoginToken
 }
 
 // Electrode defines model for Electrode.
