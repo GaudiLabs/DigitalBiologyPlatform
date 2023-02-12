@@ -20,6 +20,7 @@ class GlassCartridgeComponent extends React.Component {
                     //onMouseEnter={(e) => this.handleHover(0, e)}
                     //onClick={(e) => this.handleHover(0, e)}
                     //fill={this.renderElectrodeFill(0)}
+        var elementsReferences = new Object();
 
         for (var i = 0; i < electrodes.length; i++) {
             let current_electrode = electrodes[i];
@@ -31,7 +32,9 @@ class GlassCartridgeComponent extends React.Component {
             current_electrode.addEventListener('mousedown', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             
+            elementsReferences[String(current_electrode_id)] = current_electrode;
         }
+        this.props.state.setElectrodesElements(elementsReferences)
     }
 
     componentWillUnmount() {
@@ -267,7 +270,6 @@ class GlassCartridgeComponent extends React.Component {
             <path
               className={"electrode" +  this.renderFeedbackClass(57)}
               electrode_id="57"
-              fill={this.renderElectrodeFill(57)}
               style={{ InkscapeStroke: "none" }}
               d="M19.334 20.621h9.025V32.9h-9.025z"
             ></path>

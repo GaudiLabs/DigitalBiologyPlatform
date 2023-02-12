@@ -91,6 +91,7 @@ class Body extends React.Component {
       clearFrame: this.clearFrame.bind(this),
       clearAllFrames: this.clearAllFrames.bind(this),
       changeCartridge: this.changeCartridge.bind(this),
+      setElectrodesElements: this.setElectrodesElements.bind(this),
       framesAmount: 2,
       liveMode: false,
       username: "oh",
@@ -111,6 +112,7 @@ class Body extends React.Component {
       publicProtocols : [],
       currentCartridge : "standard",
       currentAdaptor : "standard",
+      electrodesElements : new Object(),
     };
 
     //retreive logged in infos
@@ -137,6 +139,7 @@ class Body extends React.Component {
       }
     }
   }
+
 
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT : Main")
@@ -166,6 +169,13 @@ class Body extends React.Component {
 
   }
 
+  setElectrodesElements(elements) {
+    console.log("SET ELECTRODES ELEMENTS")
+    console.log(elements)
+    this.setState({
+      electrodesElements: elements
+    })
+  }
 
   onKeyUp(keyName, e, handle) {
     //console.log("test:onKeyUp", e, handle)
@@ -1270,6 +1280,31 @@ class Body extends React.Component {
     return output
   }
 
+  getElectrodeFill(electrode_id, newState) {
+    //convert electrode id to i/j coordinates:
+    var j = Math.floor(electrode_id / 8);
+    var i = electrode_id % 8;
+
+    //console.log("MODIFYING FRAME:")
+    ////console.log(this.props.state.currently_edited_frame[0])
+    ////console.log(this.state.frames)
+    ////console.log(this.state.frames[this.props.state.currently_edited_frame[0]][i][j])
+         //console.log("i=" + i + "j=" + j)
+        //console.log(this.props.state.frames[this.props.state.currently_edited_frame[0]].electrodes[j][i])
+    //console.log(this.props.state)
+    if (newState.frames[newState.currently_edited_frame[0]].electrodes[j][i] !== null) {
+       return ("#275599")
+    } else if (newState.currently_edited_frame[0] != 0) {
+        //Previous frame have this electrode activated
+        if (newState.frames[newState.currently_edited_frame[0] - 1].electrodes[j][i] !== null) 
+        {
+            return ("rgb(186, 183, 102)")
+        }
+    } else {
+        return ("#efd94c")
+    }
+}
+
   handleHover(electrode_id, e) {
     //console.log("MOUSE ENTER")
     ////console.log(e)
@@ -1297,8 +1332,13 @@ class Body extends React.Component {
 
       this.setState({
         frames: newFrames,
-      }, this.handleLiveDeviceSend);
+      }, () => {
+      this.state.electrodesElements[String(electrode_id)].setAttribute("fill",
+      this.getElectrodeFill(electrode_id,this.state) )
+        this.handleLiveDeviceSend()
+      });
     }
+    console.log(this.state.electrodesElements)
     ////console.log(this.state.squares)
   }
 
