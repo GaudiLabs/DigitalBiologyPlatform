@@ -70,7 +70,6 @@ class Body extends React.Component {
       electrodesFeedback: this.generateEmptyFeedbackArray(),
       serialPort: null,
       clickHandle: this.handleHover.bind(this),
-      loggedInCallback: this.loggedInCallback.bind(this),
       logOut: this.logOut.bind(this),
       loadProtocol: this.handleLoadProtocol.bind(this),
       publicLoadProtocol: this.handlePublicLoadProtocol.bind(this),
@@ -138,9 +137,23 @@ class Body extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+
+    delete this.state.loggedIn 
+    delete this.state.username 
+    delete this.state.accessToken 
+    delete this.state.authHeader
+    localStorage.setItem('_SavedState', JSON.stringify(this.state))
+  }
+
   async componentDidMount() {
     console.log("COMPONENT DID MOUNT : Main")
-    this.allocCleanFrames(default_frame_amount)
+    const rehydrate = JSON.parse(localStorage.getItem('_SavedState'))
+    console.log("REHYDRATE:")
+    console.log(rehydrate)
+
+    this.setState(rehydrate)
+    //this.allocCleanFrames(default_frame_amount)
 
     this.attachResizingHandle()
 
@@ -588,20 +601,6 @@ class Body extends React.Component {
     }
   }
 
-  //TODO : never called, deprecated
-  loggedInCallback(username, token) {
-    console.log("LOGGED IN CALLBACK")
-    console.log(username)
-    console.log(token)
-    localStorage.setItem('token', JSON.stringify(token));
-    localStorage.setItem('username', username);
-    this.setState({
-      loggedIn: true,
-      username: username,
-      accessToken: token,
-      authHeader: GenerateAuthHeader(username, token)
-    }, this.refreshUserProtocols)
-  }
 
   logOut() {
     //HERE change to set ok default

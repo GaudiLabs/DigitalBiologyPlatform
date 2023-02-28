@@ -169,12 +169,8 @@ class LoginForm extends React.Component {
     const token = await this.loginUser(loginParamsToSend);
     console.log(token)
     if (token) {
-      //TODO : local store the token
-      //localStorage.setItem('token', JSON.stringify(token));
-      //this.props.state.loggedInCallback(loginParamsToSend.username, token)
       localStorage.setItem('token', JSON.stringify(token));
       localStorage.setItem('username', this.state.username);
-      //setToken(token);
       this.setState({
         captchaToken : "",
         redirectToHome: true

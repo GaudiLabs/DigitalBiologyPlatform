@@ -541,6 +541,12 @@ components:
         bio:
           type: string
           example: "I am a enginner who likes cats."
+        protocol_amount:
+          type: integer
+          example: 12
+        public_protocol_amount:
+          type: integer
+          example: 10
  
     LoginToken:
       type: object

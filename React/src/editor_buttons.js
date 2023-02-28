@@ -125,7 +125,7 @@ class EditorButtons extends React.Component {
     super(props);
     //console.log(this.props)
     this.state = {
-      settingsOpen: true
+      settingsOpen: false
     }
   }
 

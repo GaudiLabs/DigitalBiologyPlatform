@@ -1,0 +1,83 @@
+body{
+   background:#eee;
+}
+
+.card{
+   border:none;
+
+   position:relative;
+   overflow:hidden;
+   border-radius:8px;
+   cursor:pointer;
+}
+
+.fonts{
+   font-size:13px;
+}
+
+.stats {
+   display: flex;
+}
+
+.stat_column {
+   flex: 1;
+}
+
+.stat_title {
+font-weight: 200;
+}
+
+.stat_value {
+   font-size: 3em;
+
+}
+
+.profile_pic {
+   font-size: 100px !important;
+}
+
+.desc {
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+
+.plink {
+}
+
+.card {
+   cursor:auto;
+
+}
+
+.go_back_btn_container {
+   width: 100%;
+   align-items: center;
+   margin: 10px;
+}
+
+.go_back_btn {
+   margin-top: 20px;
+   margin-top: 40px;
+   width: fit-content;
+   margin: auto;
+   background-color: gray;
+   border-radius: 10px;
+   height: 3em;
+   line-height: 3em;
+   padding-right: 10px;
+   padding-left: 10px;
+}
+
+.go_back_btn:hover {
+   background-color: rgb(154, 154, 154);
+}
+
+.go_back_btn > a {
+   color: inherit;
+
+}
+
+.go_back_btn > a:visited {
+   color: inherit;
+   
+}

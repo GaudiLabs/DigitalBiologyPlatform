@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashCan, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { faCreativeCommons } from '@fortawesome/free-brands-svg-icons'
 import { formatDuration } from "./utils";
+import { Link } from 'react-router-dom';
 
 
 class ProtocolsLister extends React.PureComponent {
@@ -78,7 +79,9 @@ class ProtocolsLister extends React.PureComponent {
         <div className="protocol_meta">
           Frames : {protocol.frame_count}<br />
           Duration : {formatDuration(protocol.total_duration)} <br />
-          By : {authorsList} <br />
+          <div className="authors_list">
+          By : {this.generateAuthorsLinks(protocol.author_list)}
+          </div>
         </div>
         <div className="protocol_license">
              {this.renderLicense(protocol.public)} 
@@ -87,13 +90,25 @@ class ProtocolsLister extends React.PureComponent {
     )
   }
 
+  generateAuthorsLinks(authors) {
+
+    return (
+      <React.Fragment>
+          {authors.map((user) => (
+              <Link to={"/user/"+ user.author}>{user.author}</Link>
+          ))}
+      </React.Fragment>
+    );
+
+  }
+
   renderSinglePublicProtocol(protocol, loadedProtocolID) {
-    var authorsList = ""
+    var authorsList
     if (protocol === undefined) {
       return
     }
     for (var i = 0; i < Object.keys(protocol.author_list).length; i++) {
-      authorsList += protocol.author_list[i].author + ' '
+      authorsList += <Link to="/user/protocol.author_list[i].author">protocol.author_list[i].author</Link>  + ' '
     }
     return (
       <li className={protocol.id === loadedProtocolID ? "public_protocol public_loaded_protocol" : "public_protocol"} key={protocol.id}>
@@ -115,7 +130,10 @@ class ProtocolsLister extends React.PureComponent {
         <div className="public_protocol_meta">
           Frames : {protocol.frame_count}<br />
           Duration : {formatDuration(protocol.total_duration)} <br />
-          By : {authorsList} <br />
+          <div className="authors_list">
+          By : {this.generateAuthorsLinks(protocol.author_list)}
+          </div>
+ 
         </div>
         <div className="protocol_license">
               <FontAwesomeIcon icon={faCreativeCommons} />

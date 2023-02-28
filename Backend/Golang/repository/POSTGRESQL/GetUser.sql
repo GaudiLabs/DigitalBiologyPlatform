@@ -24,7 +24,14 @@ WITH users AS (
 			'fullname', users.fullname,
 			'bio', users.bio,
 			'institution', users.institution,
-			'website', users.website
+			'website', users.website,
+			'protocol_amount', (SELECT COUNT(*) FROM protocols.authors WHERE user_id = users.id),
+			'public_protocol_amount', (
+				SELECT COUNT(*) 
+				FROM protocols.protocol 
+				WHERE protocol.id IN (SELECT protocol_id FROM protocols.authors WHERE user_id = users.id)
+				AND protocol."public" IS TRUE
+			)
 			)
 	FROM users, tokens
 	WHERE users.login = $1

@@ -46,6 +46,23 @@
   //   background-color: #888;
   // }
   
+.authors_list {
+  display: inline;
+
+}
+
+.authors_list > a {
+  color: inherit;
+  text-decoration: none;
+
+}
+
+.authors_list > a:visited {
+  color: inherit;
+  text-decoration: none;
+  
+}
+
   ul li {
     overflow:hidden;
     margin: 5px;
@@ -65,7 +82,7 @@
 
   .protocol_meta {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     width: 30%;
     border-left: 1px solid white;
     padding-left: 5px;
@@ -77,7 +94,8 @@
 
   .public_protocol_meta {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    text-align: left;
     width: 30%;
     border-left: 1px solid rgb(143, 143, 143);
     padding-left: 5px;
