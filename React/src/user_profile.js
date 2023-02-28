@@ -157,13 +157,13 @@ class UserProfile extends React.Component {
 
               </div>
 
-              <div className='go_back_btn_container'>
+              {/* <div className='go_back_btn_container'>
               <div className='go_back_btn'>
               <FontAwesomeIcon icon={faArrowLeft} />
               &nbsp;
               <Link to="/">Go back to editor</Link>
               </div>
-              </div>
+              </div> */}
             </div>
 
           </div>

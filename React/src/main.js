@@ -78,6 +78,7 @@ class Body extends React.Component {
       serialSendClick: this.serialSendClick.bind(this),
       goToNextFrame: this.goToNextFrame.bind(this),
       toggleLoopMode: this.toggleLoopMode.bind(this),
+      toggleFeedbackMode: this.toggleFeedbackMode.bind(this),
       goToPreviousFrame: this.goToPreviousFrame.bind(this),
       saveClick: this.saveClick.bind(this),
       deleteClick: this.deleteProtocolClick.bind(this),
@@ -110,6 +111,8 @@ class Body extends React.Component {
       publicProtocols : [],
       currentCartridge : "standard",
       currentAdaptor : "standard",
+      feedbackMode : false,
+      
     };
 
     //retreive logged in infos
@@ -139,11 +142,20 @@ class Body extends React.Component {
 
   componentWillUnmount() {
 
-    delete this.state.loggedIn 
-    delete this.state.username 
-    delete this.state.accessToken 
-    delete this.state.authHeader
-    localStorage.setItem('_SavedState', JSON.stringify(this.state))
+    this.setState(
+      {
+        liveMode: false,
+        serialPort: null,
+        playing: false,
+      }
+      , ()=> {
+        delete this.state.loggedIn 
+        delete this.state.username 
+        delete this.state.accessToken 
+        delete this.state.authHeader
+        localStorage.setItem('_SavedState', JSON.stringify(this.state))
+      }
+    )
   }
 
   async componentDidMount() {
@@ -315,6 +327,21 @@ class Body extends React.Component {
     })
   }
 
+  toggleFeedbackMode() {
+    this.setState({
+      feedbackMode: !this.state.feedbackMode,
+    }, () => {
+      if (this.state.liveMode) {
+        this.liveModeTrigger()
+        if (this.state.playing) {
+          this.serialSendClick()
+        }
+      }
+
+    })
+  }
+
+
   setDefaultFrameDuration(event) {
 
     //Parse new amount, default to 2 if NaN
@@ -349,6 +376,8 @@ class Body extends React.Component {
   setSerialPort(port_id) {
     this.setState({
       serialPort: port_id
+    }, () => {
+      this.liveModeTrigger()
     })
   }
 
@@ -638,17 +667,71 @@ class Body extends React.Component {
     }
     //401 Unauthorized
     if (response.status === 401) {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Invalid Authentication, try re-loging in ?",
-        })
+      toast.error("Invalid Authentication, try re-loging in ?", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     } else {
-      this.setState(
-        {
-          error: true,
-          errorMessage: "Unexpected error happened",
-        })
+      toast.error("Unexpected error happened", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+    return true
+  }
+
+  handleSaveHTTPErrors(response) {
+    console.log("HANDLE LOAD PROTOCOL ERROR TRIGGER")
+    console.log(response)
+    if (response.ok) {
+      return false
+    }
+    //401 Unauthorized
+    if (response.status === 401) {
+      toast.error("Invalid Authentication, try re-loging in ?", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else if (response.status === 403) {
+      toast.error("You don't have the right to save this protocol", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }else {
+      toast.error("Unexpected error happened", {
+        position: "bottom-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
     return true
   }
@@ -718,7 +801,7 @@ class Body extends React.Component {
       return
     }
     //No network error, handle regular errors
-    if (!this.handleHTTPErrors(requestResp)) {
+    if (!this.handleSaveHTTPErrors(requestResp)) {
       //TODO : empty body error case
       //console.log(requestResp.json())
       return requestResp.json()
@@ -785,7 +868,7 @@ class Body extends React.Component {
       return
     }
     //No network error, handle regular errors
-    if (!this.handleHTTPErrors(requestResp)) {
+    if (!this.handleSaveHTTPErrors(requestResp)) {
       //TODO : empty body error case
       //console.log(requestResp.json())
       return requestResp
@@ -1125,7 +1208,7 @@ class Body extends React.Component {
         liveMode: !this.state.liveMode
       },
       () => {
-        if (this.state.liveMode) {
+        if (this.state.liveMode && this.state.feedbackMode) {
           console.log("STARTING LIVE MODE INTERVAL")
           this.handleLiveDeviceSend()
           const timer = setInterval(() => {
@@ -1137,13 +1220,8 @@ class Body extends React.Component {
             this.handleLiveDeviceSend()
           }, 500);
         }
-
-
       }
-      //this.handleLiveDeviceSend
     )
-
-
   }
 
   changeCartridge(event) {

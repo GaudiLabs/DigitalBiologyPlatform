@@ -95,7 +95,8 @@ class ProtocolsLister extends React.PureComponent {
     return (
       <React.Fragment>
           {authors.map((user) => (
-              <Link to={"/user/"+ user.author}>{user.author}</Link>
+            <a href={"/user/"+ user.author} target="_blank">{user.author}</a>
+              // <Link to={"/user/"+ user.author}>{user.author}</Link>
           ))}
       </React.Fragment>
     );

@@ -83,13 +83,6 @@ function Enlarge(props) {
   );
 }
 function Save(props) {
-  if (props.state.liveMode === true) {
-    return (
-      <button disabled title="Save" className="editor_btn end_btn" onClick={props.onClick}>
-        <FontAwesomeIcon icon={faFloppyDisk} />
-      </button>
-    );
-  } else {
     return (
       <React.Fragment>
         <button title="Save" className="editor_btn end_btn" onClick={props.onClick}>
@@ -97,7 +90,6 @@ function Save(props) {
         </button>
       </React.Fragment>
     );
-  }
 }
 
 function Live(props) {
@@ -131,17 +123,12 @@ class EditorButtons extends React.Component {
 
   async SelectSerialClick() {
     //console.log("CONNECT CLICKED")
-    //this.setLogginToggle(true)
-    //console.log("USERNAME :")
     //console.log(this.props.state.username)
-    //if ("serial" in navigator) {
-    //    //console.log("The serial port is supported.")
-    // The Web Serial API is supported.
-    //} else {
-    //TODO :
-    //Propoer error message ?
-    //    alert("This web browser is not compatible with serial API")
-    //}
+    if ("serial" in navigator) {
+       console.log("The serial port is supported.")
+    } else {
+       alert("This web browser is not compatible with serial API, Google Chrome is prefered.")
+    }
     const port = await navigator.serial.requestPort();
     this.props.state.setSerialPort(port)
     /*
@@ -165,6 +152,16 @@ class EditorButtons extends React.Component {
 
     return (
       <React.Fragment>
+        <div className="range_buttons_container">
+        <div className="buttons_container">
+          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame()} />
+          <Send state={this.props.state} onClick={() => this.props.state.serialSendClick()} />
+          <NextFrame onClick={() => this.props.state.goToNextFrame()} />
+          <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
+          <Settings onClick={() => this.ToggleSettingsClick()} />
+          <Live state={this.props.state} onClick={() => this.props.state.liveModeTrigger()} />
+          <Save state={this.props.state} onClick={() => this.props.state.saveClick()} />
+        </div>
         <div className="range_container">
           <Range
             values={this.props.state.currently_edited_frame}
@@ -227,22 +224,12 @@ class EditorButtons extends React.Component {
             )}
           />
         </div>
-        <div className="buttons_container">
-          <PreviousFrame onClick={() => this.props.state.goToPreviousFrame()} />
-          <Send state={this.props.state} onClick={() => this.props.state.serialSendClick()} />
-          <NextFrame onClick={() => this.props.state.goToNextFrame()} />
-          <SelectSerial state={this.props.state} onClick={() => this.SelectSerialClick()} />
-          <Settings onClick={() => this.ToggleSettingsClick()} />
-          <Enlarge onClick={() => this.SelectSerialClick()} />
-          <Live state={this.props.state} onClick={() => this.props.state.liveModeTrigger()} />
-          <Save state={this.props.state} onClick={() => this.props.state.saveClick()} />
-        </div>
-          Settings
         <div className="fullsettings_container" style={{ display: this.state.settingsOpen ? 'block' : 'none' }}>
           <br />
           <br />
           <div className="settings_container">
           <div className="column_settings">
+            <span>
           <ThemeProvider theme={SwitchTheme}>
             <Switch
               //defaultChecked 
@@ -251,6 +238,19 @@ class EditorButtons extends React.Component {
               onChange={this.props.state.toggleLoopMode}
             /> Loop Mode
           </ThemeProvider>
+
+          </span>
+          <span>
+          <ThemeProvider theme={SwitchTheme}>
+            <Switch
+              //defaultChecked 
+              size="small"
+              checked={this.props.state.feedbackMode}
+              onChange={this.props.state.toggleFeedbackMode}
+            /> Enable Feedback
+          </ThemeProvider>
+          </span>
+ 
           </div>
 
           <div className="column_settings">
@@ -285,6 +285,8 @@ class EditorButtons extends React.Component {
           <br />
           <br />
         </div>
+        </div>
+
       </React.Fragment>
     )
   }

@@ -22,6 +22,10 @@
   height: 40px;
 }
 
+.range_buttons_container {
+margin-top: -30px;
+}
+
 
 .editor_btn:disabled {
   color: #999999;
@@ -52,7 +56,7 @@
   margin-left: 5%;
   margin-right: 5%;
   margin-top: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .buttons_container{
@@ -93,6 +97,7 @@
 
 .column_settings {
   display: flex;
+  flex-direction: column;
   flex: 3 1;
   align-items: stretch;
   font-size: small;
