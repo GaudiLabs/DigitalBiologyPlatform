@@ -19,6 +19,10 @@ class LoginForm extends React.Component {
       captchaToken: "",
       email : "",
       redirectToHome: false,
+      fullname: "",
+      institution:"",
+      website : "",
+      bio : "",
     }
   }
 
@@ -230,7 +234,11 @@ class LoginForm extends React.Component {
       "username": "",
       "password": "",
       "email" : "",
-      "captcha_token": ""
+      "captcha_token": "",
+      "bio" : "",
+      "fullname" : "",
+      "website" : "",
+      "institution" :"" ,
     }
 
     var loginParamsToSend = Object.create(signUpParams)
@@ -239,6 +247,10 @@ class LoginForm extends React.Component {
     loginParamsToSend.password = this.state.password
     loginParamsToSend.email = this.state.email
     loginParamsToSend.captcha_token = this.state.captchaToken
+    loginParamsToSend.bio = this.state.bio
+    loginParamsToSend.fullname = this.state.fullname
+    loginParamsToSend.website = this.state.website
+    loginParamsToSend.institution = this.state.institution
 
     console.log("meh")
     const signupSuccess = await this.signUpUser(loginParamsToSend);
@@ -271,6 +283,31 @@ class LoginForm extends React.Component {
     });
   }
 
+  setFullName(event) {
+    this.setState({
+      fullname: event.target.value,
+    });
+  }
+
+  setBio(event) {
+    this.setState({
+      bio: event.target.value,
+    });
+  }
+
+  setInstitution(event) {
+    this.setState({
+      institution: event.target.value,
+    });
+  }
+
+  setWebsite(event) {
+    this.setState({
+      website: event.target.value,
+    });
+  }
+
+
   setPassword(event) {
     this.setState({
       password: event.target.value,
@@ -300,7 +337,7 @@ class LoginForm extends React.Component {
           </div>
 
           <input id="signin" type="radio" name="tab" />
-          <input id="register" type="radio" name="tab" />
+          <input id="register" type="radio" name="tab"/>
           <div className="pages">
             <div className="page">
               <form onSubmit={this.handleLoginSubmit.bind(this)} >
@@ -321,16 +358,32 @@ class LoginForm extends React.Component {
             <div className="page signup">
               <form onSubmit={this.handleSignupSubmit.bind(this)}>
                 <div className="input">
-                  <div className="title"> USERNAME</div>
+                  <div className="title"> Username (mandatory)</div>
                   <input className="text" type="text" placeholder="" value={this.state.username} onChange={this.setUsername.bind(this)} />
                 </div>
                 <div className="input">
-                  <div className="title"> PASSWORD</div>
+                  <div className="title"> Password (mandatory)</div>
                   <input className="text" type="password" placeholder="" value={this.state.password} onChange={this.setPassword.bind(this)} />
                 </div>
                 <div className="input">
-                  <div className="title"> EMAIL</div>
+                  <div className="title"> e-mail (mandatory)</div>
                   <input className="text" type="text" placeholder="" value={this.state.email} onChange={this.setEmail.bind(this)} />
+                </div>
+                <div className="input">
+                  <div className="title"> Full Name </div>
+                  <input className="text" type="text" placeholder="" value={this.state.fullname} onChange={this.setFullName.bind(this)} />
+                </div>
+                <div className="input">
+                  <div className="title"> Institution </div>
+                  <input className="text" type="text" placeholder="" value={this.state.institution} onChange={this.setInstitution.bind(this)} />
+                </div>
+                <div className="input">
+                  <div className="title"> Website </div>
+                  <input className="text" type="text" placeholder="" value={this.state.website} onChange={this.setWebsite.bind(this)} />
+                </div>
+                <div className="input">
+                  <div className="title"> Biography / Misc</div>
+                  <input className="text" type="textarea" placeholder="" value={this.state.bio} onChange={this.setBio.bind(this)} />
                 </div>
                 <br />
                 <HCaptcha 

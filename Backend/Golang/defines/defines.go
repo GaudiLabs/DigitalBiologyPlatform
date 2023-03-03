@@ -30,8 +30,8 @@ type User struct {
 	Bio                  string `json:"bio,omitempty"`
 	Website              string `json:"website,omitempty"`
 	Institution          string `json:"institution,omitempty"`
-	PublicProtocolAmount int    `json:"public_protocol_amount,omitempty"`
-	ProtocolAmount       int    `json:"protocol_amount,omitempty"`
+	PublicProtocolAmount int    `json:"public_protocol_amount"`
+	ProtocolAmount       int    `json:"protocol_amount"`
 	Tokens               []LoginToken
 }
 

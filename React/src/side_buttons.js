@@ -62,7 +62,7 @@ class SideButtons extends React.PureComponent {
         <FontAwesomeIcon icon={faBomb} />
         </div>
         <div className="side_button_text">
-          Clear all frames
+          Delete all frames
           </div>
           </button>
         <br/>

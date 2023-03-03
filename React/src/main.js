@@ -37,7 +37,7 @@ const default_frame_amount = 2;
 const frame = {
   duration: 0,
   electrodes: [],
-  temperatures: new Float32Array(3).fill(null),
+  temperatures: new Array(3).fill(0.0),
   magnets: Array(2).fill(null)
 };
 
@@ -53,14 +53,14 @@ class Body extends React.Component {
       frames: [{
         duration: 0,
         electrodes: Array(16).fill(Array(8).fill(null)),
-        temperatures: new Float32Array(3).fill(null),
+        temperatures: new Array(3).fill(0.0),
         magnets: Array(2).fill(null)
       }
         ,
       {
         duration: 0,
         electrodes: Array(16).fill(Array(8).fill(null)),
-        temperatures: new Float32Array(3).fill(null),
+        temperatures: new Array(3).fill(0.0),
         magnets: Array(2).fill(null)
       }
       ],
@@ -1131,7 +1131,10 @@ class Body extends React.Component {
 
       var temperaturesToAdd = new Array()
       for (var temp_index = 0; temp_index < this.state.frames[i].temperatures.length; temp_index++) {
-        if (parseFloat(this.state.frames[i].temperatures[temp_index]).toFixed(2) == '0.00') {
+          console.log("TEMP: "+ temp_index)
+          console.log("STATE VALUE:" + this.state.frames[i].temperatures[temp_index])
+        if (parseFloat(this.state.frames[i].temperatures[temp_index]) == '0.00') {
+          console.log("SKIP TEMP: "+ temp_index)
           continue
         }
         var temperatureToAdd = Object.create(temperature)
@@ -1481,7 +1484,8 @@ class Body extends React.Component {
     });
 
     let temp_index = parseInt(event.target.getAttribute("temp_id")) - 1
-    newFrames[this.state.currently_edited_frame[0]].temperatures[temp_index] = parseFloat(event.target.value).toFixed(2)
+    console.log("SET TEMP STATE:" + parseFloat(event.target.value))
+    newFrames[this.state.currently_edited_frame[0]].temperatures[temp_index] = event.target.value
 
     this.setState({
       frames: newFrames,
@@ -1544,7 +1548,7 @@ class Body extends React.Component {
     for (var j = 0; j < new_frame.electrodes.length; j++) {
       new_frame.electrodes[j] = Array(8).fill(null)
     }
-    new_frame.temperatures = new Float32Array(3).fill(0.0)
+    new_frame.temperatures = new Array(3).fill(0.0)
     new_frame.magnets = Array(2).fill(false)
     return new_frame
   }
@@ -1616,7 +1620,12 @@ class Body extends React.Component {
   }
 
   clearAllFrames() {
-    this.allocCleanFrames(this.state.framesAmount)
+    this.setState({
+      currently_edited_frame : [0]
+    }, () => {
+      this.allocCleanFrames(2)
+    })
+
   }
 
   deleteFrame() {
@@ -1732,7 +1741,7 @@ class Body extends React.Component {
                 step="0.01"
                 min='0'
                 max='120'
-                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[0].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[0]} onChange={this.handleTempChange.bind(this)} />
               <input className="temp_reading" name="temp1_reading" value={this.state.temperatureReadings[0].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>
@@ -1745,7 +1754,7 @@ class Body extends React.Component {
                 step="0.01"
                 min='0'
                 max='120'
-                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[1].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[1]} onChange={this.handleTempChange.bind(this)} />
               <input className="temp_reading" name="temp2_reading" value={this.state.temperatureReadings[1].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>
@@ -1758,7 +1767,7 @@ class Body extends React.Component {
                 step="0.01"
                 min='0'
                 max='120'
-                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[2].toFixed(2)} onChange={this.handleTempChange.bind(this)} />
+                value={this.state.frames[this.state.currently_edited_frame[0]].temperatures[2]} onChange={this.handleTempChange.bind(this)} />
               <input className="temp_reading" name="temp3_reading" value={this.state.temperatureReadings[2].toFixed(2) + "°"} readOnly disabled />
             </div>
           </form>

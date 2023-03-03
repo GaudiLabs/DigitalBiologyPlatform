@@ -577,7 +577,7 @@ func (repo *PostgresRepo) CreateUser(user defines.User) error {
 	}
 	//spew.Dump(string(bts))
 
-	result, err := repo.dbConn.Exec(string(queryBytes), user.Login, hashedPassword, user.Email)
+	result, err := repo.dbConn.Exec(string(queryBytes), user.Login, hashedPassword, user.Email, user.Fullname, user.Institution, user.Website, user.Bio)
 	if err != nil {
 		return err
 	}
