@@ -30,6 +30,7 @@ class GlassCartridgeComponent extends React.Component {
             //console.log(this.props.state);
             current_electrode.addEventListener('mousedown', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
             current_electrode.addEventListener('mouseenter', (e) => {this.props.state.clickHandle(current_electrode_id, e)}, false);
+            current_electrode.addEventListener('mouseup', (e) => {this.props.state.resetClickAction(e)}, false);
             
         }
     }
@@ -447,7 +448,7 @@ class GlassCartridgeComponent extends React.Component {
 
     render() {
         return (
-            <g>
+            <g onMouseUp={(e) => {this.props.state.resetClickAction(e)}} >
                 {this.renderCartridge()}
                 {this.renderElectrodes()}
             </g>

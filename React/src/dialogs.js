@@ -135,4 +135,45 @@ class SaveDialog extends React.Component {
   }
 }
 
-export {UnsavedDialog, DeleteDialog, SaveDialog}
+class UnsavedLogOutDialog extends React.Component {
+
+  constructor(props) {
+    super(props);
+    //console.log(this.props)
+    this.state = {
+      a: "b"
+    }
+  }
+
+  render() {
+    return (
+      <div>
+      <Dialog
+        open={this.props.open}
+        onClose={this.props.handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+        You have unsaved changes on "{this.props.protocolName}" ?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you want to discard those ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.props.handleDiscard}>
+            Discard Changes
+          </Button>
+          <Button onClick={this.props.handleClose} autoFocus>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+    )
+  }
+}
+
+export {UnsavedDialog, DeleteDialog, SaveDialog, UnsavedLogOutDialog}

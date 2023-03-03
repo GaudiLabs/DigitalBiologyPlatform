@@ -25,7 +25,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { SwitchTheme } from './graphics';
 
 
-import { SaveDialog, DeleteDialog, UnsavedDialog } from './dialogs';
+import { SaveDialog, DeleteDialog, UnsavedDialog, UnsavedLogOutDialog } from './dialogs';
 import { DateTime } from "luxon";
 import Hotkeys from 'react-hot-keys';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -40,6 +40,8 @@ const frame = {
   temperatures: new Float32Array(3).fill(null),
   magnets: Array(2).fill(null)
 };
+
+const EmptyProtocolHash = 1654625119
 
 class Body extends React.Component {
   constructor(props) {
@@ -70,6 +72,7 @@ class Body extends React.Component {
       electrodesFeedback: this.generateEmptyFeedbackArray(),
       serialPort: null,
       clickHandle: this.handleHover.bind(this),
+      resetClickAction: this.resetClickAction.bind(this),
       logOut: this.logOut.bind(this),
       loadProtocol: this.handleLoadProtocol.bind(this),
       publicLoadProtocol: this.handlePublicLoadProtocol.bind(this),
@@ -101,6 +104,7 @@ class Body extends React.Component {
       saveDialogOpen: false,
       deleteDialogOpen: false,
       unsavedDialogOpen: false,
+      unsavedLogOutDialogOpen: false,
       protocols: [],
       loadedProtocolID: null,
       loadedProtocolHash: "",
@@ -112,6 +116,7 @@ class Body extends React.Component {
       currentCartridge : "standard",
       currentAdaptor : "standard",
       feedbackMode : false,
+      clickAction : null,
       
     };
 
@@ -140,25 +145,47 @@ class Body extends React.Component {
     }
   }
 
-  componentWillUnmount() {
+  saveStateToLocalStorage() {
+    console.log("SAVE STATE TO LOCAL")
 
-    this.setState(
-      {
-        liveMode: false,
-        serialPort: null,
-        playing: false,
-      }
-      , ()=> {
         delete this.state.loggedIn 
         delete this.state.username 
         delete this.state.accessToken 
         delete this.state.authHeader
+        this.state.liveMode = false
+        this.state.serialPort = null
+        this.state.playing = false
+        console.log("SAVING")
+        console.log(this.state)
         localStorage.setItem('_SavedState', JSON.stringify(this.state))
-      }
-    )
+
+    // this.setState(
+    //   {
+    //     liveMode: false,
+    //     serialPort: null,
+    //     playing: false,
+    //   }
+    //   , () => {
+    //     delete this.state.loggedIn 
+    //     delete this.state.username 
+    //     delete this.state.accessToken 
+    //     delete this.state.authHeader
+    //     console.log("SAVING")
+    //     console.log(this.state)
+    //     localStorage.setItem('_SavedState', JSON.stringify(this.state))
+    //   }
+    // )
+  }
+
+  componentWillUnmount() {
+    console.log("COMPONENT WILL UNMOUNT : Main")
+
+    this.saveStateToLocalStorage();
+    window.removeEventListener('beforeunload', this.saveStateToLocalStorage()); // remove the event handler for normal unmounting
   }
 
   async componentDidMount() {
+    window.addEventListener('beforeunload', this.saveStateToLocalStorage);
     console.log("COMPONENT DID MOUNT : Main")
     const rehydrate = JSON.parse(localStorage.getItem('_SavedState'))
     console.log("REHYDRATE:")
@@ -168,6 +195,9 @@ class Body extends React.Component {
     //this.allocCleanFrames(default_frame_amount)
 
     this.attachResizingHandle()
+
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
 
     if (this.state.loggedIn) {
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
@@ -631,9 +661,7 @@ class Body extends React.Component {
   }
 
 
-  logOut() {
-    //HERE change to set ok default
-    console.log("LOG OUT CALL")
+  performLogOut() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     this.allocCleanFrames(default_frame_amount)
@@ -644,8 +672,6 @@ class Body extends React.Component {
       currently_edited_frame: [0],
       protocolName: "New Protocol",
       protocolDescription: "Protocol description",
-      //squares: Array(16).fill(Array(8).fill("o")),
-      //electrodes: Array(128).fill(null),
       serialPort: null,
       framesAmount: 2,
       liveMode: false,
@@ -655,8 +681,30 @@ class Body extends React.Component {
       deleteDialogOpen: false,
       protocols: [],
       loadedProtocolID: null,
-      loopMode: false
+      loopMode: false,
+      unsavedLogOutDialogOpen : false,
+      loadedProtocolID : null
     })
+  }
+
+  logOut() {
+    //HERE change to set ok default
+    console.log("LOG OUT CALL")
+
+    let protocolStr = JSON.stringify(this.SerializeStateProtocol())
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("ACTUAL PROTOCOL HASH=" + protocolHash)
+    console.log("LOADED PROTOCOL HASH=" + this.state.loadedProtocolHash)
+    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash ||
+      this.state.loadedProtocolHash != protocolHash) {
+      this.setState({
+        protocolToLoadID: null,
+        unsavedLogOutDialogOpen: true
+      })
+      return;
+    }
+    this.performLogOut()
+ 
   }
 
   handleHTTPErrors(response) {
@@ -964,9 +1012,11 @@ class Body extends React.Component {
     console.log("LOAD PROTOCOL CALL")
     let protocolStr = JSON.stringify(this.SerializeStateProtocol())
     let protocolHash = SimpleHash(protocolStr)
+    console.log(protocolHash)
     console.log("ACTUAL PROTOCOL HASH=" + protocolHash)
     console.log("LOADED PROTOCOL HASH=" + this.state.loadedProtocolHash)
-    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash) {
+    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash || 
+      this.state.loadedProtocolID == null && EmptyProtocolHash != protocolHash) {
       this.setState({
         protocolToLoadID: protocol_id,
         protocolToLoadPublic: true,
@@ -1000,7 +1050,8 @@ class Body extends React.Component {
     let protocolHash = SimpleHash(protocolStr)
     console.log("ACTUAL PROTOCOL HASH=" + protocolHash)
     console.log("LOADED PROTOCOL HASH=" + this.state.loadedProtocolHash)
-    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash) {
+    if (this.state.loadedProtocolID != null && this.state.loadedProtocolHash !== protocolHash ||
+      this.state.loadedProtocolID == null && EmptyProtocolHash != protocolHash) {
       this.setState({
         protocolToLoadID: protocol_id,
         unsavedDialogOpen: true
@@ -1128,7 +1179,6 @@ class Body extends React.Component {
 
   async saveClick() {
     console.log("SAVE CLICK TRIGGER")
-    //TODO : here add popup, choices etc
     if (this.state.loadedProtocolID != null) {
       this.setState({
         saveDialogOpen: true
@@ -1136,16 +1186,6 @@ class Body extends React.Component {
     } else {
       await this.handleCreateNewProtocol()
     }
-
-    // var currentProtocol = this.SerializeStateProtocol()
-
-    // await this.saveNewProtocol(currentProtocol)
-    // let BackendProtocolsResponse = await this.retreiveUserProtocols()
-    // this.setState(
-    //   {
-    //     protocols : BackendProtocolsResponse.protocols
-    //   }
-    // )
   }
 
 
@@ -1157,6 +1197,10 @@ class Body extends React.Component {
 
     var currentProtocol = this.SerializeStateProtocol()
 
+    let protocolStr = JSON.stringify(currentProtocol)
+    let protocolHash = SimpleHash(protocolStr)
+    console.log("SAVED PROTOCOL HASH =" + protocolHash)
+
     let resp = await this.saveNewProtocol(currentProtocol)
     console.log(resp)
     let BackendProtocolsResponse = await this.retreiveUserProtocols()
@@ -1165,7 +1209,8 @@ class Body extends React.Component {
       {
         publicProtocols : BackendPublicProtocolsResponse.protocols,
         protocols: BackendProtocolsResponse.protocols,
-        loadedProtocolID: resp.id
+        loadedProtocolID: resp.id,
+        loadedProtocolHash: protocolHash
       }
     )
   }
@@ -1364,7 +1409,7 @@ class Body extends React.Component {
 
   handleHover(electrode_id, e) {
     //console.log("MOUSE ENTER")
-    ////console.log(e)
+    console.log(e)
     if (e.type === "click" || e.buttons === 1 || e.buttons === 3) {
       var newArray = this.state.frames[this.state.currently_edited_frame[0]].electrodes.map(function (arr) {
         return arr.slice();
@@ -1374,11 +1419,16 @@ class Body extends React.Component {
       var i = Math.floor(electrode_id / 8);
       var j = electrode_id % 8;
 
+      if (this.state.clickAction != false) {
+        newArray[i][j] = this.state.clickAction
+      } else {
+
       if (newArray[i][j] != null) {
         newArray[i][j] = null;
       } else {
         newArray[i][j] = '1';
       }
+    }
       ////console.log(i, j)
 
       var newFrames = this.state.frames.map(function (arr) {
@@ -1389,9 +1439,17 @@ class Body extends React.Component {
 
       this.setState({
         frames: newFrames,
+        clickAction : newArray[i][j],
       }, this.handleLiveDeviceSend);
     }
     ////console.log(this.state.squares)
+  }
+
+  resetClickAction(e) {
+    console.log("RESET CLICK ACTION TRIGGER")
+      this.setState({
+        clickAction: false,
+      });
   }
 
   handleDurationChange(event) {
@@ -1791,6 +1849,13 @@ class Body extends React.Component {
       }
     )
   };
+  handleUnsavedLogOutDialogClose = () => {
+    this.setState(
+      {
+        unsavedLogOutDialogOpen: false
+      }
+    )
+  };
 
 
   layout = [
@@ -1831,6 +1896,18 @@ class Body extends React.Component {
             this.setState({
               unsavedDialogOpen: false,
               protocolToLoadPublic: false,
+            })
+          }}
+          protocolName={this.state.protocolName}
+        />
+        <UnsavedLogOutDialog
+          open={this.state.unsavedLogOutDialogOpen}
+          handleClose={this.handleUnsavedLogOutDialogClose.bind(this)}
+          handleDiscard={() => {
+            this.setState({
+              unsavedLogOutDialogOpen: false,
+            }, () => {
+              this.performLogOut()
             })
           }}
           protocolName={this.state.protocolName}
